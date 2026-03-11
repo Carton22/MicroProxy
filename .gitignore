@@ -1,21 +1,41 @@
-Temp/
-UserSettings/
-Library/
-Logs/
-obj/
-Build/
-Builds/
+## Unity generated folders
+[Ll]ibrary/
+[Tt]emp/
+[Oo]bj/
+[Bb]uild/
+[Bb]uilds/
+[Ll]ogs/
+[Uu]ser[Ss]ettings/
+
+## IDE / editor
 .vs/
 .vsconfig
-*.csproj
+.idea/
 *.sln
+*.csproj
+
+## Unity cache / auto-generated
 /.utmp
-*.zip
-*.apk
-RuntimeActionBindings.json
-RuntimeActionBindings.json.meta
 ProjectSettings\Packages\com.unity.testtools.codecoverage\Settings.json
 PerformanceTestRun*.*
 StreamingAssets*
 buildInfo.txt
 Packages/packages-lock.json
+
+## Platform-specific artifacts
+*.apk
+*.aab
+*.ipa
+*.app
+*.xcworkspace
+*.xcuserdatad/
+
+## Archives
+*.zip
+*.tar
+*.tar.gz
+*.tgz
+
+## Misc runtime files
+RuntimeActionBindings.json
+RuntimeActionBindings.json.meta
