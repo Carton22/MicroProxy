@@ -39,3 +39,5 @@ Packages/packages-lock.json
 ## Misc runtime files
 RuntimeActionBindings.json
 RuntimeActionBindings.json.meta
+
+.DS_Store
