@@ -495,10 +495,10 @@ PlayerSettings:
   enableInternalProfiler: 0
   logObjCUncaughtExceptions: 1
   enableCrashReportAPI: 0
-  cameraUsageDescription: 
+  cameraUsageDescription: use camera
   locationUsageDescription: 
-  microphoneUsageDescription: 
-  bluetoothUsageDescription: 
+  microphoneUsageDescription: use microphone
+  bluetoothUsageDescription: use bluetooth
   macOSTargetOSVersion: 11.0
   switchNMETAOverride: 
   switchNetLibKey: 
@@ -787,7 +787,7 @@ PlayerSettings:
   useDeterministicCompilation: 1
   additionalIl2CppArgs: 
   scriptingRuntimeVersion: 1
-  gcIncremental: 1
+  gcIncremental: 0
   gcWBarrierValidation: 0
   apiCompatibilityLevelPerPlatform: {}
   editorAssembliesCompatibilityLevel: 1
