@@ -24,11 +24,14 @@ namespace PassthroughCameraSamples.MultiObjectDetection
         [SerializeField] private TextAsset m_labelsAsset;
         [SerializeField] private TextMeshPro debugLogText;
         [SerializeField] private bool showDebugLog = false;
+        [SerializeField] private DetectionUiMenuManager m_uiMenuManager;
+
         [Header("Passthrough Camera")]
         [SerializeField] private PassthroughCameraAccess m_cameraAccess;
 
         private bool m_isWaiting = false;
         private bool m_hasConnectedToServer = false;
+        private bool m_hasStartedDetectionFlow = false;
 
         [Range(0f, 1f)]
         public float confidenceThreshold = 0.5f;  // Default: show detections with 50% confidence or higher
@@ -91,10 +94,11 @@ namespace PassthroughCameraSamples.MultiObjectDetection
 
         void Update()
         {
-            // VR controller input (A button)
-            if (OVRInput.GetDown(OVRInput.Button.One))
+            // Automatically start detection once the UI menu is unpaused
+            if (!m_hasStartedDetectionFlow && m_uiMenuManager != null && !m_uiMenuManager.IsPaused)
             {
-                AppendLog("[Scene] A button pressed — starting detection.");
+                m_hasStartedDetectionFlow = true;
+                AppendLog("[Client] DetectionUiMenuManager unpaused — starting detection.");
                 StartDetection();
             }
         }
