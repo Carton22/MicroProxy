@@ -22,9 +22,12 @@ namespace PassthroughCameraSamples.MultiObjectDetection
         [Header("Detection UI")]
         [SerializeField] private SentisInferenceUiManager m_uiInference;
         [SerializeField] private TextAsset m_labelsAsset;
-        [SerializeField] private TextMeshPro debugLogText;
-        [SerializeField] private bool showDebugLog = false;
         [SerializeField] private DetectionUiMenuManager m_uiMenuManager;
+        [SerializeField] private ProxyInject m_proxyInject;
+
+        [Header("Logging")]
+        [SerializeField] private SharedLogger m_logger;
+        [SerializeField] private bool showLog = false;
 
         [Header("Passthrough Camera")]
         [SerializeField] private PassthroughCameraAccess m_cameraAccess;
@@ -32,6 +35,7 @@ namespace PassthroughCameraSamples.MultiObjectDetection
         private bool m_isWaiting = false;
         private bool m_hasConnectedToServer = false;
         private bool m_hasStartedDetectionFlow = false;
+        private bool m_generateNextFrame = false;
 
         [Range(0f, 1f)]
         public float confidenceThreshold = 0.5f;  // Default: show detections with 50% confidence or higher
@@ -56,27 +60,47 @@ namespace PassthroughCameraSamples.MultiObjectDetection
             return true; // Always return true for remote/server inference
         }
 
+        /// <summary>
+        /// Request that the next frame sent to the server includes a
+        /// 'generate=true' query flag so the backend can save crops/masks.
+        /// Safe to call multiple times; it only affects the next request.
+        /// </summary>
+        public void RequestGenerateForNextFrame()
+        {
+            m_generateNextFrame = true;
+            AppendLog("[Client] Generate requested for next frame.");
+        }
+
         private void AppendLog(string message, bool isError = false)
         {
-            if (isError)
-            {
-                Debug.LogError(message);
-            }
-            else
-            {
-                Debug.Log(message);
-            }
 
-            // Always log to the Unity console, but only update on-headset debug text
-            // when showDebugLog is enabled and a target TextMeshPro is assigned.
-            if (!showDebugLog || debugLogText == null)
+            if (!showLog)
             {
                 return;
             }
 
-            // var line = $"{DateTime.Now:HH:mm:ss} {message}";
-            var line = $"{message}";
-            debugLogText.text = string.IsNullOrEmpty(debugLogText.text) ? line : $"{debugLogText.text}\n{line}";
+            if (m_logger != null)
+            {
+                if (isError)
+                {
+                    m_logger.LogError(message);
+                }
+                else
+                {
+                    m_logger.Log(message);
+                }
+            }
+            else
+            {
+                if (isError)
+                {
+                    Debug.LogError(message);
+                }
+                else
+                {
+                    Debug.Log(message);
+                }
+            }
         }
 
         public void StartDetection()
@@ -175,7 +199,22 @@ namespace PassthroughCameraSamples.MultiObjectDetection
 
             Destroy(frame);
 
-            UnityWebRequest request = new UnityWebRequest(serverUrl, "POST");
+            // Append optional generate=true flag for this frame
+            string url = serverUrl;
+            if (m_generateNextFrame)
+            {
+                m_generateNextFrame = false; // consume the flag
+                url = serverUrl + (serverUrl.Contains("?") ? "&" : "?") + "generate=true";
+                AppendLog("[Client] Using generate=true for this request.");
+
+                // Optional: if a debug JSON is assigned on ProxyInject, run it immediately.
+                if (m_proxyInject != null)
+                {
+                    m_proxyInject.DebugProcessServerResponse();
+                }
+            }
+
+            UnityWebRequest request = new UnityWebRequest(url, "POST");
             request.uploadHandler = new UploadHandlerRaw(imageBytes);
             request.downloadHandler = new DownloadHandlerBuffer();
             request.SetRequestHeader("Content-Type", "application/octet-stream");
@@ -193,9 +232,17 @@ namespace PassthroughCameraSamples.MultiObjectDetection
                         AppendLog("[Client] Successfully connected to inference server.");
                     }
 
-                    // string json = request.downloadHandler.text;
-                    AppendLog("[Client] Detections received: " + request.downloadHandler.text);
-                    ProcessDetections(request.downloadHandler.text);
+                    string json = request.downloadHandler.text;
+                    AppendLog("[Client] Detections received: " + json, false);
+                    // Let ProxyInject inspect any optional "analysis" payload.
+                    if (m_proxyInject != null)
+                    {   
+                        // Process the server response here to get both the detections and the GPT analysis to update the labels
+                        m_proxyInject.ProcessServerResponse(json);
+                    }
+
+                    // Detect here for only the detections and draw the spatial UI boxes
+                    ProcessDetections(json);
                 }
                 else
                 {
@@ -250,9 +297,41 @@ namespace PassthroughCameraSamples.MultiObjectDetection
             public int @class;
         }
 
+        [Serializable]
+        private class ServerDetectionsWrapper
+        {
+            public Detection[] detections;
+        }
+
         void ProcessDetections(string json)
         {
-            Detection[] detections = JsonHelper.FromJson<Detection>(json);
+            if (string.IsNullOrEmpty(json))
+            {
+                AppendLog("[Client] Empty detections JSON, skipping.", true);
+                return;
+            }
+
+            Detection[] detections;
+
+            // Support both legacy "[{...}]" arrays and new "{ detections: [...] }" wrapper.
+            string trimmed = json.TrimStart();
+            if (trimmed.Length > 0 && trimmed[0] == '[')
+            {
+                detections = JsonHelper.FromJson<Detection>(json);
+            }
+            else
+            {
+                try
+                {
+                    var wrapper = JsonUtility.FromJson<ServerDetectionsWrapper>(json);
+                    detections = wrapper?.detections ?? Array.Empty<Detection>();
+                }
+                catch (Exception ex)
+                {
+                    AppendLog("[Client] Failed to parse detections JSON: " + ex.Message, true);
+                    return;
+                }
+            }
 
             if (m_uiInference == null)
             {

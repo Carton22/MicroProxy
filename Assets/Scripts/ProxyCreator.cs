@@ -12,6 +12,8 @@ public class ProxyCreator : MonoBehaviour
     [Header("Label UI")]
     [SerializeField] private RectTransform m_labelsParent;
     [SerializeField] private GameObject m_labelPrefab;
+    [Header("Server Detection")]
+    [SerializeField] private PassthroughCameraSamples.MultiObjectDetection.ServerObjDetector m_serverDetector;
 
     private readonly List<GameObject> m_activeLabels = new();
     private readonly List<GameObject> m_labelPool = new();
@@ -22,14 +24,6 @@ public class ProxyCreator : MonoBehaviour
     /// </summary>
     private bool m_labelsFrozen;
 
-    private void Awake()
-    {
-        if (m_labelPrefab != null)
-        {
-            m_labelPrefab.SetActive(false);
-        }
-    }
-
     private void Update()
     {
         // Meta Quest 3: B button toggles whether labels are updated from detections
@@ -37,6 +31,13 @@ public class ProxyCreator : MonoBehaviour
         {
             m_labelsFrozen = !m_labelsFrozen;
             Debug.Log($"[ProxyCreator] Labels {(m_labelsFrozen ? "frozen" : "updating")} (B pressed).");
+
+            // Signal to the server that the next frame should be treated as a "generate" request
+            // (e.g., save segmented views or crops) via ServerObjDetector.
+            if (m_serverDetector != null)
+            {
+                m_serverDetector.RequestGenerateForNextFrame();
+            }
         }
     }
 
@@ -48,6 +49,20 @@ public class ProxyCreator : MonoBehaviour
     /// <param name="detectionCount">Current number of detected objects.</param>
     public void SyncLabelsWithDetections(int detectionCount)
     {
+        // Remove any inactive children under the labels parent so they
+        // don't get counted or renamed by other systems (e.g. ProxyInject).
+        if (m_labelsParent != null)
+        {
+            for (int i = m_labelsParent.childCount - 1; i >= 0; i--)
+            {
+                var child = m_labelsParent.GetChild(i);
+                if (!child.gameObject.activeSelf)
+                {
+                    Destroy(child.gameObject);
+                }
+            }
+        }
+
         if (m_labelsFrozen)
         {
             return;
