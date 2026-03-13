@@ -2781,8 +2781,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b197aff9cf0aa4d70850c643307ea64e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  serverUrl: http://10.0.225.49:8000/detect
-  healthUrl: http://10.0.225.49:8000/health
+  serverUrl: http://10.131.93.214:8000/detect
+  healthUrl: http://10.131.93.214:8000/health
   passthroughCamera: {fileID: 1744462754}
   m_uiInference: {fileID: 1711459072}
   m_labelsAsset: {fileID: 4900000, guid: c01c64149c7930b45a76559caabd5c78, type: 3}
