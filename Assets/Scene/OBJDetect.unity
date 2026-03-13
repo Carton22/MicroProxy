@@ -443,9 +443,11 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 251487947}
+  - component: {fileID: 251487951}
   - component: {fileID: 251487950}
   - component: {fileID: 251487949}
   - component: {fileID: 251487948}
+  - component: {fileID: 251487952}
   m_Layer: 0
   m_Name: LeftMicroGesture
   m_TagString: Untagged
@@ -669,6 +671,34 @@ MonoBehaviour:
   GestureRecognizedEvent:
     m_PersistentCalls:
       m_Calls: []
+--- !u!114 &251487951
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 251487946}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 51b70d7d5433a4f18989fb4aecd24ac9, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  defaultSelectable: {fileID: 0}
+  selectionRoot: {fileID: 794968809}
+--- !u!114 &251487952
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 251487946}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d34f6b789c69e4b9596cd3d1ef091a08, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  microGesture: {fileID: 251487950}
+  debugKeyboardInput: 1
 --- !u!1 &256469435
 GameObject:
   m_ObjectHideFlags: 0
@@ -868,6 +898,8 @@ GameObject:
   - component: {fileID: 456180477}
   - component: {fileID: 456180476}
   - component: {fileID: 456180475}
+  - component: {fileID: 456180478}
+  - component: {fileID: 456180479}
   m_Layer: 0
   m_Name: RightMicroGesture
   m_TagString: Untagged
@@ -1091,6 +1123,34 @@ MonoBehaviour:
   GestureRecognizedEvent:
     m_PersistentCalls:
       m_Calls: []
+--- !u!114 &456180478
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 456180473}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 51b70d7d5433a4f18989fb4aecd24ac9, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  defaultSelectable: {fileID: 0}
+  selectionRoot: {fileID: 794968809}
+--- !u!114 &456180479
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 456180473}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d34f6b789c69e4b9596cd3d1ef091a08, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  microGesture: {fileID: 456180477}
+  debugKeyboardInput: 1
 --- !u!1 &632844191
 GameObject:
   m_ObjectHideFlags: 0
@@ -1334,7 +1394,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 794968809}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 59f8146938fff824cb5fd77236b75775, type: 3}
+  m_Script: {fileID: 11500000, guid: 8a8695521f0d02e499659fee002a26c2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   m_Padding:
@@ -1342,15 +1402,13 @@ MonoBehaviour:
     m_Right: 0
     m_Top: 0
     m_Bottom: 0
-  m_ChildAlignment: 4
-  m_Spacing: 0.5
-  m_ChildForceExpandWidth: 1
-  m_ChildForceExpandHeight: 1
-  m_ChildControlWidth: 0
-  m_ChildControlHeight: 0
-  m_ChildScaleWidth: 1
-  m_ChildScaleHeight: 1
-  m_ReverseArrangement: 0
+  m_ChildAlignment: 0
+  m_StartCorner: 0
+  m_StartAxis: 0
+  m_CellSize: {x: 100, y: 100}
+  m_Spacing: {x: 8, y: 8}
+  m_Constraint: 1
+  m_ConstraintCount: 2
 --- !u!1 &847150196
 GameObject:
   m_ObjectHideFlags: 0
@@ -2723,8 +2781,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b197aff9cf0aa4d70850c643307ea64e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  serverUrl: http://10.131.93.214:8000/detect
-  healthUrl: http://10.131.93.214:8000/health
+  serverUrl: http://10.0.225.49:8000/detect
+  healthUrl: http://10.0.225.49:8000/health
   passthroughCamera: {fileID: 1744462754}
   m_uiInference: {fileID: 1711459072}
   m_labelsAsset: {fileID: 4900000, guid: c01c64149c7930b45a76559caabd5c78, type: 3}

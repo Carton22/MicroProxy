@@ -223,9 +223,11 @@ public class ProxyInject : MonoBehaviour
             }
 
             string displayName = null;
+            string nodeType = null;
             if (nodes != null && nodes.Length > 0 && nodes[0] != null)
             {
                 displayName = nodes[0].name;
+                nodeType = nodes[0].type;
             }
 
             if (string.IsNullOrEmpty(displayName))
@@ -239,6 +241,14 @@ public class ProxyInject : MonoBehaviour
             if (text != null)
             {
                 text.text = displayName;
+            }
+
+            // Inform per-label status component about the analysis data so it
+            // can update text appropriately when the label is clicked.
+            var status = labelGO.GetComponent<ProxyLabelStatus>();
+            if (status != null)
+            {
+                status.SetAnalysisData(displayName, nodeType);
             }
         }
     }
