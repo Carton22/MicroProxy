@@ -17,6 +17,7 @@ namespace PassthroughCameraSamples.MultiObjectDetection
         [SerializeField] private PassthroughCameraAccess m_cameraAccess;
 
         [SerializeField] private RectTransform m_detectionBoxPrefab;
+        [SerializeField] private Color m_defaultBoxColor = Color.white;
         [Space(10)]
         public UnityEvent<int> OnObjectsDetected;
 
@@ -31,6 +32,7 @@ namespace PassthroughCameraSamples.MultiObjectDetection
             public int ClassId;
             public RectTransform BoxRectTransform;
             public float lastUpdateTime;
+            public int DetectionIndex;
         }
 
         private void Awake() => m_detectionBoxPrefab.gameObject.SetActive(false);
@@ -66,7 +68,7 @@ namespace PassthroughCameraSamples.MultiObjectDetection
             m_labels = labelsAsset.text.Split('\n');
         }
 
-        public void DrawUIBoxes(List<(int classId, Vector4 boundingBox)> detections, Vector2 inputSize, Pose cameraPose)
+        public void DrawUIBoxes(List<(int classId, Vector4 boundingBox)> detections, Vector2 inputSize, Pose cameraPose, int selectedLabelIndex = -1, Color? selectedColor = null)
         {
             Vector2 currentResolution = m_cameraAccess.CurrentResolution;
 
@@ -76,9 +78,8 @@ namespace PassthroughCameraSamples.MultiObjectDetection
                 return;
             }
 
-            OnObjectsDetected?.Invoke(detections.Count);
-
-            // Draw the bounding boxes
+            int drawnCount = 0;
+            // Draw the bounding boxes (some may be skipped if raycast fails)
             for (var i = 0; i < detections.Count; i++)
             {
                 var detection = detections[i];
@@ -132,11 +133,57 @@ namespace PassthroughCameraSamples.MultiObjectDetection
                     Mathf.Abs(bottomRightLocal.y - topLeftLocal.y));
 
                 var boxData = GetOrCreateBoundingBoxData(detection.classId, worldSpaceCenter, size);
+                boxData.DetectionIndex = drawnCount;
                 var boxRectTransform = boxData.BoxRectTransform;
-                boxRectTransform.GetComponentInChildren<Text>().text = $"Id: {detection.classId} Class: {classname} Center (px): {center:0.0} Center (%): {normalizedCenter:0.0}";
+                int proxyIndex = drawnCount + 1;
+                boxRectTransform.GetComponentInChildren<Text>().text =
+                    $"Proxy {proxyIndex}  (Id: {detection.classId} Class: {classname}) Center (px): {center:0.0} Center (%): {normalizedCenter:0.0}";
                 boxRectTransform.SetPositionAndRotation(worldSpaceCenter, Quaternion.LookRotation(normal));
                 boxRectTransform.sizeDelta = size;
                 boxData.lastUpdateTime = Time.time;
+                SetBoxColor(boxRectTransform, i == selectedLabelIndex && selectedColor.HasValue ? selectedColor.Value : m_defaultBoxColor);
+                drawnCount++;
+            }
+
+            OnObjectsDetected?.Invoke(drawnCount);
+        }
+
+        /// <summary>
+        /// Updates world-space box colors by selected proxy label index. Call when selection changes (e.g. from microgesture).
+        /// </summary>
+        public void UpdateSelectionHighlight(int selectedLabelIndex, Color selectedColor)
+        {
+            foreach (var box in m_boxDrawn)
+            {
+                var c = box.DetectionIndex == selectedLabelIndex ? selectedColor : m_defaultBoxColor;
+                SetBoxColor(box.BoxRectTransform, c);
+            }
+        }
+
+        /// <summary>
+        /// Updates world-space box colors by selection range (multi-select, e.g. from twist). All boxes with DetectionIndex in [minIndex, maxIndex] get selectedColor.
+        /// </summary>
+        public void UpdateSelectionRangeHighlight(int minIndex, int maxIndex, Color selectedColor)
+        {
+            foreach (var box in m_boxDrawn)
+            {
+                var c = (box.DetectionIndex >= minIndex && box.DetectionIndex <= maxIndex) ? selectedColor : m_defaultBoxColor;
+                SetBoxColor(box.BoxRectTransform, c);
+            }
+        }
+
+        private static void SetBoxColor(RectTransform boxRoot, Color color)
+        {
+            var images = boxRoot.GetComponentsInChildren<Image>(true);
+            foreach (var img in images)
+            {
+                img.color = color;
+            }
+            if (images.Length == 0)
+            {
+                var graphic = boxRoot.GetComponentInChildren<Graphic>(true);
+                if (graphic != null)
+                    graphic.color = color;
             }
         }
 

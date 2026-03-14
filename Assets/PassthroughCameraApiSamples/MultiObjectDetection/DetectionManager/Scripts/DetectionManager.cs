@@ -17,6 +17,8 @@ namespace PassthroughCameraSamples.MultiObjectDetection
         [Header("Placement configuration")]
         [SerializeField] private DetectionSpawnMarkerAnim m_spawnMarker;
         [SerializeField] private AudioSource m_placeSound;
+        [Tooltip("When true, pressing A or index pinch spawns 3D markers at detected boxes. When false, spawn is disabled.")]
+        [SerializeField] private bool m_spawnMarkersOnPinch = true;
 
         [SerializeField] private SentisInferenceUiManager m_uiInference;
         [Space(10)]
@@ -56,8 +58,7 @@ namespace PassthroughCameraSamples.MultiObjectDetection
             }
             else
             {
-                // Press A button to spawn 3d markers
-                if (InputManager.IsButtonADownOrPinchStarted())
+                if (m_spawnMarkersOnPinch && InputManager.IsButtonADownOrPinchStarted())
                 {
                     SpawnCurrentDetectedObjects();
                 }

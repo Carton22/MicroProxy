@@ -24,6 +24,7 @@ namespace PassthroughCameraSamples.MultiObjectDetection
         [SerializeField] private TextAsset m_labelsAsset;
         [SerializeField] private DetectionUiMenuManager m_uiMenuManager;
         [SerializeField] private ProxyInject m_proxyInject;
+        [SerializeField] private ProxyCreator m_proxyCreator;
         [SerializeField] private MiniCameraBoxOverlay m_miniCameraOverlay;
 
         [Header("Logging")]
@@ -148,6 +149,14 @@ namespace PassthroughCameraSamples.MultiObjectDetection
                 m_hasStartedDetectionFlow = true;
                 AppendLog("[Client] DetectionUiMenuManager unpaused — starting detection.");
                 StartDetection();
+            }
+
+            // Keep bounding box highlight in sync with proxy label selection (single or multi-select from twist)
+            if (m_uiInference != null && m_proxyCreator != null)
+            {
+                m_proxyCreator.GetSelectionRange(out int minIndex, out int maxIndex);
+                Color selectedColor = m_proxyCreator.GetSelectedColor();
+                m_uiInference.UpdateSelectionRangeHighlight(minIndex, maxIndex, selectedColor);
             }
         }
 
@@ -396,9 +405,17 @@ namespace PassthroughCameraSamples.MultiObjectDetection
             Vector2 inputSize = m_cameraAccess.CurrentResolution;
             Pose cameraPose = m_cameraAccess.GetCameraPose();
 
+            int selectedLabelIndex = -1;
+            Color? selectedColor = null;
+            if (m_proxyCreator != null)
+            {
+                selectedLabelIndex = m_proxyCreator.GetSelectedLabelIndex();
+                selectedColor = m_proxyCreator.GetSelectedColor();
+            }
+
             if (m_uiInference != null)
             {
-                m_uiInference.DrawUIBoxes(uiDetections, inputSize, cameraPose);
+                m_uiInference.DrawUIBoxes(uiDetections, inputSize, cameraPose, selectedLabelIndex, selectedColor);
             }
 
             // if (m_miniCameraOverlay != null)

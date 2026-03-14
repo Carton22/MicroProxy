@@ -1,5 +1,8 @@
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.EventSystems;
+using UnityEngine.UI;
+using TMPro;
 
 /// <summary>
 /// Creates and manages a list of UI label instances under a target Canvas
@@ -18,6 +21,10 @@ public class ProxyCreator : MonoBehaviour
     private readonly List<GameObject> m_activeLabels = new();
     private readonly List<GameObject> m_labelPool = new();
 
+    private int m_selectionMin;
+    private int m_selectionMax;
+    private bool m_selectionRangeOverride;
+
     /// <summary>
     /// When true, SyncLabelsWithDetections does nothing so the current labels stay fixed.
     /// Toggled by B button on Meta Quest 3 controller.
@@ -26,6 +33,20 @@ public class ProxyCreator : MonoBehaviour
 
     private void Update()
     {
+        // Keep selection range in sync: when not overridden by twist, use current focus (single selection)
+        if (!m_selectionRangeOverride)
+        {
+            int focus = GetSelectedLabelIndex();
+            int count = m_labelsParent != null ? m_labelsParent.childCount : 0;
+            if (count > 0 && focus >= 0 && focus < count)
+            {
+                m_selectionMin = m_selectionMax = focus;
+            }
+        }
+
+        // Apply selected/normal color to each label by selection range
+        ApplySelectionRangeVisual();
+
         // Meta Quest 3: B button toggles whether labels are updated from detections
         if (OVRInput.GetDown(OVRInput.Button.Two))
         {
@@ -46,6 +67,94 @@ public class ProxyCreator : MonoBehaviour
                 m_serverDetector.RequestGenerateForNextFrame();
             }
         }
+    }
+
+    /// <summary>
+    /// Index of the currently selected proxy label under m_labelsParent (0-based), or -1 if none.
+    /// One-to-one with detection/box index.
+    /// </summary>
+    public int GetSelectedLabelIndex()
+    {
+        if (m_labelsParent == null || EventSystem.current == null)
+            return -1;
+        var current = EventSystem.current.currentSelectedGameObject;
+        if (current == null)
+            return -1;
+        for (int i = 0; i < m_labelsParent.childCount; i++)
+        {
+            if (m_labelsParent.GetChild(i).gameObject == current)
+                return i;
+        }
+        return -1;
+    }
+
+    /// <summary>
+    /// Selected color from the proxy label button (so bounding box can match when that label is selected).
+    /// </summary>
+    public Color GetSelectedColor()
+    {
+        if (m_labelsParent == null || m_labelsParent.childCount == 0)
+            return Color.white;
+        var first = m_labelsParent.GetChild(0).GetComponent<Button>();
+        if (first != null)
+            return first.colors.selectedColor;
+        return Color.white;
+    }
+
+    /// <summary>
+    /// Normal (unselected) color from the first proxy label button.
+    /// </summary>
+    public Color GetNormalColor()
+    {
+        if (m_labelsParent == null || m_labelsParent.childCount == 0)
+            return Color.white;
+        var first = m_labelsParent.GetChild(0).GetComponent<Button>();
+        if (first != null)
+            return first.colors.normalColor;
+        return Color.white;
+    }
+
+    /// <summary>
+    /// Set a multi-selection range (e.g. from twist). Labels and boxes in [min, max] will show selected style.
+    /// Clamped to valid indices. Cleared when twist ends so single selection follows focus again.
+    /// </summary>
+    public void SetSelectionRange(int minIndex, int maxIndex)
+    {
+        m_selectionRangeOverride = true;
+        int count = m_labelsParent != null ? m_labelsParent.childCount : 0;
+        if (count == 0) return;
+        m_selectionMin = Mathf.Clamp(Mathf.Min(minIndex, maxIndex), 0, count - 1);
+        m_selectionMax = Mathf.Clamp(Mathf.Max(minIndex, maxIndex), 0, count - 1);
+    }
+
+    /// <summary>
+    /// Clear the twist-driven range so selection follows the current focus (single) again.
+    /// </summary>
+    public void ClearSelectionRangeOverride()
+    {
+        m_selectionRangeOverride = false;
+    }
+
+    /// <summary>
+    /// Number of active proxy labels (children under m_labelsParent).
+    /// </summary>
+    public int GetLabelCount()
+    {
+        return m_labelsParent != null ? m_labelsParent.childCount : 0;
+    }
+
+    /// <summary>
+    /// Current selection range (0-based indices). Used for multi-highlight on labels and world-space boxes.
+    /// </summary>
+    public void GetSelectionRange(out int minIndex, out int maxIndex)
+    {
+        if (!m_selectionRangeOverride)
+        {
+            int focus = GetSelectedLabelIndex();
+            m_selectionMin = m_selectionMax = focus >= 0 ? focus : 0;
+        }
+        minIndex = m_selectionMin;
+        maxIndex = m_selectionMax;
     }
 
     /// <summary>
@@ -95,6 +204,18 @@ public class ProxyCreator : MonoBehaviour
             m_activeLabels.Add(label);
         }
 
+        // Ensure each active label shows an ID like "ID: 1", "ID: 2", ...
+        for (int i = 0; i < m_activeLabels.Count; i++)
+        {
+            var go = m_activeLabels[i];
+            if (go == null) continue;
+            var text = go.GetComponentInChildren<TextMeshPro>();
+            if (text != null)
+            {
+                text.text = $"ID: {i + 1}";
+            }
+        }
+
         // Shrink
         while (m_activeLabels.Count > detectionCount)
         {
@@ -141,6 +262,25 @@ public class ProxyCreator : MonoBehaviour
         label.SetActive(false);
         label.transform.SetParent(transform, false);
         m_labelPool.Add(label);
+    }
+
+    private void ApplySelectionRangeVisual()
+    {
+        if (m_labelsParent == null) return;
+        int count = m_labelsParent.childCount;
+        if (count == 0) return;
+        Color selectedColor = GetSelectedColor();
+        Color normalColor = GetNormalColor();
+        for (int i = 0; i < count; i++)
+        {
+            var child = m_labelsParent.GetChild(i).gameObject;
+            var btn = child.GetComponent<Button>();
+            var graphic = btn != null && btn.targetGraphic != null ? btn.targetGraphic : child.GetComponentInChildren<Image>();
+            if (graphic != null)
+            {
+                graphic.color = (i >= m_selectionMin && i <= m_selectionMax) ? selectedColor : normalColor;
+            }
+        }
     }
 }
 
