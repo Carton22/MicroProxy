@@ -144,6 +144,21 @@ public class ProxyCreator : MonoBehaviour
     }
 
     /// <summary>
+    /// Set the current single selection to the proxy label at the given index (0-based). Used e.g. by pinch-twist single-select.
+    /// </summary>
+    public void SetSelectedLabelByIndex(int index)
+    {
+        if (m_labelsParent == null || EventSystem.current == null) return;
+        int count = m_labelsParent.childCount;
+        if (count == 0) return;
+        index = Mathf.Clamp(index, 0, count - 1);
+        var go = m_labelsParent.GetChild(index).gameObject;
+        EventSystem.current.SetSelectedGameObject(go);
+        var sel = go.GetComponent<Selectable>();
+        if (sel != null) sel.Select();
+    }
+
+    /// <summary>
     /// Current selection range (0-based indices). Used for multi-highlight on labels and world-space boxes.
     /// </summary>
     public void GetSelectionRange(out int minIndex, out int maxIndex)

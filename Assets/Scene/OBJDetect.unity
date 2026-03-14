@@ -1079,6 +1079,7 @@ GameObject:
   - component: {fileID: 456180478}
   - component: {fileID: 456180479}
   - component: {fileID: 456180480}
+  - component: {fileID: 456180481}
   m_Layer: 0
   m_Name: RightMicroGesture
   m_TagString: Untagged
@@ -1345,6 +1346,23 @@ MonoBehaviour:
   m_proxyCreator: {fileID: 155020913}
   m_twistEventSource: {fileID: 456180475}
   twistPerLabel: 0.1
+  m_debugLog: 0
+--- !u!114 &456180481
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 456180473}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ae00ed8fcdcb24372825e70a9987e4cf, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_proxyCreator: {fileID: 155020913}
+  m_twistEventSource: {fileID: 456180475}
+  twistPerStep: 0.1
+  m_clearMultiSelectOnStart: 1
   m_debugLog: 0
 --- !u!1 &632844191
 GameObject:
