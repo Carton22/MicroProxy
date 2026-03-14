@@ -272,15 +272,13 @@ namespace PassthroughCameraSamples.MultiObjectDetection
 
                     string json = request.downloadHandler.text;
                     AppendLog("[Client] Detections received: " + json, false);
-                    // Let ProxyInject inspect any optional "analysis" payload.
+                    // Let ProxyInject inspect any optional "analysis" payload (analysis data for labels).
                     if (m_proxyInject != null)
-                    {   
-                        // Process the server response here to get both the detections and the GPT analysis to update the labels
                         m_proxyInject.ProcessServerResponse(json);
-                    }
 
-                    // Detect here for only the detections and draw the spatial UI boxes
-                    ProcessDetections(json);
+                    // When frozen, do not run detection again: keep current boxes and avoid re-invoking OnObjectsDetected.
+                    if (!m_detectionFrozen)
+                        ProcessDetections(json);
                 }
                 else
                 {
