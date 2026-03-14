@@ -26,6 +26,11 @@ namespace PassthroughCameraSamples.MultiObjectDetection
         [SerializeField] private ProxyInject m_proxyInject;
         [SerializeField] private ProxyCreator m_proxyCreator;
         [SerializeField] private MiniCameraBoxOverlay m_miniCameraOverlay;
+        [Tooltip("Optional: draw 2D bounding boxes in screen space (no 3D raycast).")]
+        [SerializeField] private ScreenSpaceBoundingBoxDrawer m_screenSpaceBoxDrawer;
+
+        [Tooltip("When false, 3D world-space bounding boxes are not drawn (SentisInferenceUiManager.DrawUIBoxes is skipped).")]
+        [SerializeField] private bool m_draw3DBoundingBoxes = true;
 
         [Header("Logging")]
         [SerializeField] private SharedLogger m_logger;
@@ -411,9 +416,14 @@ namespace PassthroughCameraSamples.MultiObjectDetection
                 selectedColor = m_proxyCreator.GetSelectedColor();
             }
 
-            if (m_uiInference != null)
+            if (m_draw3DBoundingBoxes && m_uiInference != null)
             {
                 m_uiInference.DrawUIBoxes(uiDetections, inputSize, cameraPose, selectedLabelIndex, selectedColor);
+            }
+
+            if (m_screenSpaceBoxDrawer != null)
+            {
+                m_screenSpaceBoxDrawer.DrawBoxes(uiDetections, inputSize);
             }
 
             // if (m_miniCameraOverlay != null)
