@@ -24,6 +24,7 @@ namespace PassthroughCameraSamples.MultiObjectDetection
         [SerializeField] private TextAsset m_labelsAsset;
         [SerializeField] private DetectionUiMenuManager m_uiMenuManager;
         [SerializeField] private ProxyInject m_proxyInject;
+        [SerializeField] private MiniCameraBoxOverlay m_miniCameraOverlay;
 
         [Header("Logging")]
         [SerializeField] private SharedLogger m_logger;
@@ -333,12 +334,6 @@ namespace PassthroughCameraSamples.MultiObjectDetection
                 }
             }
 
-            if (m_uiInference == null)
-            {
-                AppendLog("[Client] m_uiInference is null. Did you forget to assign it?", true);
-                return;
-            }
-
             if (m_cameraAccess == null || !m_cameraAccess.IsPlaying)
             {
                 AppendLog("[Client] m_cameraAccess is not ready while processing detections.", true);
@@ -373,7 +368,18 @@ namespace PassthroughCameraSamples.MultiObjectDetection
             Vector2 inputSize = m_cameraAccess.CurrentResolution;
             Pose cameraPose = m_cameraAccess.GetCameraPose();
 
-            m_uiInference.DrawUIBoxes(uiDetections, inputSize, cameraPose);
+            if (m_uiInference != null)
+            {
+                m_uiInference.DrawUIBoxes(uiDetections, inputSize, cameraPose);
+            }
+
+            if (m_miniCameraOverlay != null)
+            {
+                showLog = true;
+                AppendLog("[Client] Drawing boxes on mini camera overlay", true);
+                m_miniCameraOverlay.DrawBoxes(uiDetections, inputSize);
+                showLog = false;
+            }
         }
     }
 
