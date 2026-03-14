@@ -37,6 +37,7 @@ namespace PassthroughCameraSamples.MultiObjectDetection
         private bool m_hasConnectedToServer = false;
         private bool m_hasStartedDetectionFlow = false;
         private bool m_generateNextFrame = false;
+        private bool m_detectionFrozen = false;
 
         [Range(0f, 1f)]
         public float confidenceThreshold = 0.5f;  // Default: show detections with 50% confidence or higher
@@ -70,6 +71,28 @@ namespace PassthroughCameraSamples.MultiObjectDetection
         {
             m_generateNextFrame = true;
             AppendLog("[Client] Generate requested for next frame.");
+        }
+
+        /// <summary>
+        /// Freeze detection: stop sending frames and keep current detections and world-space boxes.
+        /// </summary>
+        public void FreezeDetection()
+        {
+            m_detectionFrozen = true;
+            if (m_uiInference != null)
+                m_uiInference.SetAnnotationsFrozen(true);
+            AppendLog("[Client] Detection frozen — keeping current boxes and results.");
+        }
+
+        /// <summary>
+        /// Unfreeze detection: resume sending frames and updating detections/boxes.
+        /// </summary>
+        public void UnfreezeDetection()
+        {
+            m_detectionFrozen = false;
+            if (m_uiInference != null)
+                m_uiInference.SetAnnotationsFrozen(false);
+            AppendLog("[Client] Detection unfrozen — resuming updates.");
         }
 
         private void AppendLog(string message, bool isError = false)
@@ -143,6 +166,11 @@ namespace PassthroughCameraSamples.MultiObjectDetection
 
             while (true)
             {
+                if (m_detectionFrozen)
+                {
+                    yield return null;
+                    continue;
+                }
                 if (!m_isWaiting)
                 {
                     AppendLog("[Client] About to send frame to server");
@@ -373,13 +401,13 @@ namespace PassthroughCameraSamples.MultiObjectDetection
                 m_uiInference.DrawUIBoxes(uiDetections, inputSize, cameraPose);
             }
 
-            if (m_miniCameraOverlay != null)
-            {
-                showLog = true;
-                AppendLog("[Client] Drawing boxes on mini camera overlay", true);
-                m_miniCameraOverlay.DrawBoxes(uiDetections, inputSize);
-                showLog = false;
-            }
+            // if (m_miniCameraOverlay != null)
+            // {
+            //     showLog = true;
+            //     AppendLog("[Client] Drawing boxes on mini camera overlay", true);
+            //     m_miniCameraOverlay.DrawBoxes(uiDetections, inputSize);
+            //     showLog = false;
+            // }
         }
     }
 

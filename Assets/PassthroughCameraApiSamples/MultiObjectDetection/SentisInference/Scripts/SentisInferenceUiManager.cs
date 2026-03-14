@@ -23,6 +23,7 @@ namespace PassthroughCameraSamples.MultiObjectDetection
         internal readonly List<BoundingBoxData> m_boxDrawn = new();
         private string[] m_labels;
         private readonly List<BoundingBoxData> m_boxPool = new();
+        private bool m_annotationsFrozen;
 
         internal class BoundingBoxData
         {
@@ -34,8 +35,18 @@ namespace PassthroughCameraSamples.MultiObjectDetection
 
         private void Awake() => m_detectionBoxPrefab.gameObject.SetActive(false);
 
+        /// <summary>
+        /// When true, world-space boxes are not removed by the time-based culling (e.g. when detection is frozen).
+        /// </summary>
+        public void SetAnnotationsFrozen(bool frozen)
+        {
+            m_annotationsFrozen = frozen;
+        }
+
         private void Update()
         {
+            if (m_annotationsFrozen)
+                return;
             // Remove boxes that haven't been updated recently
             for (int i = m_boxDrawn.Count - 1; i >= 0; i--)
             {

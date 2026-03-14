@@ -32,10 +32,17 @@ public class ProxyCreator : MonoBehaviour
             m_labelsFrozen = !m_labelsFrozen;
             Debug.Log($"[ProxyCreator] Labels {(m_labelsFrozen ? "frozen" : "updating")} (B pressed).");
 
-            // Signal to the server that the next frame should be treated as a "generate" request
-            // (e.g., save segmented views or crops) via ServerObjDetector.
             if (m_serverDetector != null)
             {
+                if (m_labelsFrozen)
+                {
+                    m_serverDetector.FreezeDetection();
+                }
+                else
+                {
+                    m_serverDetector.UnfreezeDetection();
+                }
+                // When unfreezing, next frame can be a "generate" request for crops/masks.
                 m_serverDetector.RequestGenerateForNextFrame();
             }
         }
