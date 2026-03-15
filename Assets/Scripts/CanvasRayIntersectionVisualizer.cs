@@ -1,0 +1,139 @@
+
+using UnityEngine;
+using Meta.XR.Samples;
+using Meta.XR;
+
+public class CanvasRayIntersectionVisualizer : MonoBehaviour
+{
+    [Header("References")]
+    [SerializeField] private MyCameraToWorldManager m_cameraToWorldManager;
+    [SerializeField] private PassthroughCameraAccess m_cameraAccess;
+    [Tooltip("UI prefab (RectTransform + Image) to place at intersection points on the passthrough canvas.")]
+    [SerializeField] private RectTransform m_circlePrefab;
+
+    [Header("Runtime")]
+    private RectTransform m_circleInstance;
+
+    [Header("Debug targets (optional)")]
+    [Tooltip("World-space points to test intersection with the passthrough canvas (for debugging).")]
+    [SerializeField] private Transform[] m_debugTargets;
+    [SerializeField] private bool m_updateDebugEveryFrame = true;
+    private RectTransform[] m_debugInstances;
+
+    private void Update()
+    {
+        if (!m_updateDebugEveryFrame || m_debugTargets == null || m_debugTargets.Length == 0)
+            return;
+
+        // Lazily allocate per-target instances
+        if (m_debugInstances == null || m_debugInstances.Length != m_debugTargets.Length)
+        {
+            m_debugInstances = new RectTransform[m_debugTargets.Length];
+        }
+
+        for (int i = 0; i < m_debugTargets.Length; i++)
+        {
+            var t = m_debugTargets[i];
+            if (t == null)
+                continue;
+
+            if (!TryGetIntersectionPoint(t.position, out var hitWorld, out var canvasTransform))
+            {
+                if (m_debugInstances[i] != null)
+                    m_debugInstances[i].gameObject.SetActive(false);
+                continue;
+            }
+
+            if (m_debugInstances[i] == null && m_circlePrefab != null)
+            {
+                m_debugInstances[i] = Instantiate(m_circlePrefab, canvasTransform);
+            }
+
+            if (m_debugInstances[i] != null)
+            {
+                m_debugInstances[i].gameObject.SetActive(true);
+
+                var parentRect = canvasTransform as RectTransform;
+                var local = parentRect != null
+                    ? parentRect.InverseTransformPoint(hitWorld)
+                    : canvasTransform.InverseTransformPoint(hitWorld);
+
+                m_debugInstances[i].SetParent(canvasTransform, false);
+                m_debugInstances[i].anchoredPosition = new Vector2(local.x, local.y);
+            }
+        }
+    }
+
+    /// <summary>
+    /// Call this with a world-space target point. It will:
+    /// - cast a ray from the passthrough camera to the point,
+    /// - check intersection with the camera-to-world canvas plane,
+    /// - place a circle on the canvas at the hit point (if any).
+    /// </summary>
+    public void ShowIntersection(Vector3 worldTarget)
+    {
+        if (!TryGetIntersectionPoint(worldTarget, out var hitWorld, out var canvasTransform))
+            return;
+
+        // 5) Ensure we have an instance of the circle
+        if (m_circleInstance == null)
+        {
+            m_circleInstance = Instantiate(m_circlePrefab, canvasTransform);
+            m_circleInstance.gameObject.SetActive(true);
+        }
+
+        // 6) Place the circle at the hit point in canvas space
+        var parentRect = canvasTransform as RectTransform;
+        var local = parentRect != null
+            ? parentRect.InverseTransformPoint(hitWorld)
+            : canvasTransform.InverseTransformPoint(hitWorld);
+
+        m_circleInstance.SetParent(canvasTransform, false);
+        m_circleInstance.anchoredPosition = new Vector2(local.x, local.y);
+    }
+
+    /// <summary>
+    /// Core math: from a world target, compute the intersection point (if any) of the ray
+    /// from the passthrough camera to that target with the camera-to-world canvas plane.
+    /// </summary>
+    private bool TryGetIntersectionPoint(Vector3 worldTarget, out Vector3 hitWorld, out Transform canvasTransform)
+    {
+        hitWorld = default;
+        canvasTransform = null;
+
+        if (m_cameraToWorldManager == null || m_cameraAccess == null)
+            return false;
+
+        if (!m_cameraAccess.IsPlaying)
+            return false;
+
+        // 1) Get camera pose (same as used by MyCameraToWorldManager)
+        var camPose = m_cameraAccess.GetCameraPose();
+        Vector3 camPos = camPose.position;
+
+        // 2) Ray from camera to target
+        Vector3 dir = (worldTarget - camPos).normalized;
+        var ray = new Ray(camPos, dir);
+        float distToTarget = Vector3.Distance(camPos, worldTarget);
+
+        // 3) Canvas plane (same transform as camera-to-world canvas)
+        var canvas = m_cameraToWorldManager != null
+            ? m_cameraToWorldManager.GetComponentInChildren<Canvas>()
+            : null;
+        if (canvas == null)
+            return false;
+        canvasTransform = canvas.transform;
+        var plane = new Plane(canvasTransform.forward, canvasTransform.position);
+
+        // 4) Ray–plane intersection
+        if (!plane.Raycast(ray, out float t))
+            return false;
+
+        // Only accept hits between camera and target (small epsilon)
+        if (t < 0f || t > distToTarget + 0.01f)
+            return false;
+
+        hitWorld = ray.GetPoint(t);
+        return true;
+    }
+}

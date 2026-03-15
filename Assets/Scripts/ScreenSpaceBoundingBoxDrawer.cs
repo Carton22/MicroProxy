@@ -10,12 +10,14 @@ public class ScreenSpaceBoundingBoxDrawer : MonoBehaviour
     [Header("UI")]
     [SerializeField] private MyCameraToWorldManager m_cameraToWorldManager;
     [SerializeField] private RectTransform m_boxPrefab;
+    [SerializeField] private RectTransform m_centerCirclePrefab;
 
     // Bounding boxes are normalized using the inputSize passed from the detector.
     // The canvas already matches the passthrough camera texture via MyCameraToWorldManager,
     // so no additional resolution override or aspect-fit is applied here.
 
     private readonly List<RectTransform> m_activeBoxes = new();
+    private readonly List<RectTransform> m_activeCenters = new();
     private readonly List<RectTransform> m_boxPool = new();
 
     private void Awake()
@@ -32,6 +34,15 @@ public class ScreenSpaceBoundingBoxDrawer : MonoBehaviour
             m_boxPool.Add(rt);
         }
         m_activeBoxes.Clear();
+
+        foreach (var center in m_activeCenters)
+        {
+            if (center != null)
+            {
+                center.gameObject.SetActive(false);
+            }
+        }
+        m_activeCenters.Clear();
     }
 
     private RectTransform GetOverlayParent() => m_cameraToWorldManager != null ? m_cameraToWorldManager.BoundingBoxOverlayRect : null;
@@ -88,6 +99,27 @@ public class ScreenSpaceBoundingBoxDrawer : MonoBehaviour
             box.anchorMax = new Vector2(axMax, ayMax);
             box.offsetMin = Vector2.zero;
             box.offsetMax = Vector2.zero;
+
+            // Optional center marker (e.g. small circle) at the middle of the 2D box.
+            if (m_centerCirclePrefab != null)
+            {
+                var marker = Instantiate(m_centerCirclePrefab, overlayParent);
+                marker.gameObject.SetActive(true);
+                // Center in normalized space between axMin/axMax, ayMin/ayMax
+                float axMid = 0.5f * (axMin + axMax);
+                float ayMid = 0.5f * (ayMin + ayMax);
+                marker.anchorMin = new Vector2(axMid, ayMid);
+                marker.anchorMax = new Vector2(axMid, ayMid);
+                marker.offsetMin = Vector2.zero;
+                marker.offsetMax = Vector2.zero;
+
+                // Force a visible size and bright color for debugging
+                marker.sizeDelta = new Vector2(40f, 40f);
+                var img = marker.GetComponentInChildren<Image>();
+
+                m_activeCenters.Add(marker);
+            }
+
             m_activeBoxes.Add(box);
         }
     }
@@ -103,24 +135,38 @@ public class ScreenSpaceBoundingBoxDrawer : MonoBehaviour
 
         for (int i = 0; i < m_activeBoxes.Count; i++)
         {
-            var boxRoot = m_activeBoxes[i];
-            if (boxRoot == null) continue;
-
             bool inRange = (minIndex >= 0 && maxIndex >= minIndex && i >= minIndex && i <= maxIndex);
             var color = inRange ? selectedColor : normalColor;
 
-            var images = boxRoot.GetComponentsInChildren<Image>(true);
-            foreach (var img in images)
+            var boxRoot = m_activeBoxes[i];
+            if (boxRoot != null)
             {
-                img.color = color;
+                var images = boxRoot.GetComponentsInChildren<Image>(true);
+                foreach (var img in images)
+                {
+                    img.color = color;
+                }
+
+                if (images.Length == 0)
+                {
+                    var graphic = boxRoot.GetComponentInChildren<Graphic>(true);
+                    if (graphic != null)
+                    {
+                        graphic.color = color;
+                    }
+                }
             }
 
-            if (images.Length == 0)
+            if (i < m_activeCenters.Count)
             {
-                var graphic = boxRoot.GetComponentInChildren<Graphic>(true);
-                if (graphic != null)
+                var center = m_activeCenters[i];
+                if (center != null)
                 {
-                    graphic.color = color;
+                    var img = center.GetComponentInChildren<Image>(true);
+                    if (img != null)
+                    {
+                        img.color = color;
+                    }
                 }
             }
         }
