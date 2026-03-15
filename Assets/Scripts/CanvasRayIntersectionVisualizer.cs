@@ -1,4 +1,5 @@
 
+using System.Collections.Generic;
 using UnityEngine;
 using Meta.XR.Samples;
 using Meta.XR;
@@ -14,26 +15,38 @@ public class CanvasRayIntersectionVisualizer : MonoBehaviour
     [Header("Runtime")]
     private RectTransform m_circleInstance;
 
+    [Header("Runtime targets (optional)")]
+    [Tooltip("When set, intersection markers are driven by left-hand pinch spawns from this spawner.")]
+    [SerializeField] private PinchTargetSpawner m_runtimeTargetSource;
+
     [Header("Debug targets (optional)")]
-    [Tooltip("World-space points to test intersection with the passthrough canvas (for debugging).")]
+    [Tooltip("World-space points to test intersection with the passthrough canvas (for debugging). Used only when Runtime Target Source is not set or has no targets.")]
     [SerializeField] private Transform[] m_debugTargets;
     [SerializeField] private bool m_updateDebugEveryFrame = true;
     private RectTransform[] m_debugInstances;
 
     private void Update()
     {
-        if (!m_updateDebugEveryFrame || m_debugTargets == null || m_debugTargets.Length == 0)
+        int targetCount = GetActiveTargetCount(out var targetList);
+        if (!m_updateDebugEveryFrame || targetCount == 0)
             return;
 
-        // Lazily allocate per-target instances
-        if (m_debugInstances == null || m_debugInstances.Length != m_debugTargets.Length)
+        // Lazily allocate or grow per-target instances
+        if (m_debugInstances == null || m_debugInstances.Length < targetCount)
         {
-            m_debugInstances = new RectTransform[m_debugTargets.Length];
+            var newSize = targetCount;
+            var next = new RectTransform[newSize];
+            if (m_debugInstances != null)
+            {
+                for (int j = 0; j < m_debugInstances.Length; j++)
+                    next[j] = m_debugInstances[j];
+            }
+            m_debugInstances = next;
         }
 
-        for (int i = 0; i < m_debugTargets.Length; i++)
+        for (int i = 0; i < targetCount; i++)
         {
-            var t = m_debugTargets[i];
+            var t = targetList[i];
             if (t == null)
                 continue;
 
@@ -61,6 +74,13 @@ public class CanvasRayIntersectionVisualizer : MonoBehaviour
                 m_debugInstances[i].anchoredPosition = new Vector2(local.x, local.y);
                 m_debugInstances[i].sizeDelta = new Vector2(40f, 40f);
             }
+        }
+
+        // Hide canvas markers when target list shrinks
+        for (int i = targetCount; i < m_debugInstances.Length; i++)
+        {
+            if (m_debugInstances[i] != null)
+                m_debugInstances[i].gameObject.SetActive(false);
         }
     }
 
@@ -135,5 +155,24 @@ public class CanvasRayIntersectionVisualizer : MonoBehaviour
 
         hitWorld = ray.GetPoint(t);
         return true;
+    }
+
+    /// <summary>
+    /// Returns the number of targets to visualize and the list to use: runtime pinch targets if available, otherwise debug targets.
+    /// </summary>
+    private int GetActiveTargetCount(out IReadOnlyList<Transform> targetList)
+    {
+        if (m_runtimeTargetSource != null && m_runtimeTargetSource.GetRuntimeTargetCount() > 0)
+        {
+            targetList = m_runtimeTargetSource.GetRuntimeTargets();
+            return targetList.Count;
+        }
+        if (m_debugTargets == null || m_debugTargets.Length == 0)
+        {
+            targetList = null;
+            return 0;
+        }
+        targetList = m_debugTargets;
+        return m_debugTargets.Length;
     }
 }
