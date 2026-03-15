@@ -53,13 +53,13 @@ public class CanvasRayIntersectionVisualizer : MonoBehaviour
             {
                 m_debugInstances[i].gameObject.SetActive(true);
 
-                var parentRect = canvasTransform as RectTransform;
-                var local = parentRect != null
-                    ? parentRect.InverseTransformPoint(hitWorld)
-                    : canvasTransform.InverseTransformPoint(hitWorld);
+                // Convert world hit point into local-space position of the overlay parent,
+                // exactly like ScreenSpaceBoundingBoxDrawer does for anchors.
+                var local = canvasTransform.InverseTransformPoint(hitWorld);
 
                 m_debugInstances[i].SetParent(canvasTransform, false);
                 m_debugInstances[i].anchoredPosition = new Vector2(local.x, local.y);
+                m_debugInstances[i].sizeDelta = new Vector2(40f, 40f);
             }
         }
     }
@@ -82,21 +82,20 @@ public class CanvasRayIntersectionVisualizer : MonoBehaviour
             m_circleInstance.gameObject.SetActive(true);
         }
 
-        // 6) Place the circle at the hit point in canvas space
-        var parentRect = canvasTransform as RectTransform;
-        var local = parentRect != null
-            ? parentRect.InverseTransformPoint(hitWorld)
-            : canvasTransform.InverseTransformPoint(hitWorld);
+        // 6) Place the circle at the hit point in overlay-parent local space
+        var local = canvasTransform.InverseTransformPoint(hitWorld);
 
         m_circleInstance.SetParent(canvasTransform, false);
         m_circleInstance.anchoredPosition = new Vector2(local.x, local.y);
+        m_circleInstance.sizeDelta = new Vector2(40f, 40f);
     }
 
     /// <summary>
     /// Core math: from a world target, compute the intersection point (if any) of the ray
-    /// from the passthrough camera to that target with the camera-to-world canvas plane.
+    /// from the passthrough camera to that target with the same overlay parent
+    /// that ScreenSpaceBoundingBoxDrawer uses (BoundingBoxOverlayRect).
     /// </summary>
-    private bool TryGetIntersectionPoint(Vector3 worldTarget, out Vector3 hitWorld, out Transform canvasTransform)
+    private bool TryGetIntersectionPoint(Vector3 worldTarget, out Vector3 hitWorld, out RectTransform canvasTransform)
     {
         hitWorld = default;
         canvasTransform = null;
@@ -116,13 +115,14 @@ public class CanvasRayIntersectionVisualizer : MonoBehaviour
         var ray = new Ray(camPos, dir);
         float distToTarget = Vector3.Distance(camPos, worldTarget);
 
-        // 3) Canvas plane (same transform as camera-to-world canvas)
-        var canvas = m_cameraToWorldManager != null
-            ? m_cameraToWorldManager.GetComponentInChildren<Canvas>()
+        // 3) Canvas plane (same as overlay parent used for 2D boxes)
+        var overlayParent = m_cameraToWorldManager != null
+            ? m_cameraToWorldManager.BoundingBoxOverlayRect
             : null;
-        if (canvas == null)
+        if (overlayParent == null)
             return false;
-        canvasTransform = canvas.transform;
+
+        canvasTransform = overlayParent;
         var plane = new Plane(canvasTransform.forward, canvasTransform.position);
 
         // 4) Ray–plane intersection
