@@ -14,16 +14,6 @@ public class MyCameraToWorldManager : MonoBehaviour
         [SerializeField] private CameraToWorldCameraCanvas m_cameraCanvas;
         [SerializeField] private float m_canvasDistance = 1f;
 
-        [SerializeField] private Vector3 m_headSpaceDebugShift = new(0, -.15f, .4f);
-
-        private bool m_isDebugOn;
-        private bool m_snapshotTaken;
-        private OVRPose m_snapshotHeadPose;
-
-        private void OnEnable() => OVRManager.display.RecenteredPose += RecenterCallBack;
-
-        private void OnDisable() => OVRManager.display.RecenteredPose -= RecenterCallBack;
-
         private IEnumerator Start()
         {
             if (m_cameraAccess == null)
@@ -41,37 +31,13 @@ public class MyCameraToWorldManager : MonoBehaviour
             }
 
             ScaleCameraCanvas();
+            // Ensure the canvas shows the live passthrough (not a blank texture)
+            m_cameraCanvas.ResumeStreamingFromCamera();
         }
 
         private void Update()
         {
-            if (InputManager.IsButtonADownOrPinchStarted())
-            {
-                m_snapshotTaken = !m_snapshotTaken;
-                if (m_snapshotTaken)
-                {
-                    m_cameraCanvas.MakeCameraSnapshot();
-                    m_snapshotHeadPose = m_centerEyeAnchor.transform.ToOVRPose();
-                    UpdateMarkerPoses();
-                    m_cameraAccess.enabled = false;
-                }
-                else
-                {
-                    m_cameraAccess.enabled = true;
-                    m_cameraCanvas.ResumeStreamingFromCamera();
-                }
-            }
-
-            if (InputManager.IsButtonBDownOrMiddleFingerPinchStarted())
-            {
-                m_isDebugOn = !m_isDebugOn;
-                Debug.Log($"PCA: SpatialSnapshotManager: DEBUG mode is {(m_isDebugOn ? "ON" : "OFF")}");
-            }
-
-            if (!m_snapshotTaken)
-            {
-                UpdateMarkerPoses();
-            }
+            UpdateMarkerPoses();
         }
 
         /// <summary>
@@ -114,21 +80,5 @@ public class MyCameraToWorldManager : MonoBehaviour
 
             m_cameraCanvas.transform.position = position;
             m_cameraCanvas.transform.rotation = rotation;
-
-            if (m_isDebugOn)
-            {
-                var direction = m_snapshotTaken ? m_snapshotHeadPose.orientation : m_centerEyeAnchor.transform.rotation;
-                m_cameraCanvas.transform.position += direction * m_headSpaceDebugShift;
-            }
-        }
-
-        private void RecenterCallBack()
-        {
-            if (m_snapshotTaken)
-            {
-                m_snapshotTaken = false;
-                m_cameraAccess.enabled = true;
-                m_cameraCanvas.ResumeStreamingFromCamera();
-            }
         }
     }
