@@ -249,12 +249,6 @@ namespace PassthroughCameraSamples.MultiObjectDetection
                 m_generateNextFrame = false; // consume the flag
                 url = serverUrl + (serverUrl.Contains("?") ? "&" : "?") + "generate=true";
                 AppendLog("[Client] Using generate=true for this request.");
-
-                // Optional: if a debug JSON is assigned on ProxyInject, run it immediately.
-                if (m_proxyInject != null)
-                {
-                    m_proxyInject.DebugProcessServerResponse();
-                }
             }
 
             UnityWebRequest request = new UnityWebRequest(url, "POST");
@@ -424,6 +418,18 @@ namespace PassthroughCameraSamples.MultiObjectDetection
             if (m_screenSpaceBoxDrawer != null)
             {
                 m_screenSpaceBoxDrawer.DrawBoxes(uiDetections, inputSize);
+            }
+
+            // Sync proxy labels to detection count (driven by 2D boxes on passthrough canvas, not 3D world boxes)
+            if (m_proxyCreator != null)
+            {
+                m_proxyCreator.SyncLabelsWithDetections(uiDetections.Count);
+            }
+
+            // Update detection UI menu with current object count (so "Detecting objects: N" is correct when only 2D boxes are drawn)
+            if (m_uiMenuManager != null)
+            {
+                m_uiMenuManager.OnObjectsDetected(uiDetections.Count);
             }
 
             // if (m_miniCameraOverlay != null)

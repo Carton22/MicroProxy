@@ -62,10 +62,6 @@ public class ProxyInject : MonoBehaviour
         public AnalysisItem[] analysis;
     }
 
-    [Header("Debug JSON")]
-    [SerializeField]
-    private TextAsset m_debugJson;
-
     public ServerResponse LastResponse { get; private set; }
 
     private void AppendLog(string message, bool isError = false)
@@ -96,16 +92,7 @@ public class ProxyInject : MonoBehaviour
 
     void Start()
     {
-        // Optional one-time startup log
         AppendLog("[ProxyInject] Ready.");
-    }
-
-    public void DebugProcessServerResponse()
-    {
-        if (m_debugJson != null)
-        {
-            ProcessServerResponse(m_debugJson.text);
-        }
     }
 
     [Serializable]
