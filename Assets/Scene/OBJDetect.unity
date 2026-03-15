@@ -2159,7 +2159,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 393026141339629332, guid: 58eee23691c63485ba7ef961e1ceeb74, type: 3}
       propertyPath: m_SizeDelta.y
-      value: 960
+      value: 1280
       objectReference: {fileID: 0}
     - target: {fileID: 3538017278138891281, guid: 58eee23691c63485ba7ef961e1ceeb74, type: 3}
       propertyPath: m_Pivot.x
@@ -2191,7 +2191,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3538017278138891281, guid: 58eee23691c63485ba7ef961e1ceeb74, type: 3}
       propertyPath: m_SizeDelta.y
-      value: 960
+      value: 1280
       objectReference: {fileID: 0}
     - target: {fileID: 3538017278138891281, guid: 58eee23691c63485ba7ef961e1ceeb74, type: 3}
       propertyPath: m_LocalPosition.x
@@ -2269,6 +2269,14 @@ PrefabInstance:
     - target: {fileID: 1748868316715821956, guid: abfaad578d05e4a09838223134c41c46, type: 3}
       propertyPath: eye
       value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 1748868316715821956, guid: abfaad578d05e4a09838223134c41c46, type: 3}
+      propertyPath: RequestedResolution.x
+      value: 1280
+      objectReference: {fileID: 0}
+    - target: {fileID: 1748868316715821956, guid: abfaad578d05e4a09838223134c41c46, type: 3}
+      propertyPath: RequestedResolution.y
+      value: 1280
       objectReference: {fileID: 0}
     - target: {fileID: 1748868316715821956, guid: abfaad578d05e4a09838223134c41c46, type: 3}
       propertyPath: requestedResolution.x
@@ -3127,7 +3135,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1774586779}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 47ebb7eb9a2754e64ba9133e1b96ad0f, type: 3}
   m_Name: 
@@ -3234,7 +3242,7 @@ MonoBehaviour:
   m_proxyCreator: {fileID: 155020913}
   m_miniCameraOverlay: {fileID: 0}
   m_screenSpaceBoxDrawer: {fileID: 1774586781}
-  m_draw3DBoundingBoxes: 1
+  m_draw3DBoundingBoxes: 0
   m_logger: {fileID: 1561124091}
   showLog: 0
   m_cameraAccess: {fileID: 1373946501}
