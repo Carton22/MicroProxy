@@ -11,12 +11,9 @@ public class ScreenSpaceBoundingBoxDrawer : MonoBehaviour
     [SerializeField] private MyCameraToWorldManager m_cameraToWorldManager;
     [SerializeField] private RectTransform m_boxPrefab;
 
-    [Header("Coordinates")]
-    [Tooltip("If set (x>0, y>0), use this resolution for normalizing bbox. Must match the resolution your server returns bboxes in (e.g. 640x480).")]
-    [SerializeField] private Vector2Int m_inputSizeOverride;
-
-    [Tooltip("When enabled, fits the detection aspect ratio inside the overlay (letterboxing). Disable so 2D maps to full viewport.")]
-    [SerializeField] private bool m_fitAspectRatio = false;
+    // Bounding boxes are normalized using the inputSize passed from the detector.
+    // The canvas already matches the passthrough camera texture via MyCameraToWorldManager,
+    // so no additional resolution override or aspect-fit is applied here.
 
     private readonly List<RectTransform> m_activeBoxes = new();
     private readonly List<RectTransform> m_boxPool = new();
@@ -51,20 +48,12 @@ public class ScreenSpaceBoundingBoxDrawer : MonoBehaviour
         if (detections == null || detections.Count == 0)
             return;
 
-        Vector2 size = (m_inputSizeOverride.x > 0 && m_inputSizeOverride.y > 0)
-            ? new Vector2(m_inputSizeOverride.x, m_inputSizeOverride.y)
-            : inputSize;
+        Vector2 size = inputSize;
 
-        float contentMinX, contentMinY, contentWidth, contentHeight;
-        if (m_fitAspectRatio)
-            GetAspectFittedContent(overlayParent, size, out contentMinX, out contentMinY, out contentWidth, out contentHeight);
-        else
-        {
-            contentMinX = 0f;
-            contentMinY = 0f;
-            contentWidth = 1f;
-            contentHeight = 1f;
-        }
+        float contentMinX = 0f;
+        float contentMinY = 0f;
+        float contentWidth = 1f;
+        float contentHeight = 1f;
 
         for (int i = 0; i < detections.Count; i++)
         {
@@ -100,34 +89,6 @@ public class ScreenSpaceBoundingBoxDrawer : MonoBehaviour
             box.offsetMin = Vector2.zero;
             box.offsetMax = Vector2.zero;
             m_activeBoxes.Add(box);
-        }
-    }
-
-    private void GetAspectFittedContent(RectTransform overlay, Vector2 inputSize, out float minX, out float minY, out float width, out float height)
-    {
-        minX = 0f;
-        minY = 0f;
-        width = 1f;
-        height = 1f;
-        if (overlay == null || inputSize.x <= 0 || inputSize.y <= 0) return;
-
-        float inputAspect = inputSize.x / inputSize.y;
-        float overlayW = overlay.rect.width;
-        float overlayH = overlay.rect.height;
-        if (overlayW <= 0 || overlayH <= 0) return;
-        float overlayAspect = overlayW / overlayH;
-
-        if (inputAspect >= overlayAspect)
-        {
-            width = 1f;
-            height = overlayAspect / inputAspect;
-            minY = (1f - height) * 0.5f;
-        }
-        else
-        {
-            height = 1f;
-            width = inputAspect / overlayAspect;
-            minX = (1f - width) * 0.5f;
         }
     }
 
