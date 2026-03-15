@@ -7,6 +7,9 @@ public class FollowAtDistance : MonoBehaviour
     [Tooltip("Usually the player's camera (HMD).")]
     public Transform target;
 
+    [Tooltip("Optional: when set, this transform's rotation is used so the follower stays parallel to that plane (e.g. camera-to-world canvas).")]
+    public Transform rotationSource;
+
     [Header("Placement")]
     [Min(0.01f)]
     [Tooltip("How far in front of the target the object should sit.")]
@@ -43,24 +46,33 @@ public class FollowAtDistance : MonoBehaviour
 
         // Desired rotation
         Quaternion desiredRot;
-        if (inheritRotation)
+        if (rotationSource != null)
         {
-            if (yawOnly)
-            {
-                // Strip pitch and roll so UI stays upright
-                Vector3 fwd = Vector3.ProjectOnPlane(target.forward, worldUp).normalized;
-                if (fwd.sqrMagnitude < 1e-6f) fwd = Vector3.ProjectOnPlane(target.up, worldUp).normalized;
-                desiredRot = Quaternion.LookRotation(fwd, worldUp);
-            }
-            else
-            {
-                desiredRot = target.rotation;
-            }
+            // Follow the exact rotation of the provided source (e.g. camera-to-world canvas)
+            // so this canvas stays parallel to that plane.
+            desiredRot = rotationSource.rotation;
         }
         else
         {
-            // Face the same direction as the target, using world up to keep upright
-            desiredRot = Quaternion.LookRotation(target.forward, worldUp);
+            if (inheritRotation)
+            {
+                if (yawOnly)
+                {
+                    // Strip pitch and roll so UI stays upright
+                    Vector3 fwd = Vector3.ProjectOnPlane(target.forward, worldUp).normalized;
+                    if (fwd.sqrMagnitude < 1e-6f) fwd = Vector3.ProjectOnPlane(target.up, worldUp).normalized;
+                    desiredRot = Quaternion.LookRotation(fwd, worldUp);
+                }
+                else
+                {
+                    desiredRot = target.rotation;
+                }
+            }
+            else
+            {
+                // Face the same direction as the target, using world up to keep upright
+                desiredRot = Quaternion.LookRotation(target.forward, worldUp);
+            }
         }
 
         // Smooth position
@@ -81,7 +93,11 @@ public class FollowAtDistance : MonoBehaviour
         if (target == null) return;
         transform.position = target.position + target.forward * distance;
 
-        if (inheritRotation)
+        if (rotationSource != null)
+        {
+            transform.rotation = rotationSource.rotation;
+        }
+        else if (inheritRotation)
         {
             if (yawOnly)
             {

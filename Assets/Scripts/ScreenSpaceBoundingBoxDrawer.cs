@@ -92,6 +92,48 @@ public class ScreenSpaceBoundingBoxDrawer : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// Updates 2D box colors based on a selection range so screen-space boxes
+    /// visually track the same selection as proxy labels and (optionally) world-space boxes.
+    /// </summary>
+    public void UpdateSelectionRangeHighlight(int minIndex, int maxIndex, Color selectedColor, Color normalColor)
+    {
+        if (m_activeBoxes.Count == 0)
+            return;
+
+        for (int i = 0; i < m_activeBoxes.Count; i++)
+        {
+            var boxRoot = m_activeBoxes[i];
+            if (boxRoot == null) continue;
+
+            bool inRange = (minIndex >= 0 && maxIndex >= minIndex && i >= minIndex && i <= maxIndex);
+            var color = inRange ? selectedColor : normalColor;
+
+            var images = boxRoot.GetComponentsInChildren<Image>(true);
+            foreach (var img in images)
+            {
+                img.color = color;
+            }
+
+            if (images.Length == 0)
+            {
+                var graphic = boxRoot.GetComponentInChildren<Graphic>(true);
+                if (graphic != null)
+                {
+                    graphic.color = color;
+                }
+            }
+        }
+    }
+
+    /// <summary>
+    /// Convenience wrapper for single-index selection (min = max = selectedIndex).
+    /// </summary>
+    public void UpdateSelectionHighlight(int selectedIndex, Color selectedColor, Color normalColor)
+    {
+        UpdateSelectionRangeHighlight(selectedIndex, selectedIndex, selectedColor, normalColor);
+    }
+
     private RectTransform GetBox(RectTransform overlayParent)
     {
         if (m_boxPool.Count > 0)

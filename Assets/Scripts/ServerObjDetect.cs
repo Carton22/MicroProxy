@@ -25,7 +25,6 @@ namespace PassthroughCameraSamples.MultiObjectDetection
         [SerializeField] private DetectionUiMenuManager m_uiMenuManager;
         [SerializeField] private ProxyInject m_proxyInject;
         [SerializeField] private ProxyCreator m_proxyCreator;
-        [SerializeField] private MiniCameraBoxOverlay m_miniCameraOverlay;
         [Tooltip("Optional: draw 2D bounding boxes in screen space (no 3D raycast).")]
         [SerializeField] private ScreenSpaceBoundingBoxDrawer m_screenSpaceBoxDrawer;
 
@@ -404,10 +403,12 @@ namespace PassthroughCameraSamples.MultiObjectDetection
 
             int selectedLabelIndex = -1;
             Color? selectedColor = null;
+            Color? normalColor = null;
             if (m_proxyCreator != null)
             {
                 selectedLabelIndex = m_proxyCreator.GetSelectedLabelIndex();
                 selectedColor = m_proxyCreator.GetSelectedColor();
+                normalColor = m_proxyCreator.GetNormalColor();
             }
 
             if (m_draw3DBoundingBoxes && m_uiInference != null)

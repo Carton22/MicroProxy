@@ -17,6 +17,8 @@ public class ProxyCreator : MonoBehaviour
     [SerializeField] private GameObject m_labelPrefab;
     [Header("Server Detection")]
     [SerializeField] private PassthroughCameraSamples.MultiObjectDetection.ServerObjDetector m_serverDetector;
+    [Header("2D Boxes (screen space)")]
+    [SerializeField] private ScreenSpaceBoundingBoxDrawer m_screenSpaceBoxDrawer;
 
     private readonly List<GameObject> m_activeLabels = new();
     private readonly List<GameObject> m_labelPool = new();
@@ -295,6 +297,16 @@ public class ProxyCreator : MonoBehaviour
             {
                 graphic.color = (i >= m_selectionMin && i <= m_selectionMax) ? selectedColor : normalColor;
             }
+        }
+
+        // Keep 2D screen-space boxes in sync with the same selection range
+        if (m_screenSpaceBoxDrawer != null)
+        {
+            m_screenSpaceBoxDrawer.UpdateSelectionRangeHighlight(
+                m_selectionMin,
+                m_selectionMax,
+                selectedColor,
+                normalColor);
         }
     }
 }
