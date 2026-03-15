@@ -3132,11 +3132,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 47ebb7eb9a2754e64ba9133e1b96ad0f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_overlayParent: {fileID: 129753843}
+  m_cameraToWorldManager: {fileID: 1001865144}
   m_boxPrefab: {fileID: 2171317211530993139, guid: 8670d7410c30d4ebd9e3486572372e27, type: 3}
   m_inputSizeOverride: {x: 0, y: 0}
   m_fitAspectRatio: 1
-  m_flipY: 1
 --- !u!1 &1884619604
 GameObject:
   m_ObjectHideFlags: 0

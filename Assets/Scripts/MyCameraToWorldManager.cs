@@ -14,6 +14,12 @@ public class MyCameraToWorldManager : MonoBehaviour
         [SerializeField] private CameraToWorldCameraCanvas m_cameraCanvas;
         [SerializeField] private float m_canvasDistance = 1f;
 
+        /// <summary>
+        /// RectTransform to use as the parent for 2D bounding boxes so they align with the passthrough image on this canvas.
+        /// Used by ScreenSpaceBoundingBoxDrawer when configured to draw on this canvas.
+        /// </summary>
+        public RectTransform BoundingBoxOverlayRect => m_cameraCanvas != null ? m_cameraCanvas.GetComponent<RectTransform>() : null;
+
         private IEnumerator Start()
         {
             if (m_cameraAccess == null)

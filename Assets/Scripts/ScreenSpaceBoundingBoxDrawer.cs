@@ -3,25 +3,20 @@ using UnityEngine;
 using UnityEngine.UI;
 
 /// <summary>
-/// Draws 2D bounding boxes in screen space (e.g. over the passthrough camera view).
-/// For alignment with world-space boxes: Fit Aspect Ratio = false, Flip Y = true (or try false if vertically off),
-/// and use the same resolution as the camera image (Input Size Override 0,0 if server returns that resolution).
+/// Draws 2D bounding boxes on the canvas managed by MyCameraToWorldManager (passthrough camera view).
 /// </summary>
 public class ScreenSpaceBoundingBoxDrawer : MonoBehaviour
 {
     [Header("UI")]
-    [SerializeField] private RectTransform m_overlayParent;
+    [SerializeField] private MyCameraToWorldManager m_cameraToWorldManager;
     [SerializeField] private RectTransform m_boxPrefab;
 
     [Header("Coordinates")]
     [Tooltip("If set (x>0, y>0), use this resolution for normalizing bbox. Must match the resolution your server returns bboxes in (e.g. 640x480).")]
     [SerializeField] private Vector2Int m_inputSizeOverride;
 
-    [Tooltip("When enabled, fits the detection aspect ratio inside the overlay (letterboxing). Disable for alignment with world-space boxes so 2D maps to full viewport.")]
+    [Tooltip("When enabled, fits the detection aspect ratio inside the overlay (letterboxing). Disable so 2D maps to full viewport.")]
     [SerializeField] private bool m_fitAspectRatio = false;
-
-    [Tooltip("When enabled, flip Y (image top-down -> UI bottom-up). Disable if 2D boxes are vertically flipped vs world-space.")]
-    [SerializeField] private bool m_flipY = true;
 
     private readonly List<RectTransform> m_activeBoxes = new();
     private readonly List<RectTransform> m_boxPool = new();
@@ -42,11 +37,14 @@ public class ScreenSpaceBoundingBoxDrawer : MonoBehaviour
         m_activeBoxes.Clear();
     }
 
+    private RectTransform GetOverlayParent() => m_cameraToWorldManager != null ? m_cameraToWorldManager.BoundingBoxOverlayRect : null;
+
     /// <param name="detections">Each (classId, bbox) where bbox = (x1,y1,x2,y2) in input pixels.</param>
     /// <param name="inputSize">Resolution the detections are in (ignored if Input Size Override is set).</param>
     public void DrawBoxes(List<(int classId, Vector4 bbox)> detections, Vector2 inputSize)
     {
-        if (m_overlayParent == null || m_boxPrefab == null)
+        var overlayParent = GetOverlayParent();
+        if (overlayParent == null || m_boxPrefab == null)
             return;
 
         ClearBoxes();
@@ -59,7 +57,7 @@ public class ScreenSpaceBoundingBoxDrawer : MonoBehaviour
 
         float contentMinX, contentMinY, contentWidth, contentHeight;
         if (m_fitAspectRatio)
-            GetAspectFittedContent(size, out contentMinX, out contentMinY, out contentWidth, out contentHeight);
+            GetAspectFittedContent(overlayParent, size, out contentMinX, out contentMinY, out contentWidth, out contentHeight);
         else
         {
             contentMinX = 0f;
@@ -86,16 +84,17 @@ public class ScreenSpaceBoundingBoxDrawer : MonoBehaviour
             if (w < 0.002f || h < 0.002f)
                 continue;
 
-            float uiYMin = m_flipY ? (1f - nyMax) : nyMin;
-            float uiYMax = m_flipY ? (1f - nyMin) : nyMax;
+            // Image Y is top-down; UI is bottom-up
+            float uiYMin = 1f - nyMax;
+            float uiYMax = 1f - nyMin;
 
             float axMin = contentMinX + nxMin * contentWidth;
             float axMax = contentMinX + nxMax * contentWidth;
             float ayMin = contentMinY + uiYMin * contentHeight;
             float ayMax = contentMinY + uiYMax * contentHeight;
 
-            var box = GetBox();
-            box.SetParent(m_overlayParent, false);
+            var box = GetBox(overlayParent);
+            box.SetParent(overlayParent, false);
             box.anchorMin = new Vector2(axMin, ayMin);
             box.anchorMax = new Vector2(axMax, ayMax);
             box.offsetMin = Vector2.zero;
@@ -104,17 +103,17 @@ public class ScreenSpaceBoundingBoxDrawer : MonoBehaviour
         }
     }
 
-    private void GetAspectFittedContent(Vector2 inputSize, out float minX, out float minY, out float width, out float height)
+    private void GetAspectFittedContent(RectTransform overlay, Vector2 inputSize, out float minX, out float minY, out float width, out float height)
     {
         minX = 0f;
         minY = 0f;
         width = 1f;
         height = 1f;
-        if (m_overlayParent == null || inputSize.x <= 0 || inputSize.y <= 0) return;
+        if (overlay == null || inputSize.x <= 0 || inputSize.y <= 0) return;
 
         float inputAspect = inputSize.x / inputSize.y;
-        float overlayW = m_overlayParent.rect.width;
-        float overlayH = m_overlayParent.rect.height;
+        float overlayW = overlay.rect.width;
+        float overlayH = overlay.rect.height;
         if (overlayW <= 0 || overlayH <= 0) return;
         float overlayAspect = overlayW / overlayH;
 
@@ -132,7 +131,7 @@ public class ScreenSpaceBoundingBoxDrawer : MonoBehaviour
         }
     }
 
-    private RectTransform GetBox()
+    private RectTransform GetBox(RectTransform overlayParent)
     {
         if (m_boxPool.Count > 0)
         {
@@ -141,7 +140,7 @@ public class ScreenSpaceBoundingBoxDrawer : MonoBehaviour
             rt.gameObject.SetActive(true);
             return rt;
         }
-        var instance = Instantiate(m_boxPrefab, m_overlayParent);
+        var instance = Instantiate(m_boxPrefab, overlayParent);
         instance.gameObject.SetActive(true);
         return instance;
     }
