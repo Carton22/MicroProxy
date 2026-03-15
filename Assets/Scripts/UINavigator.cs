@@ -8,6 +8,10 @@ public class UINavigator : MonoBehaviour
     [SerializeField] private Selectable defaultSelectable;
     [SerializeField] private GameObject selectionRoot;
 
+    [Header("Proxy set switching (2-column grid)")]
+    [Tooltip("Parent whose direct children are proxy UI set roots. Swipe left on left column → previous set; swipe right on right column → next set.")]
+    [SerializeField] private Transform m_proxySetsParent;
+
     void Start()
     {
         // Ensure something is selected at start if you want keyboard/gamepad style focus
@@ -18,8 +22,20 @@ public class UINavigator : MonoBehaviour
     // Call these from your custom events or input
     public void MoveUp() => SendMove(MoveDirection.Up, Vector2.up);
     public void MoveDown() => SendMove(MoveDirection.Down, Vector2.down);
-    public void MoveLeft() => SendMove(MoveDirection.Left, Vector2.left);
-    public void MoveRight() => SendMove(MoveDirection.Right, Vector2.right);
+
+    public void MoveLeft()
+    {
+        if (TrySwitchToPreviousProxySet())
+            return;
+        SendMove(MoveDirection.Left, Vector2.left);
+    }
+
+    public void MoveRight()
+    {
+        if (TrySwitchToNextProxySet())
+            return;
+        SendMove(MoveDirection.Right, Vector2.right);
+    }
 
     public void ClickSelected() => SendSubmit();
 
@@ -28,11 +44,17 @@ public class UINavigator : MonoBehaviour
     {
         if (dir.sqrMagnitude < 0.001f) return;
         dir.Normalize();
-        MoveDirection md =
-            Mathf.Abs(dir.x) > Mathf.Abs(dir.y)
-            ? (dir.x > 0 ? MoveDirection.Right : MoveDirection.Left)
-            : (dir.y > 0 ? MoveDirection.Up : MoveDirection.Down);
-        SendMove(md, dir);
+        if (Mathf.Abs(dir.x) > Mathf.Abs(dir.y))
+        {
+            if (dir.x > 0) MoveRight();
+            else MoveLeft();
+        }
+        else
+        {
+            var md = dir.y > 0 ? MoveDirection.Up : MoveDirection.Down;
+            var moveVector = dir.y > 0 ? Vector2.up : Vector2.down;
+            SendMove(md, moveVector);
+        }
     }
 
     // ---------- Internals ----------
@@ -132,5 +154,109 @@ public class UINavigator : MonoBehaviour
         EventSystem.current.SetSelectedGameObject(go);
         var sel = go.GetComponent<Selectable>();
         if (sel) sel.Select();
+    }
+
+    // ---------- Proxy set switching (2-column grid) ----------
+
+    /// <summary>
+    /// Column index of the current selection in its grid: 0 = left, 1 = right. Returns -1 if not in a 2-column grid.
+    /// </summary>
+    int GetSelectedColumn()
+    {
+        var selected = EventSystem.current?.currentSelectedGameObject;
+        if (selected == null) return -1;
+
+        Transform t = selected.transform;
+        var grid = t.GetComponentInParent<GridLayoutGroup>();
+        if (grid == null) return -1;
+
+        Transform content = grid.transform;
+        if (!t.IsChildOf(content)) return -1;
+        int cellIndex = GetCellIndexUnder(t, content);
+        return cellIndex >= 0 ? cellIndex % 2 : -1; // 0 = left column, 1 = right column
+    }
+
+    /// <summary>
+    /// Index of the grid cell that contains 'child' (direct child of 'content' that is self or ancestor of child).
+    /// </summary>
+    static int GetCellIndexUnder(Transform child, Transform content)
+    {
+        if (child == null || content == null || !child.IsChildOf(content)) return -1;
+        Transform walk = child;
+        while (walk != null && walk.parent != content)
+            walk = walk.parent;
+        return walk != null ? walk.GetSiblingIndex() : -1;
+    }
+
+    /// <summary>
+    /// The proxy set root that contains the current selection (a direct child of m_proxySetsParent), or null.
+    /// </summary>
+    Transform GetCurrentProxySetRoot()
+    {
+        if (m_proxySetsParent == null) return null;
+        var selected = EventSystem.current?.currentSelectedGameObject;
+        if (selected == null) return null;
+
+        Transform selT = selected.transform;
+        for (int i = 0; i < m_proxySetsParent.childCount; i++)
+        {
+            var child = m_proxySetsParent.GetChild(i);
+            if (selT.IsChildOf(child))
+                return child;
+        }
+        return null;
+    }
+
+    /// <summary>
+    /// If selection is on the left column, deactivate current proxy set and activate previous sibling. Returns true if switched.
+    /// </summary>
+    bool TrySwitchToPreviousProxySet()
+    {
+        if (m_proxySetsParent == null) return false;
+        if (GetSelectedColumn() != 0) return false; // only when on very left column
+
+        var currentSet = GetCurrentProxySetRoot();
+        if (currentSet == null) return false;
+
+        int idx = currentSet.GetSiblingIndex();
+        if (idx <= 0) return false;
+
+        var previousSet = m_proxySetsParent.GetChild(idx - 1);
+        currentSet.gameObject.SetActive(false);
+        previousSet.gameObject.SetActive(true);
+
+        var first = FindFirstSelectableIn(previousSet);
+        if (first != null) Select(first);
+        return true;
+    }
+
+    /// <summary>
+    /// If selection is on the right column, deactivate current proxy set and activate next sibling. Returns true if switched.
+    /// </summary>
+    bool TrySwitchToNextProxySet()
+    {
+        if (m_proxySetsParent == null) return false;
+        if (GetSelectedColumn() != 1) return false; // only when on very right column
+
+        var currentSet = GetCurrentProxySetRoot();
+        if (currentSet == null) return false;
+
+        int idx = currentSet.GetSiblingIndex();
+        if (idx >= m_proxySetsParent.childCount - 1) return false;
+
+        var nextSet = m_proxySetsParent.GetChild(idx + 1);
+        currentSet.gameObject.SetActive(false);
+        nextSet.gameObject.SetActive(true);
+
+        var first = FindFirstSelectableIn(nextSet);
+        if (first != null) Select(first);
+        return true;
+    }
+
+    GameObject FindFirstSelectableIn(Transform root)
+    {
+        if (root == null) return null;
+        var sel = root.GetComponentInChildren<Selectable>(false);
+        return sel != null ? sel.gameObject : null;
     }
 }
