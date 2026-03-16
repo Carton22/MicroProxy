@@ -897,7 +897,7 @@ GameObject:
   - component: {fileID: 186719076}
   - component: {fileID: 186719077}
   m_Layer: 0
-  m_Name: LongPinchToggle
+  m_Name: DoubleTapToggle
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -927,15 +927,15 @@ MonoBehaviour:
   m_GameObject: {fileID: 186719075}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 33ebc463670934e218213aa845b3637f, type: 3}
+  m_Script: {fileID: 11500000, guid: cec38b082a32f466db4a38d861951adf, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   m_rightHand: {fileID: 1924298972}
   m_pinchStrengthThreshold: 0.7
-  m_requiredHoldSeconds: 0.7
+  m_doubleTapMaxIntervalSeconds: 0.4
   m_toggleTargets:
-  - {fileID: 269540400}
   - {fileID: 1968332517}
+  - {fileID: 269540400}
   m_debugLog: 0
 --- !u!1 &204397961
 GameObject:
