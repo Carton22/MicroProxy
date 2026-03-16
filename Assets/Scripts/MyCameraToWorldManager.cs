@@ -14,6 +14,9 @@ public class MyCameraToWorldManager : MonoBehaviour
         [SerializeField] private CameraToWorldCameraCanvas m_cameraCanvas;
         [SerializeField] private float m_canvasDistance = 1f;
 
+        [Tooltip("If true, the canvas displays the live passthrough. If false, the canvas is used for ray-casting only (e.g. void canvas).")]
+        [SerializeField] private bool m_streamCameraToCanvas = true;
+
         /// <summary>
         /// RectTransform to use as the parent for 2D bounding boxes so they align with the passthrough image on this canvas.
         /// Used by ScreenSpaceBoundingBoxDrawer when configured to draw on this canvas.
@@ -37,8 +40,8 @@ public class MyCameraToWorldManager : MonoBehaviour
             }
 
             ScaleCameraCanvas();
-            // Ensure the canvas shows the live passthrough (not a blank texture)
-            m_cameraCanvas.ResumeStreamingFromCamera();
+            if (m_streamCameraToCanvas && m_cameraCanvas != null)
+                m_cameraCanvas.ResumeStreamingFromCamera();
         }
 
         private void Update()
