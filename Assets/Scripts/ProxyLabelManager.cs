@@ -28,7 +28,7 @@ public class ProxyLabelManager : MonoBehaviour
     private int m_selectionMax;
     private bool m_selectionRangeOverride;
 
-    private Transform GetActiveLabelsParent()
+    public Transform GetActiveLabelsParent()
     {
         for (int i = 0; i < m_labelParents.Count; i++)
         {

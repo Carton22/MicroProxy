@@ -8,12 +8,18 @@ public class UINavigator : MonoBehaviour
     [SerializeField] private Selectable defaultSelectable;
     [SerializeField] private GameObject selectionRoot;
 
+    [Header("Label management")]
+    [Tooltip("ProxyLabelManager used to determine the currently active labels parent for selection.")]
+    [SerializeField] private ProxyLabelManager m_labelManager;
+
     [Header("Proxy set switching (2-column grid)")]
     [Tooltip("Parent whose direct children are proxy UI set roots. Swipe left on left column → previous set; swipe right on right column → next set.")]
     [SerializeField] private Transform m_proxySetsParent;
 
     void Start()
     {
+        if (m_labelManager == null)
+            m_labelManager = FindFirstObjectByType<ProxyLabelManager>();
         // Ensure something is selected at start if you want keyboard/gamepad style focus
         if (EventSystem.current != null && EventSystem.current.currentSelectedGameObject == null)
             Select(defaultSelectable ? defaultSelectable.gameObject : FindFirstSelectable());
@@ -136,9 +142,19 @@ public class UINavigator : MonoBehaviour
     {
         Selectable any = null;
 
-        if (selectionRoot != null)
+        // Prefer explicit selectionRoot if assigned,
+        // otherwise fall back to the active labels parent from ProxyLabelManager.
+        GameObject root = selectionRoot;
+        if (root == null && m_labelManager != null)
         {
-            any = selectionRoot.GetComponentInChildren<Selectable>(false);
+            var activeLabelsParent = m_labelManager.GetActiveLabelsParent();
+            if (activeLabelsParent != null)
+                root = activeLabelsParent.gameObject;
+        }
+
+        if (root != null)
+        {
+            any = root.GetComponentInChildren<Selectable>(false);
         }
         else
         {

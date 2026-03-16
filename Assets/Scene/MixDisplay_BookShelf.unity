@@ -1350,7 +1350,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   defaultSelectable: {fileID: 0}
-  selectionRoot: {fileID: 243943084}
+  selectionRoot: {fileID: 0}
+  m_labelManager: {fileID: 1272610422}
   m_proxySetsParent: {fileID: 269540402}
 --- !u!114 &251487952
 MonoBehaviour:
@@ -2093,7 +2094,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   defaultSelectable: {fileID: 0}
-  selectionRoot: {fileID: 243943084}
+  selectionRoot: {fileID: 0}
+  m_labelManager: {fileID: 1272610422}
   m_proxySetsParent: {fileID: 269540402}
 --- !u!114 &456180479
 MonoBehaviour:
@@ -3312,7 +3314,7 @@ GameObject:
   - component: {fileID: 1272610421}
   - component: {fileID: 1272610422}
   m_Layer: 0
-  m_Name: ItemsProxyLabelManager
+  m_Name: ProxyLabelManager
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -6259,13 +6261,13 @@ SceneRoots:
   - {fileID: 340999898}
   - {fileID: 1913935296}
   - {fileID: 7177215558053442464}
+  - {fileID: 155020914}
+  - {fileID: 1255321337}
+  - {fileID: 1774586780}
   - {fileID: 1561124090}
   - {fileID: 380269043}
   - {fileID: 1449017789}
-  - {fileID: 155020914}
-  - {fileID: 1255321337}
   - {fileID: 269540402}
-  - {fileID: 1774586780}
   - {fileID: 1288145368}
   - {fileID: 1001865143}
   - {fileID: 1538608527}
