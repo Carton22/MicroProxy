@@ -66,7 +66,7 @@ public class CanvasRayIntersectionVisualizer : MonoBehaviour
 
                 m_markerInstances[i].SetParent(canvasTransform, false);
                 m_markerInstances[i].anchoredPosition = new Vector2(local.x, local.y);
-                m_markerInstances[i].sizeDelta = new Vector2(40f, 40f);
+                m_markerInstances[i].sizeDelta = new Vector2(25f, 25f);
             }
         }
 
@@ -100,7 +100,7 @@ public class CanvasRayIntersectionVisualizer : MonoBehaviour
 
         m_circleInstance.SetParent(canvasTransform, false);
         m_circleInstance.anchoredPosition = new Vector2(local.x, local.y);
-        m_circleInstance.sizeDelta = new Vector2(40f, 40f);
+        m_circleInstance.sizeDelta = new Vector2(25f, 25f);
     }
 
     /// <summary>
