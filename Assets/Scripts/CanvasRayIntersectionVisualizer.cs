@@ -43,8 +43,12 @@ public class CanvasRayIntersectionVisualizer : MonoBehaviour
         for (int i = 0; i < targetCount; i++)
         {
             var t = targetList[i];
-            if (t == null)
+            if (t == null || !t.gameObject.activeInHierarchy)
+            {
+                if (m_markerInstances != null && i < m_markerInstances.Length && m_markerInstances[i] != null)
+                    m_markerInstances[i].gameObject.SetActive(false);
                 continue;
+            }
 
             if (!TryGetIntersectionPoint(t.position, out var hitWorld, out var canvasTransform))
             {

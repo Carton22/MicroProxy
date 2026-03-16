@@ -24,6 +24,12 @@ public class PinchTargetSpawner : MonoBehaviour
     [Tooltip("If enabled, uses the midpoint between thumb tip and index tip. If disabled, uses index tip only.")]
     [SerializeField] private bool m_useThumbIndexMidpoint = true;
 
+    [Header("Debug logging")]
+    [Tooltip("Optional shared logger used to log the index of each created marker.")]
+    [SerializeField] private SharedLogger m_logger;
+    [Tooltip("If false, newly created markers will not be logged even if a logger is assigned.")]
+    [SerializeField] private bool m_enableLogging = true;
+
     [Header("Pinch thresholds")]
     [SerializeField] [Range(0f, 1f)] private float m_pinchStartStrength = 0.6f;
     [SerializeField] [Range(0f, 1f)] private float m_pinchReleaseStrength = 0.35f;
@@ -133,7 +139,7 @@ public class PinchTargetSpawner : MonoBehaviour
         }
     }
 
-    private static void TryStampMarkerLabel(GameObject instance, int labelIndex)
+    private void TryStampMarkerLabel(GameObject instance, int labelIndex)
     {
         if (instance == null || labelIndex < 0)
             return;
@@ -143,5 +149,11 @@ public class PinchTargetSpawner : MonoBehaviour
             binding = instance.AddComponent<MarkerLabelBinding>();
 
         binding.LabelIndex = labelIndex;
+
+        if (m_enableLogging && m_logger != null)
+        {
+            int siblingIndex = instance.transform.GetSiblingIndex();
+            m_logger.Log($"[PinchTargetSpawner] Created marker with label index: {labelIndex}, marker index {siblingIndex}");
+        }
     }
 }
