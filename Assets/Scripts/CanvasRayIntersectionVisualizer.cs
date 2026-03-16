@@ -4,6 +4,7 @@ using UnityEngine;
 using Meta.XR.Samples;
 using Meta.XR;
 
+// check which marker(s) are actiavted and draw lines to the corresponding label(s)
 public class CanvasRayIntersectionVisualizer : MonoBehaviour
 {
     [Header("References")]
@@ -201,7 +202,7 @@ public class CanvasRayIntersectionVisualizer : MonoBehaviour
 
     private void UpdateLineForMarker(int index, RectTransform canvasTransform)
     {
-        if (m_linePrefab == null || m_markerInstances == null || m_runtimeTargetSource == null || m_labelManager == null)
+        if (m_linePrefab == null || m_markerInstances == null || m_labelManager == null)
             return;
 
         if (index < 0 || index >= m_markerInstances.Length)
@@ -215,20 +216,8 @@ public class CanvasRayIntersectionVisualizer : MonoBehaviour
             return;
         }
 
-        // Resolve label index from the corresponding runtime target's MarkerLabelBinding
-        var targets = m_runtimeTargetSource.GetRuntimeTargets();
-        if (targets == null || index >= targets.Count)
-            return;
-
-        var targetTransform = targets[index];
-        if (targetTransform == null)
-            return;
-
-        var binding = targetTransform.GetComponent<MarkerLabelBinding>();
-        if (binding == null || binding.LabelIndex < 0)
-            return;
-
-        var labelRect = m_labelManager.GetLabelRectTransform(binding.LabelIndex);
+        // Resolve label associated with this marker index using LabelMarkerBinding on labels
+        var labelRect = m_labelManager.GetLabelRectTransformForMarkerIndex(index);
         if (labelRect == null || !labelRect.gameObject.activeInHierarchy)
             return;
 

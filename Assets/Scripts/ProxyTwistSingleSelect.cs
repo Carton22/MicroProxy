@@ -6,7 +6,7 @@ using UnityEngine;
 /// </summary>
 public class ProxyTwistSingleSelect : MonoBehaviour
 {
-    [SerializeField] private ProxyCreator m_proxyCreator;
+    [SerializeField] private ProxyLabelManager m_labelManager;
     [SerializeField] private PinchAndTwistEventSource m_twistEventSource;
 
     [Tooltip("Twist amount (0–1) per one label step. 0.1 = 10% twist moves to next/previous label.")]
@@ -48,23 +48,23 @@ public class ProxyTwistSingleSelect : MonoBehaviour
 
     private void OnStartPinchAndTwist()
     {
-        if (m_proxyCreator == null) return;
-        int count = m_proxyCreator.GetLabelCount();
+        if (m_labelManager == null) return;
+        int count = m_labelManager.GetLabelCount();
         if (count == 0) return;
-        m_startIndex = m_proxyCreator.GetSelectedLabelIndex();
+        m_startIndex = m_labelManager.GetSelectedLabelIndex();
         if (m_startIndex < 0)
             m_startIndex = 0;
         m_startIndex = Mathf.Clamp(m_startIndex, 0, count - 1);
         if (m_clearMultiSelectOnStart)
-            m_proxyCreator.ClearSelectionRangeOverride();
+            m_labelManager.ClearSelectionRangeOverride();
         m_inGesture = true;
         if (m_debugLog) Debug.Log($"[ProxyTwistSingleSelect] Twist started, startIndex={m_startIndex}");
     }
 
     private void OnPinchAndTwist(float signedNormalized)
     {
-        if (m_proxyCreator == null || !m_inGesture) return;
-        int count = m_proxyCreator.GetLabelCount();
+        if (m_labelManager == null || !m_inGesture) return;
+        int count = m_labelManager.GetLabelCount();
         if (count == 0) return;
 
         int rightSteps = 0;
@@ -75,7 +75,7 @@ public class ProxyTwistSingleSelect : MonoBehaviour
             leftSteps = Mathf.Max(1, Mathf.FloorToInt(-signedNormalized / twistPerStep));
 
         int targetIndex = Mathf.Clamp(m_startIndex + rightSteps - leftSteps, 0, count - 1);
-        m_proxyCreator.SetSelectedLabelByIndex(targetIndex);
+        m_labelManager.SetSelectedLabelByIndex(targetIndex);
         if (m_debugLog) Debug.Log($"[ProxyTwistSingleSelect] Twist={signedNormalized:F2} -> index {targetIndex}");
     }
 

@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
@@ -14,8 +15,8 @@ using UnityEngine.UI;
 public class ProxyLabelManager : MonoBehaviour
 {
     [Header("Authored labels")]
-    [Tooltip("Parent whose direct children are the proxy label GameObjects (authored ahead of time).")]
-    [SerializeField] private Transform m_labelsParent;
+    [Tooltip("Possible parents whose direct children are proxy label GameObjects. Exactly one should be active in the hierarchy at a time.")]
+    [SerializeField] private List<Transform> m_labelParents = new();
 
     [Header("Debug logging")]
     [Tooltip("Optional shared logger used to log which label index is currently selected.")]
@@ -27,20 +28,70 @@ public class ProxyLabelManager : MonoBehaviour
     private int m_selectionMax;
     private bool m_selectionRangeOverride;
 
-    public int GetLabelCount() => m_labelsParent != null ? m_labelsParent.childCount : 0;
+    private Transform GetActiveLabelsParent()
+    {
+        for (int i = 0; i < m_labelParents.Count; i++)
+        {
+            var parent = m_labelParents[i];
+            if (parent != null && parent.gameObject.activeInHierarchy)
+                return parent;
+        }
+        return null;
+    }
+
+    public int GetLabelCount()
+    {
+        var parent = GetActiveLabelsParent();
+        return parent != null ? parent.childCount : 0;
+    }
 
     /// <summary>
     /// Returns the RectTransform for the label at the given index, or null if out of range.
     /// </summary>
     public RectTransform GetLabelRectTransform(int index)
     {
-        if (m_labelsParent == null)
+        var parent = GetActiveLabelsParent();
+        if (parent == null)
             return null;
 
-        if (index < 0 || index >= m_labelsParent.childCount)
+        if (index < 0 || index >= parent.childCount)
             return null;
 
-        return m_labelsParent.GetChild(index) as RectTransform;
+        return parent.GetChild(index) as RectTransform;
+    }
+
+    /// <summary>
+    /// Finds the first label whose LabelMarkerBinding contains the given marker index.
+    /// Returns its RectTransform, or null if none is found.
+    /// </summary>
+    public RectTransform GetLabelRectTransformForMarkerIndex(int markerIndex)
+    {
+        if (markerIndex < 0)
+            return null;
+
+        var parent = GetActiveLabelsParent();
+        if (parent == null)
+            return null;
+
+        for (int i = 0; i < parent.childCount; i++)
+        {
+            var child = parent.GetChild(i) as RectTransform;
+            if (child == null || !child.gameObject.activeInHierarchy)
+                continue;
+
+            var binding = child.GetComponent<LabelMarkerBinding>();
+            var indices = binding != null ? binding.MarkerIndices : null;
+            if (indices == null)
+                continue;
+
+            for (int j = 0; j < indices.Count; j++)
+            {
+                if (indices[j] == markerIndex)
+                    return child;
+            }
+        }
+
+        return null;
     }
 
     /// <summary>
@@ -48,7 +99,8 @@ public class ProxyLabelManager : MonoBehaviour
     /// </summary>
     public int GetSelectedLabelIndex()
     {
-        if (m_labelsParent == null || EventSystem.current == null)
+        var parent = GetActiveLabelsParent();
+        if (parent == null || EventSystem.current == null)
             return -1;
 
         var current = EventSystem.current.currentSelectedGameObject;
@@ -56,9 +108,9 @@ public class ProxyLabelManager : MonoBehaviour
             return -1;
 
         // Accept selection on the child itself or any nested descendant.
-        for (int i = 0; i < m_labelsParent.childCount; i++)
+        for (int i = 0; i < parent.childCount; i++)
         {
-            var child = m_labelsParent.GetChild(i);
+            var child = parent.GetChild(i);
             if (child == null) continue;
             if (current == child.gameObject || current.transform.IsChildOf(child))
             {
@@ -83,15 +135,16 @@ public class ProxyLabelManager : MonoBehaviour
     /// </summary>
     public void SetSelectedLabelByIndex(int index)
     {
-        if (m_labelsParent == null || EventSystem.current == null)
+        var parent = GetActiveLabelsParent();
+        if (parent == null || EventSystem.current == null)
             return;
 
-        int count = m_labelsParent.childCount;
+        int count = parent.childCount;
         if (count <= 0)
             return;
 
         index = Mathf.Clamp(index, 0, count - 1);
-        var go = m_labelsParent.GetChild(index).gameObject;
+        var go = parent.GetChild(index).gameObject;
         EventSystem.current.SetSelectedGameObject(go);
 
         var sel = go.GetComponent<Selectable>();

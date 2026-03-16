@@ -68,7 +68,13 @@ public class PinchTargetSpawner : MonoBehaviour
 
             var parent = m_spawnParent != null ? m_spawnParent : transform;
             var instance = Instantiate(m_targetPrefab, worldPos, Quaternion.identity, parent);
-            TryStampMarkerLabel(instance, m_runtimeTargets.Count);
+
+            if (m_enableLogging && m_logger != null)
+            {
+                int siblingIndex = instance.transform.GetSiblingIndex();
+                m_logger.Log($"[PinchTargetSpawner] Created marker, sibling index under parent: {siblingIndex}");
+            }
+
             m_runtimeTargets.Add(instance.transform);
         }
 
@@ -139,21 +145,4 @@ public class PinchTargetSpawner : MonoBehaviour
         }
     }
 
-    private void TryStampMarkerLabel(GameObject instance, int labelIndex)
-    {
-        if (instance == null || labelIndex < 0)
-            return;
-
-        var binding = instance.GetComponent<MarkerLabelBinding>();
-        if (binding == null)
-            binding = instance.AddComponent<MarkerLabelBinding>();
-
-        binding.LabelIndex = labelIndex;
-
-        if (m_enableLogging && m_logger != null)
-        {
-            int siblingIndex = instance.transform.GetSiblingIndex();
-            m_logger.Log($"[PinchTargetSpawner] Created marker with label index: {labelIndex}, marker index {siblingIndex}");
-        }
-    }
 }
