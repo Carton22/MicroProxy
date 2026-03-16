@@ -12,6 +12,12 @@ public class CanvasRayIntersectionVisualizer : MonoBehaviour
     [Tooltip("UI prefab (RectTransform + Image) to place at intersection points on the passthrough canvas.")]
     [SerializeField] private RectTransform m_circlePrefab;
 
+    [Tooltip("Optional LineRenderer prefab used to draw lines from circles to their corresponding labels.")]
+    [SerializeField] private LineRenderer m_linePrefab;
+
+    [Tooltip("Label manager used to resolve label RectTransforms for line endpoints.")]
+    [SerializeField] private ProxyLabelManager m_labelManager;
+
     [Header("Runtime")]
     private RectTransform m_circleInstance;
 
@@ -20,6 +26,7 @@ public class CanvasRayIntersectionVisualizer : MonoBehaviour
     [SerializeField] private PinchTargetSpawner m_runtimeTargetSource;
 
     private RectTransform[] m_markerInstances;
+    private LineRenderer[] m_lineInstances;
 
     private void Update()
     {
@@ -40,6 +47,19 @@ public class CanvasRayIntersectionVisualizer : MonoBehaviour
             m_markerInstances = next;
         }
 
+        // Lazily allocate or grow per-target line instances
+        if (m_lineInstances == null || m_lineInstances.Length < targetCount)
+        {
+            var newSize = targetCount;
+            var nextLines = new LineRenderer[newSize];
+            if (m_lineInstances != null)
+            {
+                for (int j = 0; j < m_lineInstances.Length; j++)
+                    nextLines[j] = m_lineInstances[j];
+            }
+            m_lineInstances = nextLines;
+        }
+
         for (int i = 0; i < targetCount; i++)
         {
             var t = targetList[i];
@@ -47,6 +67,8 @@ public class CanvasRayIntersectionVisualizer : MonoBehaviour
             {
                 if (m_markerInstances != null && i < m_markerInstances.Length && m_markerInstances[i] != null)
                     m_markerInstances[i].gameObject.SetActive(false);
+                if (m_lineInstances != null && i < m_lineInstances.Length && m_lineInstances[i] != null)
+                    m_lineInstances[i].gameObject.SetActive(false);
                 continue;
             }
 
@@ -54,6 +76,8 @@ public class CanvasRayIntersectionVisualizer : MonoBehaviour
             {
                 if (m_markerInstances[i] != null)
                     m_markerInstances[i].gameObject.SetActive(false);
+                if (m_lineInstances != null && i < m_lineInstances.Length && m_lineInstances[i] != null)
+                    m_lineInstances[i].gameObject.SetActive(false);
                 continue;
             }
 
@@ -72,12 +96,24 @@ public class CanvasRayIntersectionVisualizer : MonoBehaviour
                 m_markerInstances[i].anchoredPosition = new Vector2(local.x, local.y);
                 m_markerInstances[i].sizeDelta = new Vector2(25f, 25f);
             }
+
+            // Draw line from circle to its corresponding label
+            UpdateLineForMarker(i, canvasTransform);
         }
 
         for (int i = targetCount; i < m_markerInstances.Length; i++)
         {
             if (m_markerInstances[i] != null)
                 m_markerInstances[i].gameObject.SetActive(false);
+        }
+
+        if (m_lineInstances != null)
+        {
+            for (int i = targetCount; i < m_lineInstances.Length; i++)
+            {
+                if (m_lineInstances[i] != null)
+                    m_lineInstances[i].gameObject.SetActive(false);
+            }
         }
     }
 
@@ -161,5 +197,60 @@ public class CanvasRayIntersectionVisualizer : MonoBehaviour
             return 0;
         targetList = m_runtimeTargetSource.GetRuntimeTargets();
         return targetList.Count;
+    }
+
+    private void UpdateLineForMarker(int index, RectTransform canvasTransform)
+    {
+        if (m_linePrefab == null || m_markerInstances == null || m_runtimeTargetSource == null || m_labelManager == null)
+            return;
+
+        if (index < 0 || index >= m_markerInstances.Length)
+            return;
+
+        var circle = m_markerInstances[index];
+        if (circle == null || !circle.gameObject.activeInHierarchy)
+        {
+            if (m_lineInstances != null && index < m_lineInstances.Length && m_lineInstances[index] != null)
+                m_lineInstances[index].gameObject.SetActive(false);
+            return;
+        }
+
+        // Resolve label index from the corresponding runtime target's MarkerLabelBinding
+        var targets = m_runtimeTargetSource.GetRuntimeTargets();
+        if (targets == null || index >= targets.Count)
+            return;
+
+        var targetTransform = targets[index];
+        if (targetTransform == null)
+            return;
+
+        var binding = targetTransform.GetComponent<MarkerLabelBinding>();
+        if (binding == null || binding.LabelIndex < 0)
+            return;
+
+        var labelRect = m_labelManager.GetLabelRectTransform(binding.LabelIndex);
+        if (labelRect == null || !labelRect.gameObject.activeInHierarchy)
+            return;
+
+        // Ensure line instance exists
+        if (m_lineInstances[index] == null && m_linePrefab != null)
+        {
+            var lineGO = Instantiate(m_linePrefab.gameObject, canvasTransform);
+            m_lineInstances[index] = lineGO.GetComponent<LineRenderer>();
+        }
+
+        var line = m_lineInstances[index];
+        if (line == null)
+            return;
+
+        line.gameObject.SetActive(true);
+
+        // Use world positions of circle and label for the line endpoints
+        Vector3 start = circle.position;
+        Vector3 end = labelRect.position;
+
+        line.positionCount = 2;
+        line.SetPosition(0, start);
+        line.SetPosition(1, end);
     }
 }

@@ -30,6 +30,20 @@ public class ProxyLabelManager : MonoBehaviour
     public int GetLabelCount() => m_labelsParent != null ? m_labelsParent.childCount : 0;
 
     /// <summary>
+    /// Returns the RectTransform for the label at the given index, or null if out of range.
+    /// </summary>
+    public RectTransform GetLabelRectTransform(int index)
+    {
+        if (m_labelsParent == null)
+            return null;
+
+        if (index < 0 || index >= m_labelsParent.childCount)
+            return null;
+
+        return m_labelsParent.GetChild(index) as RectTransform;
+    }
+
+    /// <summary>
     /// Index of the currently selected label under m_labelsParent (0-based), or -1 if none.
     /// </summary>
     public int GetSelectedLabelIndex()
