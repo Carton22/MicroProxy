@@ -5439,11 +5439,23 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3538017278138891281, guid: 58eee23691c63485ba7ef961e1ceeb74, type: 3}
       propertyPath: m_SizeDelta.x
-      value: 1280
+      value: 2148
       objectReference: {fileID: 0}
     - target: {fileID: 3538017278138891281, guid: 58eee23691c63485ba7ef961e1ceeb74, type: 3}
       propertyPath: m_SizeDelta.y
-      value: 1280
+      value: 897
+      objectReference: {fileID: 0}
+    - target: {fileID: 3538017278138891281, guid: 58eee23691c63485ba7ef961e1ceeb74, type: 3}
+      propertyPath: m_LocalScale.x
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 3538017278138891281, guid: 58eee23691c63485ba7ef961e1ceeb74, type: 3}
+      propertyPath: m_LocalScale.y
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 3538017278138891281, guid: 58eee23691c63485ba7ef961e1ceeb74, type: 3}
+      propertyPath: m_LocalScale.z
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 3538017278138891281, guid: 58eee23691c63485ba7ef961e1ceeb74, type: 3}
       propertyPath: m_LocalPosition.x
@@ -5455,7 +5467,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3538017278138891281, guid: 58eee23691c63485ba7ef961e1ceeb74, type: 3}
       propertyPath: m_LocalPosition.z
-      value: 100
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 3538017278138891281, guid: 58eee23691c63485ba7ef961e1ceeb74, type: 3}
       propertyPath: m_LocalRotation.w
@@ -5475,11 +5487,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3538017278138891281, guid: 58eee23691c63485ba7ef961e1ceeb74, type: 3}
       propertyPath: m_AnchoredPosition.x
-      value: 0
+      value: 1074
       objectReference: {fileID: 0}
     - target: {fileID: 3538017278138891281, guid: 58eee23691c63485ba7ef961e1ceeb74, type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: 0
+      value: 448.5
       objectReference: {fileID: 0}
     - target: {fileID: 3538017278138891281, guid: 58eee23691c63485ba7ef961e1ceeb74, type: 3}
       propertyPath: m_LocalEulerAnglesHint.x
@@ -5493,6 +5505,10 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 5181220601960006006, guid: 58eee23691c63485ba7ef961e1ceeb74, type: 3}
+      propertyPath: m_PresetInfoIsWorld
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 5191280226305392922, guid: 58eee23691c63485ba7ef961e1ceeb74, type: 3}
       propertyPath: m_Enabled
       value: 0
@@ -5505,6 +5521,10 @@ PrefabInstance:
       propertyPath: m_Camera
       value: 
       objectReference: {fileID: 1744462754}
+    - target: {fileID: 5841989571830368855, guid: 58eee23691c63485ba7ef961e1ceeb74, type: 3}
+      propertyPath: m_RenderMode
+      value: 2
+      objectReference: {fileID: 0}
     - target: {fileID: 7837170260614969833, guid: 58eee23691c63485ba7ef961e1ceeb74, type: 3}
       propertyPath: m_IgnoreReversedGraphics
       value: 0
@@ -6963,7 +6983,7 @@ MonoBehaviour:
   m_cameraToWorldManager: {fileID: 1001865144}
   m_cameraAccess: {fileID: 1373946501}
   m_circlePrefab: {fileID: 2171317211530993139, guid: 19fc067d4b97843779d2e4ece10959c7, type: 3}
-  m_linePrefab: {fileID: 0}
+  m_linePrefab: {fileID: 8259901140109785974, guid: 7a22edf228430442baabc7ff1a91b95c, type: 3}
   m_labelManager: {fileID: 1272610422}
   m_runtimeTargetSource: {fileID: 1942878147}
   m_showCirclesAndLinesOnBigCanvas: 0

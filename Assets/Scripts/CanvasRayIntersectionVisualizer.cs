@@ -29,6 +29,13 @@ public class CanvasRayIntersectionVisualizer : MonoBehaviour
     [Tooltip("If false, red circles and lines on the big canvas are hidden (minicamera circles unchanged).")]
     [SerializeField] private bool m_showCirclesAndLinesOnBigCanvas = true;
 
+    [Tooltip("Horizontal interpolation factor (0–1) for the bend point between circle and label in canvas space. 0.3 = 30% towards the label on X, Y matches the label.")]
+    [Range(0f, 1f)]
+    [SerializeField] private float m_bendXFactor = 0.3f;
+
+    [Tooltip("Padding (in canvas local units) from circle and label so the line does not start/end exactly at their centers.")]
+    [SerializeField] private float m_lineEndPadding = 10f;
+
     private RectTransform[] m_markerInstances;
     private LineRenderer[] m_lineInstances;
 
@@ -263,12 +270,36 @@ public class CanvasRayIntersectionVisualizer : MonoBehaviour
 
         line.gameObject.SetActive(true);
 
-        // Use world positions of circle and label for the line endpoints
-        Vector3 start = circle.position;
-        Vector3 end = labelRect.position;
+        // Draw a bent polyline: circle -> bend point -> label.
+        // Compute bend point in canvas local space, then convert to world.
+        var canvasRect = canvasTransform;
+        var rect = canvasRect.rect;
 
-        line.positionCount = 2;
-        line.SetPosition(0, start);
-        line.SetPosition(1, end);
+        // Local positions on canvas
+        Vector3 circleLocal = canvasRect.InverseTransformPoint(circle.position);
+        Vector3 labelLocal = canvasRect.InverseTransformPoint(labelRect.position);
+
+        // Bend X is interpolated between circle and label X; Y matches the label.
+        float bendX = Mathf.Lerp(circleLocal.x, labelLocal.x, m_bendXFactor);
+        float bendY = labelLocal.y;
+        Vector3 bendLocal = new Vector3(bendX, bendY, circleLocal.z);
+
+        // Apply padding so the line does not overlap circle/label centers.
+        Vector3 dirStart = (bendLocal - circleLocal).normalized;
+        Vector3 dirEnd = (bendLocal - labelLocal).normalized;
+
+        Vector3 circlePadded = circleLocal + dirStart * m_lineEndPadding;
+        Vector3 labelPadded = labelLocal + dirEnd * m_lineEndPadding;
+
+        // Convert back to world for the LineRenderer (world space)
+        Vector3 startWorld = canvasRect.TransformPoint(circlePadded);
+        Vector3 bendWorld = canvasRect.TransformPoint(bendLocal);
+        Vector3 endWorld = canvasRect.TransformPoint(labelPadded);
+
+        line.useWorldSpace = true;
+        line.positionCount = 3;
+        line.SetPosition(0, startWorld);
+        line.SetPosition(1, bendWorld);
+        line.SetPosition(2, endWorld);
     }
 }

@@ -936,6 +936,7 @@ MonoBehaviour:
   m_toggleTargets:
   - {fileID: 1968332517}
   - {fileID: 269540400}
+  m_worldMarkerVisualHider: {fileID: 0}
   m_debugLog: 0
 --- !u!1 &204397961
 GameObject:
@@ -2994,6 +2995,7 @@ MonoBehaviour:
   m_centerEyeAnchor: {fileID: 1744462752}
   m_cameraCanvas: {fileID: 1462897928}
   m_canvasDistance: 1
+  m_streamCameraToCanvas: 1
 --- !u!1 &1054382764
 GameObject:
   m_ObjectHideFlags: 0
@@ -3461,6 +3463,10 @@ PrefabInstance:
       propertyPath: m_Camera
       value: 
       objectReference: {fileID: 1744462754}
+    - target: {fileID: 5841989571830368855, guid: 58eee23691c63485ba7ef961e1ceeb74, type: 3}
+      propertyPath: m_PlaneDistance
+      value: 1
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -3684,9 +3690,12 @@ MonoBehaviour:
   m_cameraToWorldManager: {fileID: 1001865144}
   m_cameraAccess: {fileID: 1373946501}
   m_circlePrefab: {fileID: 2171317211530993139, guid: 19fc067d4b97843779d2e4ece10959c7, type: 3}
-  m_linePrefab: {fileID: 0}
+  m_linePrefab: {fileID: 8259901140109785974, guid: 7a22edf228430442baabc7ff1a91b95c, type: 3}
   m_labelManager: {fileID: 1272610422}
   m_runtimeTargetSource: {fileID: 1942878147}
+  m_showCirclesAndLinesOnBigCanvas: 1
+  m_bendXFactor: 0.3
+  m_lineEndPadding: 30
 --- !u!114 &1542092273 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 7042133912099342453, guid: 946c4bcf5ee78c2438bd71dd2f9fe1f9, type: 3}
