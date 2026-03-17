@@ -12,8 +12,8 @@ public class UINavigator : MonoBehaviour
     [Tooltip("ProxyLabelManager used to determine the currently active labels parent for selection.")]
     [SerializeField] private ProxyLabelManager m_labelManager;
 
-    [Header("Proxy set switching (2-column grid)")]
-    [Tooltip("Parent whose direct children are proxy UI set roots. Swipe left on left column → previous set; swipe right on right column → next set.")]
+    [Header("Proxy set switching (grid)")]
+    [Tooltip("Parent whose direct children are proxy UI set roots. Swipe left on leftmost column → previous set; swipe right on rightmost column → next set. Works with any fixed column count (1, 2, 3, …).")]
     [SerializeField] private Transform m_proxySetsParent;
 
     void Start()
@@ -172,24 +172,36 @@ public class UINavigator : MonoBehaviour
         if (sel) sel.Select();
     }
 
-    // ---------- Proxy set switching (2-column grid) ----------
+    // ---------- Proxy set switching (grid with any fixed column count) ----------
 
     /// <summary>
-    /// Column index of the current selection in its grid: 0 = left, 1 = right. Returns -1 if not in a 2-column grid.
+    /// Gets the current selection's column index (0 = leftmost) and the grid's column count.
+    /// Returns true only when the selection is inside a GridLayoutGroup with Constraint = Fixed Column Count.
     /// </summary>
-    int GetSelectedColumn()
+    bool TryGetSelectedColumnInfo(out int columnIndex, out int columnCount)
     {
+        columnIndex = -1;
+        columnCount = -1;
+
         var selected = EventSystem.current?.currentSelectedGameObject;
-        if (selected == null) return -1;
+        if (selected == null) return false;
 
         Transform t = selected.transform;
         var grid = t.GetComponentInParent<GridLayoutGroup>();
-        if (grid == null) return -1;
+        if (grid == null) return false;
+        if (grid.constraint != GridLayoutGroup.Constraint.FixedColumnCount) return false;
 
         Transform content = grid.transform;
-        if (!t.IsChildOf(content)) return -1;
+        if (!t.IsChildOf(content)) return false;
+
         int cellIndex = GetCellIndexUnder(t, content);
-        return cellIndex >= 0 ? cellIndex % 2 : -1; // 0 = left column, 1 = right column
+        if (cellIndex < 0) return false;
+
+        columnCount = grid.constraintCount;
+        if (columnCount <= 0) return false;
+
+        columnIndex = cellIndex % columnCount;
+        return true;
     }
 
     /// <summary>
@@ -224,12 +236,12 @@ public class UINavigator : MonoBehaviour
     }
 
     /// <summary>
-    /// If selection is on the left column, deactivate current proxy set and activate previous sibling. Returns true if switched.
+    /// If selection is on the leftmost column, deactivate current proxy set and activate previous sibling. Returns true if switched.
     /// </summary>
     bool TrySwitchToPreviousProxySet()
     {
         if (m_proxySetsParent == null) return false;
-        if (GetSelectedColumn() != 0) return false; // only when on very left column
+        if (!TryGetSelectedColumnInfo(out int col, out _) || col != 0) return false; // only when on very left column
 
         var currentSet = GetCurrentProxySetRoot();
         if (currentSet == null) return false;
@@ -247,12 +259,12 @@ public class UINavigator : MonoBehaviour
     }
 
     /// <summary>
-    /// If selection is on the right column, deactivate current proxy set and activate next sibling. Returns true if switched.
+    /// If selection is on the rightmost column, deactivate current proxy set and activate next sibling. Returns true if switched.
     /// </summary>
     bool TrySwitchToNextProxySet()
     {
         if (m_proxySetsParent == null) return false;
-        if (GetSelectedColumn() != 1) return false; // only when on very right column
+        if (!TryGetSelectedColumnInfo(out int col, out int columnCount) || col != columnCount - 1) return false; // only when on very right column
 
         var currentSet = GetCurrentProxySetRoot();
         if (currentSet == null) return false;
