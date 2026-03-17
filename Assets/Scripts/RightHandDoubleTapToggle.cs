@@ -20,14 +20,18 @@ public class RightHandDoubleTapToggle : MonoBehaviour
     [SerializeField] private float m_doubleTapMaxIntervalSeconds = 0.4f;
 
     [Header("Targets")]
-    [Tooltip("GameObjects whose active state will be toggled on each long pinch.")]
+    [Tooltip("GameObjects whose active state will be toggled on each double tap.")]
     [SerializeField] private List<GameObject> m_toggleTargets = new();
+
+    [Tooltip("Optional. When set, the first double tap will also hide world markers (via WorldMarkerVisualHider).")]
+    [SerializeField] private WorldMarkerVisualHider m_worldMarkerVisualHider;
 
     [Header("Debug")]
     [SerializeField] private bool m_debugLog;
 
     private bool m_isPinching;
     private float m_lastTapTime = -1f;
+    private bool m_markersHiddenOnce;
 
     private void Reset()
     {
@@ -88,6 +92,12 @@ public class RightHandDoubleTapToggle : MonoBehaviour
 
             bool newState = !go.activeSelf;
             go.SetActive(newState);
+        }
+
+        if (m_worldMarkerVisualHider != null && !m_markersHiddenOnce)
+        {
+            m_worldMarkerVisualHider.SetHideWorldMarkers(true);
+            m_markersHiddenOnce = true;
         }
 
         if (m_debugLog)

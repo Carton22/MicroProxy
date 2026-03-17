@@ -26,11 +26,20 @@ public class CanvasRayIntersectionVisualizer : MonoBehaviour
     [Tooltip("Left-hand pinch spawner; intersection markers are driven by its runtime targets.")]
     [SerializeField] private PinchTargetSpawner m_runtimeTargetSource;
 
+    [Tooltip("If false, red circles and lines on the big canvas are hidden (minicamera circles unchanged).")]
+    [SerializeField] private bool m_showCirclesAndLinesOnBigCanvas = true;
+
     private RectTransform[] m_markerInstances;
     private LineRenderer[] m_lineInstances;
 
     private void Update()
     {
+        if (!m_showCirclesAndLinesOnBigCanvas)
+        {
+            HideAllBigCanvasCirclesAndLines();
+            return;
+        }
+
         int targetCount = GetActiveTargetCount(out var targetList);
         if (targetCount == 0)
             return;
@@ -189,6 +198,26 @@ public class CanvasRayIntersectionVisualizer : MonoBehaviour
 
         hitWorld = ray.GetPoint(t);
         return true;
+    }
+
+    private void HideAllBigCanvasCirclesAndLines()
+    {
+        if (m_markerInstances != null)
+        {
+            for (int i = 0; i < m_markerInstances.Length; i++)
+            {
+                if (m_markerInstances[i] != null)
+                    m_markerInstances[i].gameObject.SetActive(false);
+            }
+        }
+        if (m_lineInstances != null)
+        {
+            for (int i = 0; i < m_lineInstances.Length; i++)
+            {
+                if (m_lineInstances[i] != null)
+                    m_lineInstances[i].gameObject.SetActive(false);
+            }
+        }
     }
 
     private int GetActiveTargetCount(out IReadOnlyList<Transform> targetList)
