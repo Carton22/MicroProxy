@@ -16,6 +16,7 @@ GameObject:
   - component: {fileID: 1425862825632069543}
   - component: {fileID: -1293814966277781294}
   - component: {fileID: 4015155752309191152}
+  - component: {fileID: 9098699202892683956}
   m_Layer: 0
   m_Name: ProxyLabel
   m_TagString: Untagged
@@ -186,6 +187,19 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_markerIndices: 
+--- !u!114 &9098699202892683956
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4235160468344426946}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e37e898d24dcb47a8b518bc7ca93c6f2, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_audioSource: {fileID: 0}
 --- !u!1 &6856314460656858343
 GameObject:
   m_ObjectHideFlags: 0
