@@ -130,7 +130,7 @@ PrefabInstance:
     - target: {fileID: 2814049813371364162, guid: a9088ffdc24df41fba5fd6cb1eaf3ead, type: 3}
       propertyPath: m_Sprite
       value: 
-      objectReference: {fileID: 10911, guid: 0000000000000000f000000000000000, type: 0}
+      objectReference: {fileID: 0}
     - target: {fileID: 2814049813371364162, guid: a9088ffdc24df41fba5fd6cb1eaf3ead, type: 3}
       propertyPath: m_Color.b
       value: 1
@@ -2440,7 +2440,7 @@ PrefabInstance:
     - target: {fileID: 2814049813371364162, guid: a9088ffdc24df41fba5fd6cb1eaf3ead, type: 3}
       propertyPath: m_Sprite
       value: 
-      objectReference: {fileID: 10911, guid: 0000000000000000f000000000000000, type: 0}
+      objectReference: {fileID: 0}
     - target: {fileID: 2814049813371364162, guid: a9088ffdc24df41fba5fd6cb1eaf3ead, type: 3}
       propertyPath: m_Color.b
       value: 1
@@ -3535,6 +3535,10 @@ PrefabInstance:
     - target: {fileID: 3538017278138891281, guid: 58eee23691c63485ba7ef961e1ceeb74, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5181220601960006006, guid: 58eee23691c63485ba7ef961e1ceeb74, type: 3}
+      propertyPath: m_PresetInfoIsWorld
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 5191280226305392922, guid: 58eee23691c63485ba7ef961e1ceeb74, type: 3}
       propertyPath: m_cameraAccess
