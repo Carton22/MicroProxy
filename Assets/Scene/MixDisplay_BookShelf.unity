@@ -1057,7 +1057,7 @@ MonoBehaviour:
   m_CellSize: {x: 100, y: 50}
   m_Spacing: {x: 8, y: 8}
   m_Constraint: 1
-  m_ConstraintCount: 2
+  m_ConstraintCount: 1
 --- !u!114 &243943087
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -3775,6 +3775,10 @@ MonoBehaviour:
   m_cameraToWorldManager: {fileID: 1001865144}
   m_cameraAccess: {fileID: 1373946501}
   m_circlePrefab: {fileID: 2171317211530993139, guid: 19fc067d4b97843779d2e4ece10959c7, type: 3}
+  m_selectedCircleMaterial: {fileID: 2100000, guid: effc973398d194f8e8d7ea2e54e09a3a, type: 2}
+  m_unselectedCircleMaterial: {fileID: 2100000, guid: 90e7333d471314c8c844daf3259827dd, type: 2}
+  m_selectedCircleSize: 40
+  m_unselectedCircleSize: 30
   m_linePrefab: {fileID: 8259901140109785974, guid: 7a22edf228430442baabc7ff1a91b95c, type: 3}
   m_labelManager: {fileID: 1272610422}
   m_runtimeTargetSource: {fileID: 1942878147}

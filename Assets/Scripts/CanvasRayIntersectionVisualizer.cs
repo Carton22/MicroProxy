@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using Meta.XR.Samples;
 using Meta.XR;
+using UnityEngine.UI;
 
 // check which marker(s) are actiavted and draw lines to the corresponding label(s)
 public class CanvasRayIntersectionVisualizer : MonoBehaviour
@@ -12,6 +13,16 @@ public class CanvasRayIntersectionVisualizer : MonoBehaviour
     [SerializeField] private PassthroughCameraAccess m_cameraAccess;
     [Tooltip("UI prefab (RectTransform + Image) to place at intersection points on the passthrough canvas.")]
     [SerializeField] private RectTransform m_circlePrefab;
+
+    [Header("Circle materials")]
+    [Tooltip("Material for the circle that corresponds to the currently selected label.")]
+    [SerializeField] private Material m_selectedCircleMaterial;
+    [Tooltip("Material for circles that are raycasting/hit but not selected.")]
+    [SerializeField] private Material m_unselectedCircleMaterial;
+    [Tooltip("Size (width/height) for the selected circle.")]
+    [SerializeField] private float m_selectedCircleSize = 32f;
+    [Tooltip("Size (width/height) for unselected circles.")]
+    [SerializeField] private float m_unselectedCircleSize = 18f;
 
     [Tooltip("Optional LineRenderer prefab used to draw lines from circles to their corresponding labels.")]
     [SerializeField] private LineRenderer m_linePrefab;
@@ -111,7 +122,11 @@ public class CanvasRayIntersectionVisualizer : MonoBehaviour
 
                 m_markerInstances[i].SetParent(canvasTransform, false);
                 m_markerInstances[i].anchoredPosition = new Vector2(local.x, local.y);
-                m_markerInstances[i].sizeDelta = new Vector2(25f, 25f);
+
+                // Swap circle material based on selection state.
+                bool isSelected = IsMarkerSelected(i);
+                ApplyCircleMaterial(m_markerInstances[i], isSelected);
+                ApplyCircleSize(m_markerInstances[i], isSelected);
             }
 
             // Draw line from circle to its corresponding label
@@ -301,5 +316,55 @@ public class CanvasRayIntersectionVisualizer : MonoBehaviour
         line.SetPosition(0, startWorld);
         line.SetPosition(1, bendWorld);
         line.SetPosition(2, endWorld);
+    }
+
+    private bool IsMarkerSelected(int markerIndex)
+    {
+        if (m_labelManager == null)
+            return false;
+
+        int selectedIndex = m_labelManager.GetSelectedLabelIndex();
+        if (selectedIndex < 0)
+            return false;
+
+        var selectedLabel = m_labelManager.GetLabelRectTransform(selectedIndex);
+        if (selectedLabel == null)
+            return false;
+
+        var markerLabel = m_labelManager.GetLabelRectTransformForMarkerIndex(markerIndex);
+        return markerLabel != null && markerLabel == selectedLabel;
+    }
+
+    private void ApplyCircleMaterial(RectTransform circle, bool selected)
+    {
+        if (circle == null)
+            return;
+
+        var img = circle.GetComponent<Image>();
+        if (img == null)
+            img = circle.GetComponentInChildren<Image>(true);
+        if (img == null)
+            return;
+
+        var targetMat = selected ? m_selectedCircleMaterial : m_unselectedCircleMaterial;
+        if (targetMat == null)
+            return;
+
+        if (img.material != targetMat)
+            img.material = targetMat;
+    }
+
+    private void ApplyCircleSize(RectTransform circle, bool selected)
+    {
+        if (circle == null)
+            return;
+
+        float size = selected ? m_selectedCircleSize : m_unselectedCircleSize;
+        if (size <= 0f)
+            return;
+
+        var target = new Vector2(size, size);
+        if (circle.sizeDelta != target)
+            circle.sizeDelta = target;
     }
 }
