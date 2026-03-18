@@ -267,6 +267,14 @@ public class CanvasRayIntersectionVisualizer : MonoBehaviour
             return;
         }
 
+        // Only draw a line for the marker whose label is currently selected.
+        if (!IsMarkerSelected(index))
+        {
+            if (m_lineInstances != null && index < m_lineInstances.Length && m_lineInstances[index] != null)
+                m_lineInstances[index].gameObject.SetActive(false);
+            return;
+        }
+
         // Resolve label associated with this marker index using LabelMarkerBinding on labels
         var labelRect = m_labelManager.GetLabelRectTransformForMarkerIndex(index);
         if (labelRect == null || !labelRect.gameObject.activeInHierarchy)
