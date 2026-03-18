@@ -12,10 +12,6 @@ public class UINavigator : MonoBehaviour
     [Tooltip("ProxyLabelManager used to determine the currently active labels parent for selection.")]
     [SerializeField] private ProxyLabelManager m_labelManager;
 
-    [Header("Proxy set switching (grid)")]
-    [Tooltip("Parent whose direct children are proxy UI set roots. Swipe left on leftmost column → previous set; swipe right on rightmost column → next set. Works with any fixed column count (1, 2, 3, …).")]
-    [SerializeField] private Transform m_proxySetsParent;
-
     void Start()
     {
         if (m_labelManager == null)
@@ -217,66 +213,37 @@ public class UINavigator : MonoBehaviour
     }
 
     /// <summary>
-    /// The proxy set root that contains the current selection (a direct child of m_proxySetsParent), or null.
-    /// </summary>
-    Transform GetCurrentProxySetRoot()
-    {
-        if (m_proxySetsParent == null) return null;
-        var selected = EventSystem.current?.currentSelectedGameObject;
-        if (selected == null) return null;
-
-        Transform selT = selected.transform;
-        for (int i = 0; i < m_proxySetsParent.childCount; i++)
-        {
-            var child = m_proxySetsParent.GetChild(i);
-            if (selT.IsChildOf(child))
-                return child;
-        }
-        return null;
-    }
-
-    /// <summary>
-    /// If selection is on the leftmost column, deactivate current proxy set and activate previous sibling. Returns true if switched.
+    /// If selection is on the leftmost column, switch to previous active label parent in ProxyLabelManager.
+    /// Returns true if a switch occurred.
     /// </summary>
     bool TrySwitchToPreviousProxySet()
     {
-        if (m_proxySetsParent == null) return false;
-        if (!TryGetSelectedColumnInfo(out int col, out _) || col != 0) return false; // only when on very left column
+        if (m_labelManager == null) return false;
+        if (!TryGetSelectedColumnInfo(out int col, out _) || col != 0) return false;
 
-        var currentSet = GetCurrentProxySetRoot();
-        if (currentSet == null) return false;
+        if (!m_labelManager.TrySwitchToPreviousLabelsParent())
+            return false;
 
-        int idx = currentSet.GetSiblingIndex();
-        if (idx <= 0) return false;
-
-        var previousSet = m_proxySetsParent.GetChild(idx - 1);
-        currentSet.gameObject.SetActive(false);
-        previousSet.gameObject.SetActive(true);
-
-        var first = FindFirstSelectableIn(previousSet);
+        var newRoot = m_labelManager.GetActiveLabelsParent();
+        var first = FindFirstSelectableIn(newRoot);
         if (first != null) Select(first);
         return true;
     }
 
     /// <summary>
-    /// If selection is on the rightmost column, deactivate current proxy set and activate next sibling. Returns true if switched.
+    /// If selection is on the rightmost column, switch to next active label parent in ProxyLabelManager.
+    /// Returns true if a switch occurred.
     /// </summary>
     bool TrySwitchToNextProxySet()
     {
-        if (m_proxySetsParent == null) return false;
-        if (!TryGetSelectedColumnInfo(out int col, out int columnCount) || col != columnCount - 1) return false; // only when on very right column
+        if (m_labelManager == null) return false;
+        if (!TryGetSelectedColumnInfo(out int col, out int columnCount) || col != columnCount - 1) return false;
 
-        var currentSet = GetCurrentProxySetRoot();
-        if (currentSet == null) return false;
+        if (!m_labelManager.TrySwitchToNextLabelsParent())
+            return false;
 
-        int idx = currentSet.GetSiblingIndex();
-        if (idx >= m_proxySetsParent.childCount - 1) return false;
-
-        var nextSet = m_proxySetsParent.GetChild(idx + 1);
-        currentSet.gameObject.SetActive(false);
-        nextSet.gameObject.SetActive(true);
-
-        var first = FindFirstSelectableIn(nextSet);
+        var newRoot = m_labelManager.GetActiveLabelsParent();
+        var first = FindFirstSelectableIn(newRoot);
         if (first != null) Select(first);
         return true;
     }

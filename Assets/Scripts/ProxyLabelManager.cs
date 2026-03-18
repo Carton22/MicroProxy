@@ -39,6 +39,66 @@ public class ProxyLabelManager : MonoBehaviour
         return null;
     }
 
+    private int GetActiveLabelsParentIndex()
+    {
+        for (int i = 0; i < m_labelParents.Count; i++)
+        {
+            var parent = m_labelParents[i];
+            if (parent != null && parent.gameObject.activeInHierarchy)
+                return i;
+        }
+        return -1;
+    }
+
+    private Transform GetLabelsParentAtIndex(int index)
+    {
+        if (index < 0 || index >= m_labelParents.Count)
+            return null;
+        return m_labelParents[index];
+    }
+
+    /// <summary>
+    /// Activates the previous label parent in m_labelParents (based on currently active one).
+    /// Returns true if a switch occurred.
+    /// </summary>
+    public bool TrySwitchToPreviousLabelsParent()
+    {
+        int activeIndex = GetActiveLabelsParentIndex();
+        if (activeIndex <= 0)
+            return false;
+
+        var current = GetLabelsParentAtIndex(activeIndex);
+        var previous = GetLabelsParentAtIndex(activeIndex - 1);
+        if (previous == null)
+            return false;
+
+        if (current != null)
+            current.gameObject.SetActive(false);
+        previous.gameObject.SetActive(true);
+        return true;
+    }
+
+    /// <summary>
+    /// Activates the next label parent in m_labelParents (based on currently active one).
+    /// Returns true if a switch occurred.
+    /// </summary>
+    public bool TrySwitchToNextLabelsParent()
+    {
+        int activeIndex = GetActiveLabelsParentIndex();
+        if (activeIndex < 0 || activeIndex >= m_labelParents.Count - 1)
+            return false;
+
+        var current = GetLabelsParentAtIndex(activeIndex);
+        var next = GetLabelsParentAtIndex(activeIndex + 1);
+        if (next == null)
+            return false;
+
+        if (current != null)
+            current.gameObject.SetActive(false);
+        next.gameObject.SetActive(true);
+        return true;
+    }
+
     public int GetLabelCount()
     {
         var parent = GetActiveLabelsParent();
