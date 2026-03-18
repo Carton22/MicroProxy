@@ -122,6 +122,9 @@ public class CanvasRayIntersectionVisualizer : MonoBehaviour
 
                 m_markerInstances[i].SetParent(canvasTransform, false);
                 m_markerInstances[i].anchoredPosition = new Vector2(local.x, local.y);
+                // Keep circles on the canvas plane.
+                var lp = m_markerInstances[i].localPosition;
+                m_markerInstances[i].localPosition = new Vector3(lp.x, lp.y, 0f);
 
                 // Swap circle material based on selection state.
                 bool isSelected = IsMarkerSelected(i);
@@ -314,16 +317,18 @@ public class CanvasRayIntersectionVisualizer : MonoBehaviour
         Vector3 circlePadded = circleLocal + dirStart * m_lineEndPadding;
         Vector3 labelPadded = labelLocal + dirEnd * m_lineEndPadding;
 
-        // Convert back to world for the LineRenderer (world space)
-        Vector3 startWorld = canvasRect.TransformPoint(circlePadded);
-        Vector3 bendWorld = canvasRect.TransformPoint(bendLocal);
-        Vector3 endWorld = canvasRect.TransformPoint(labelPadded);
+        // Keep the polyline on the canvas plane (local z = 0).
+        circlePadded.z = 0f;
+        bendLocal.z = 0f;
+        labelPadded.z = 0f;
 
-        line.useWorldSpace = true;
+        // Draw in canvas/local space so the line lies on the canvas surface.
+        // (The LineRenderer GameObject is parented under the canvas.)
+        line.useWorldSpace = false;
         line.positionCount = 3;
-        line.SetPosition(0, startWorld);
-        line.SetPosition(1, bendWorld);
-        line.SetPosition(2, endWorld);
+        line.SetPosition(0, circlePadded);
+        line.SetPosition(1, bendLocal);
+        line.SetPosition(2, labelPadded);
     }
 
     private bool IsMarkerSelected(int markerIndex)
