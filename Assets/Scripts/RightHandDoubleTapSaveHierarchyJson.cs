@@ -4,22 +4,14 @@ using System.IO;
 using UnityEngine;
 
 /// <summary>
-/// Detects a double-tap pinch on the right hand (thumb + middle finger) and writes a JSON file
+/// Detects a controller button press and writes a JSON file
 /// capturing transform information for a target GameObject and all its children.
 /// </summary>
 public class RightHandDoubleTapSaveHierarchyJson : MonoBehaviour
 {
-    [Header("Right hand")]
-    [Tooltip("Right hand OVRHand (from hand tracking rig). Used to read pinch strength.")]
-    [SerializeField] private OVRHand m_rightHand;
-
-    [Header("Pinch settings")]
-    [Tooltip("Pinch strength threshold (0–1) to consider the thumb–middle-finger pinch as 'down'.")]
-    [Range(0f, 1f)]
-    [SerializeField] private float m_pinchStrengthThreshold = 0.7f;
-
-    [Tooltip("Maximum time (seconds) allowed between two pinch taps to count as a double tap.")]
-    [SerializeField] private float m_doubleTapMaxIntervalSeconds = 0.4f;
+    [Header("Controller input")]
+    [Tooltip("Controller button used to trigger save. Default = Y button.")]
+    [SerializeField] private OVRInput.RawButton m_saveButton = OVRInput.RawButton.Y;
 
     [Header("Save target")]
     [Tooltip("Root GameObject to snapshot (includes all children).")]
@@ -47,51 +39,13 @@ public class RightHandDoubleTapSaveHierarchyJson : MonoBehaviour
     [Tooltip("If false, snapshot save results will not be logged even if a logger is assigned.")]
     [SerializeField] private bool m_enableLogging = true;
 
-    private bool m_isPinching;
-    private float m_lastTapTime = -1f;
-
-    private void Reset()
-    {
-        if (m_rightHand == null)
-            m_rightHand = FindFirstObjectByType<OVRHand>();
-    }
-
     private void Update()
     {
-        if (m_rightHand == null || m_root == null)
+        if (m_root == null)
             return;
 
-        if (!m_rightHand.IsDataValid)
-        {
-            m_isPinching = false;
-            return;
-        }
-
-        float pinch = m_rightHand.GetFingerPinchStrength(OVRHand.HandFinger.Middle);
-        bool pinchDown = pinch >= m_pinchStrengthThreshold;
-
-        if (pinchDown)
-        {
-            if (!m_isPinching)
-            {
-                m_isPinching = true;
-
-                float now = Time.time;
-                if (m_lastTapTime >= 0f && (now - m_lastTapTime) <= m_doubleTapMaxIntervalSeconds)
-                {
-                    m_lastTapTime = -1f;
-                    SaveSnapshot();
-                }
-                else
-                {
-                    m_lastTapTime = now;
-                }
-            }
-        }
-        else
-        {
-            m_isPinching = false;
-        }
+        if (OVRInput.GetDown(m_saveButton))
+            SaveSnapshot();
     }
 
     private void SaveSnapshot()

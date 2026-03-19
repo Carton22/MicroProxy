@@ -8257,11 +8257,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 554492a1b012346adba0e49178b2fe45, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_rightHand: {fileID: 1924298972}
-  m_pinchStrengthThreshold: 0.7
-  m_doubleTapMaxIntervalSeconds: 0.4
+  m_saveButton: 512
   m_root: {fileID: 1968332517}
-  m_includeInactive: 0
+  m_includeInactive: 1
   m_outputSubfolder: Snapshots
   m_prettyPrint: 1
   m_markerSpatialPersistence: {fileID: 1099541780}
