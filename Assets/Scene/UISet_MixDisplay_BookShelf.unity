@@ -8341,7 +8341,7 @@ MonoBehaviour:
   m_runtimeTargetSource: {fileID: 1942878147}
   m_showCirclesAndLinesOnBigCanvas: 1
   m_bendXFactor: 0.7
-  m_lineEndPadding: 30
+  m_lineEndPadding: 0
 --- !u!114 &1542092273 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 7042133912099342453, guid: 946c4bcf5ee78c2438bd71dd2f9fe1f9, type: 3}
