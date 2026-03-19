@@ -49,6 +49,7 @@ public class CanvasRayIntersectionVisualizer : MonoBehaviour
 
     private RectTransform[] m_markerInstances;
     private LineRenderer[] m_lineInstances;
+    private readonly List<Transform> m_markerTargetsBuffer = new();
 
     private void Awake()
     {
@@ -58,7 +59,7 @@ public class CanvasRayIntersectionVisualizer : MonoBehaviour
         if (m_labelManagers.Count == 0)
         {
             // Fallback: include all label managers in the scene (including inactive).
-            var found = FindObjectsOfType<ProxyLabelManager>(true);
+            var found = FindObjectsByType<ProxyLabelManager>(FindObjectsInactive.Include, FindObjectsSortMode.None);
             for (int i = 0; i < found.Length; i++)
             {
                 var lm = found[i];
@@ -279,10 +280,31 @@ public class CanvasRayIntersectionVisualizer : MonoBehaviour
     private int GetActiveTargetCount(out IReadOnlyList<Transform> targetList)
     {
         targetList = null;
-        if (m_runtimeTargetSource == null || m_runtimeTargetSource.GetRuntimeTargetCount() == 0)
+        if (m_runtimeTargetSource == null)
             return 0;
+
+        // Preferred source: marker children currently under MarkerParent (works for restored markers too).
+        var markerParent = m_runtimeTargetSource.GetMarkerParentTransform();
+        if (markerParent != null && markerParent.childCount > 0)
+        {
+            m_markerTargetsBuffer.Clear();
+            for (int i = 0; i < markerParent.childCount; i++)
+            {
+                var child = markerParent.GetChild(i);
+                if (child != null)
+                    m_markerTargetsBuffer.Add(child);
+            }
+
+            targetList = m_markerTargetsBuffer;
+            return m_markerTargetsBuffer.Count;
+        }
+
+        // Fallback source: runtime pinch list.
+        if (m_runtimeTargetSource.GetRuntimeTargetCount() == 0)
+            return 0;
+
         targetList = m_runtimeTargetSource.GetRuntimeTargets();
-        return targetList.Count;
+        return targetList != null ? targetList.Count : 0;
     }
 
     private void UpdateLineForMarker(int index, RectTransform canvasTransform)

@@ -34,6 +34,12 @@ public class RightHandDoubleTapSaveHierarchyJson : MonoBehaviour
     [Tooltip("If true, writes pretty-printed JSON.")]
     [SerializeField] private bool m_prettyPrint = true;
 
+    [Header("Optional marker spatial persistence")]
+    [Tooltip("Optional. If assigned, this script also saves anchor + marker layout on double tap.")]
+    [SerializeField] private MarkerSpatialAnchorPersistence m_markerSpatialPersistence;
+    [Tooltip("If true and m_markerSpatialPersistence is assigned, trigger SaveAnchorAndMarkers() after JSON save.")]
+    [SerializeField] private bool m_saveSpatialMarkersOnDoubleTap = true;
+
     [Header("Debug")]
     [Tooltip("Optional shared logger used to log save results.")]
     [SerializeField] private SharedLogger m_logger;
@@ -108,6 +114,9 @@ public class RightHandDoubleTapSaveHierarchyJson : MonoBehaviour
 
             string json = JsonUtility.ToJson(snapshot, m_prettyPrint);
             File.WriteAllText(fullPath, json);
+
+            if (m_saveSpatialMarkersOnDoubleTap && m_markerSpatialPersistence != null)
+                m_markerSpatialPersistence.SaveAnchorAndMarkers();
 
             if (m_enableLogging && m_logger != null)
                 m_logger.Log($"[RightHandDoubleTapSaveHierarchyJson] Saved snapshot: {fullPath}");

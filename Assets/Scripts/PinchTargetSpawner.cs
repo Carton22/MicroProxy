@@ -3,7 +3,7 @@ using UnityEngine;
 using TMPro;
 
 /// <summary>
-/// Tracks the left hand index pinch. Each time the user starts an index pinch with the left hand,
+/// Tracks the left hand thumb+middle pinch. Each time the user starts a pinch with the left hand,
 /// assigns an intersection marker (reused from pre-created children first, otherwise instantiated)
 /// at the pinch position in world space and adds it as a runtime target.
 /// These targets can be used by CanvasRayIntersectionVisualizer to draw hit points on the passthrough canvas.
@@ -13,7 +13,7 @@ public class PinchTargetSpawner : MonoBehaviour
     [Header("Left hand")]
     [Tooltip("Left hand OVRHand (from hand tracking rig). Used for pinch state and pinch position.")]
     [SerializeField] private OVRHand m_leftHand;
-    [Tooltip("Optional OVRSkeleton for the same hand. Used to resolve the thumb and index tip bones.")]
+    [Tooltip("Optional OVRSkeleton for the same hand. Used to resolve the thumb and middle tip bones.")]
     [SerializeField] private OVRSkeleton m_leftHandSkeleton;
 
     [Header("Spawn")]
@@ -21,7 +21,7 @@ public class PinchTargetSpawner : MonoBehaviour
     [SerializeField] private GameObject m_targetPrefab;
     [Tooltip("Optional parent for spawned objects. If null, spawned under this transform.")]
     [SerializeField] private Transform m_spawnParent;
-    [Tooltip("If enabled, uses the midpoint between thumb tip and index tip. If disabled, uses index tip only.")]
+    [Tooltip("If enabled, uses the midpoint between thumb tip and middle tip. If disabled, uses middle tip only.")]
     [SerializeField] private bool m_useThumbIndexMidpoint = true;
 
     [Header("Debug logging")]
@@ -152,7 +152,7 @@ public class PinchTargetSpawner : MonoBehaviour
     }
 
     /// <summary>
-    /// Returns the list of runtime-created targets (one per left-hand index pinch). Used by CanvasRayIntersectionVisualizer.
+    /// Returns the list of runtime-created targets (one per left-hand pinch). Used by CanvasRayIntersectionVisualizer.
     /// </summary>
     public IReadOnlyList<Transform> GetRuntimeTargets() => m_runtimeTargets;
 
@@ -160,6 +160,12 @@ public class PinchTargetSpawner : MonoBehaviour
     /// Number of runtime targets (pinch spawns). Used to size the visualizer's instances.
     /// </summary>
     public int GetRuntimeTargetCount() => m_runtimeTargets.Count;
+
+    /// <summary>
+    /// Effective marker parent used by this spawner (m_spawnParent if assigned, otherwise this transform).
+    /// Useful for external systems (e.g. spatial-anchor persistence) that need to re-parent/save marker roots.
+    /// </summary>
+    public Transform GetMarkerParentTransform() => GetMarkerParent();
 
     /// <summary>
     /// Remove all runtime targets and destroy their GameObjects. Call to clear pinch markers.
@@ -219,7 +225,7 @@ public class PinchTargetSpawner : MonoBehaviour
             if (m_thumbTip == null && bone.Id == OVRSkeleton.BoneId.Hand_ThumbTip)
                 m_thumbTip = bone.Transform;
 
-            if (m_middleTip == null && bone.Id == OVRSkeleton.BoneId.Hand_IndexTip)
+            if (m_middleTip == null && bone.Id == OVRSkeleton.BoneId.Hand_MiddleTip)
                 m_middleTip = bone.Transform;
 
             if (m_thumbTip != null && m_middleTip != null)
