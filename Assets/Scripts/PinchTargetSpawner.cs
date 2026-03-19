@@ -1,12 +1,12 @@
 using System.Collections.Generic;
 using UnityEngine;
+using TMPro;
 
 /// <summary>
 /// Tracks the left hand index pinch. Each time the user starts an index pinch with the left hand,
-/// spawns an instance of the assigned prefab at the pinch position in world space and adds it as a
-/// runtime target. These targets can be used by CanvasRayIntersectionVisualizer to draw hit points
-/// on the passthrough canvas.
-/// Assign the left hand's OVRHand (e.g. from the hand tracking rig) and a prefab to spawn.
+/// assigns an intersection marker (reused from pre-created children first, otherwise instantiated)
+/// at the pinch position in world space and adds it as a runtime target.
+/// These targets can be used by CanvasRayIntersectionVisualizer to draw hit points on the passthrough canvas.
 /// </summary>
 public class PinchTargetSpawner : MonoBehaviour
 {
@@ -34,10 +34,49 @@ public class PinchTargetSpawner : MonoBehaviour
     [SerializeField] [Range(0f, 1f)] private float m_pinchStartStrength = 0.6f;
     [SerializeField] [Range(0f, 1f)] private float m_pinchReleaseStrength = 0.35f;
 
+    // Pool of marker transforms under the spawn parent (child objects containing a TextMeshPro).
+    private readonly List<Transform> m_markerPool = new();
+
+    // Tracks only the marker transforms currently used for this session (by pinch order).
     private readonly List<Transform> m_runtimeTargets = new();
+
+    // Markers instantiated at runtime (so ClearRuntimeTargets can destroy them, while leaving pre-created pool children intact).
+    private readonly List<GameObject> m_instantiatedRuntimeMarkers = new();
+
     private bool m_wasPinching;
     private Transform m_thumbTip;
     private Transform m_middleTip;
+
+    private Transform GetMarkerParent()
+    {
+        return m_spawnParent != null ? m_spawnParent : transform;
+    }
+
+    private void Awake()
+    {
+        CacheMarkerPoolFromChildren();
+    }
+
+    private void CacheMarkerPoolFromChildren()
+    {
+        m_markerPool.Clear();
+
+        var parent = GetMarkerParent();
+        if (parent == null)
+            return;
+
+        // Reuse only direct children that look like markers (i.e., they contain a TextMeshPro somewhere).
+        for (int i = 0; i < parent.childCount; i++)
+        {
+            var child = parent.GetChild(i);
+            if (child == null)
+                continue;
+
+            var tmp = child.GetComponentInChildren<TextMeshPro>(true);
+            if (tmp != null)
+                m_markerPool.Add(child);
+        }
+    }
 
     private void Update()
     {
@@ -66,16 +105,44 @@ public class PinchTargetSpawner : MonoBehaviour
                 return;
             }
 
-            var parent = m_spawnParent != null ? m_spawnParent : transform;
-            var instance = Instantiate(m_targetPrefab, worldPos, Quaternion.identity, parent);
+            int markerIndex = m_runtimeTargets.Count;
 
-            if (m_enableLogging && m_logger != null)
+            // Reuse pre-created markers first. If we don't have enough, instantiate new ones.
+            Transform instance = null;
+            var markerParent = GetMarkerParent();
+            if (markerIndex < m_markerPool.Count)
             {
-                int siblingIndex = instance.transform.GetSiblingIndex();
-                m_logger.Log($"[PinchTargetSpawner] Created marker, sibling index under parent: {siblingIndex}");
+                instance = m_markerPool[markerIndex];
             }
 
-            m_runtimeTargets.Add(instance.transform);
+            if (instance == null)
+            {
+                var go = Instantiate(m_targetPrefab, markerParent);
+                instance = go.transform;
+                m_instantiatedRuntimeMarkers.Add(go);
+
+                // Add to pool so future pinches can reuse it.
+                while (m_markerPool.Count <= markerIndex)
+                    m_markerPool.Add(null);
+                m_markerPool[markerIndex] = instance;
+
+                if (m_enableLogging && m_logger != null)
+                {
+                    int siblingIndex = instance.GetSiblingIndex();
+                    m_logger.Log($"[PinchTargetSpawner] Created marker for markerIndex={markerIndex}, sibling index under parent: {siblingIndex}");
+                }
+            }
+
+            // Ensure marker stays active and moves to the pinch position.
+            instance.gameObject.SetActive(true);
+            instance.SetPositionAndRotation(worldPos, Quaternion.identity);
+
+            // Set TMP label to its 0-based marker index.
+            var tmp = instance.GetComponentInChildren<TextMeshPro>(true);
+            if (tmp != null)
+                tmp.text = markerIndex.ToString();
+
+            m_runtimeTargets.Add(instance);
         }
 
         if (!isPinching && pinch < m_pinchReleaseStrength)
@@ -99,12 +166,27 @@ public class PinchTargetSpawner : MonoBehaviour
     /// </summary>
     public void ClearRuntimeTargets()
     {
+        // Disable/release used pre-created pool markers.
         foreach (var t in m_runtimeTargets)
         {
-            if (t != null && t.gameObject != null)
+            if (t == null || t.gameObject == null)
+                continue;
+
+            bool isRuntimeInstantiated = m_instantiatedRuntimeMarkers.Contains(t.gameObject);
+            if (isRuntimeInstantiated)
+            {
                 Destroy(t.gameObject);
+            }
+            else
+            {
+                t.gameObject.SetActive(false);
+            }
         }
+
         m_runtimeTargets.Clear();
+
+        // Destroyed/cleared runtime-instantiated markers; reset tracking list.
+        m_instantiatedRuntimeMarkers.Clear();
     }
 
     private Vector3 GetPinchWorldPosition()

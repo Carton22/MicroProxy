@@ -27,8 +27,8 @@ public class CanvasRayIntersectionVisualizer : MonoBehaviour
     [Tooltip("Optional LineRenderer prefab used to draw lines from circles to their corresponding labels.")]
     [SerializeField] private LineRenderer m_linePrefab;
 
-    [Tooltip("Label manager used to resolve label RectTransforms for line endpoints.")]
-    [SerializeField] private ProxyLabelManager m_labelManager;
+    [Tooltip("Label managers used to resolve which proxy-set label is selected and which label is bound to each marker index.")]
+    [SerializeField] private List<ProxyLabelManager> m_labelManagers = new();
 
     [Header("Runtime")]
     private RectTransform m_circleInstance;
@@ -49,6 +49,37 @@ public class CanvasRayIntersectionVisualizer : MonoBehaviour
 
     private RectTransform[] m_markerInstances;
     private LineRenderer[] m_lineInstances;
+
+    private void Awake()
+    {
+        if (m_labelManagers == null)
+            m_labelManagers = new List<ProxyLabelManager>();
+
+        if (m_labelManagers.Count == 0)
+        {
+            // Fallback: include all label managers in the scene (including inactive).
+            var found = FindObjectsOfType<ProxyLabelManager>(true);
+            for (int i = 0; i < found.Length; i++)
+            {
+                var lm = found[i];
+                if (lm == null)
+                    continue;
+
+                bool exists = false;
+                for (int j = 0; j < m_labelManagers.Count; j++)
+                {
+                    if (m_labelManagers[j] == lm)
+                    {
+                        exists = true;
+                        break;
+                    }
+                }
+
+                if (!exists)
+                    m_labelManagers.Add(lm);
+            }
+        }
+    }
 
     private void Update()
     {
@@ -116,8 +147,6 @@ public class CanvasRayIntersectionVisualizer : MonoBehaviour
 
             if (m_markerInstances[i] != null)
             {
-                m_markerInstances[i].gameObject.SetActive(true);
-
                 var local = canvasTransform.InverseTransformPoint(hitWorld);
 
                 m_markerInstances[i].SetParent(canvasTransform, false);
@@ -130,6 +159,8 @@ public class CanvasRayIntersectionVisualizer : MonoBehaviour
                 bool isSelected = IsMarkerSelected(i);
                 ApplyCircleMaterial(m_markerInstances[i], isSelected);
                 ApplyCircleSize(m_markerInstances[i], isSelected);
+                // Only show circles for markers bound to the currently selected label.
+                m_markerInstances[i].gameObject.SetActive(isSelected);
             }
 
             // Draw line from circle to its corresponding label
@@ -256,7 +287,7 @@ public class CanvasRayIntersectionVisualizer : MonoBehaviour
 
     private void UpdateLineForMarker(int index, RectTransform canvasTransform)
     {
-        if (m_linePrefab == null || m_markerInstances == null || m_labelManager == null)
+        if (m_linePrefab == null || m_markerInstances == null || m_labelManagers == null || m_labelManagers.Count == 0)
             return;
 
         if (index < 0 || index >= m_markerInstances.Length)
@@ -270,18 +301,14 @@ public class CanvasRayIntersectionVisualizer : MonoBehaviour
             return;
         }
 
-        // Only draw a line for the marker whose label is currently selected.
-        if (!IsMarkerSelected(index))
+        // Resolve label associated with this marker index: it must be bound to the currently selected label
+        // in ANY proxy set.
+        if (!TryGetSelectedLabelRectForMarkerIndex(index, out var labelRect) || labelRect == null)
         {
             if (m_lineInstances != null && index < m_lineInstances.Length && m_lineInstances[index] != null)
                 m_lineInstances[index].gameObject.SetActive(false);
             return;
         }
-
-        // Resolve label associated with this marker index using LabelMarkerBinding on labels
-        var labelRect = m_labelManager.GetLabelRectTransformForMarkerIndex(index);
-        if (labelRect == null || !labelRect.gameObject.activeInHierarchy)
-            return;
 
         // Ensure line instance exists
         if (m_lineInstances[index] == null && m_linePrefab != null)
@@ -331,21 +358,43 @@ public class CanvasRayIntersectionVisualizer : MonoBehaviour
         line.SetPosition(2, labelPadded);
     }
 
-    private bool IsMarkerSelected(int markerIndex)
+    private bool IsMarkerSelected(int markerIndex) =>
+        TryGetSelectedLabelRectForMarkerIndex(markerIndex, out _);
+
+    private bool TryGetSelectedLabelRectForMarkerIndex(int markerIndex, out RectTransform selectedLabelRect)
     {
-        if (m_labelManager == null)
+        selectedLabelRect = null;
+
+        if (markerIndex < 0)
             return false;
 
-        int selectedIndex = m_labelManager.GetSelectedLabelIndex();
-        if (selectedIndex < 0)
+        if (m_labelManagers == null || m_labelManagers.Count == 0)
             return false;
 
-        var selectedLabel = m_labelManager.GetLabelRectTransform(selectedIndex);
-        if (selectedLabel == null)
-            return false;
+        // Marker is "selected" if it is bound to the currently selected label in ANY ProxyLabelManager.
+        for (int lmIndex = 0; lmIndex < m_labelManagers.Count; lmIndex++)
+        {
+            var lm = m_labelManagers[lmIndex];
+            if (lm == null)
+                continue;
 
-        var markerLabel = m_labelManager.GetLabelRectTransformForMarkerIndex(markerIndex);
-        return markerLabel != null && markerLabel == selectedLabel;
+            int selectedIndex = lm.GetSelectedLabelIndex();
+            if (selectedIndex < 0)
+                continue;
+
+            var selectedLabel = lm.GetLabelRectTransform(selectedIndex);
+            if (selectedLabel == null)
+                continue;
+
+            var markerLabel = lm.GetLabelRectTransformForMarkerIndex(markerIndex);
+            if (markerLabel != null && markerLabel == selectedLabel)
+            {
+                selectedLabelRect = selectedLabel;
+                return true;
+            }
+        }
+
+        return false;
     }
 
     private void ApplyCircleMaterial(RectTransform circle, bool selected)
