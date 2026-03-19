@@ -219,7 +219,7 @@ public class PinchTargetSpawner : MonoBehaviour
             if (m_thumbTip == null && bone.Id == OVRSkeleton.BoneId.Hand_ThumbTip)
                 m_thumbTip = bone.Transform;
 
-            if (m_middleTip == null && bone.Id == OVRSkeleton.BoneId.Hand_MiddleTip)
+            if (m_middleTip == null && bone.Id == OVRSkeleton.BoneId.Hand_IndexTip)
                 m_middleTip = bone.Transform;
 
             if (m_thumbTip != null && m_middleTip != null)
