@@ -17,6 +17,7 @@ GameObject:
   - component: {fileID: 4015155752309191152}
   - component: {fileID: 9098699202892683956}
   - component: {fileID: -2579346452747637868}
+  - component: {fileID: 5983480220058251615}
   m_Layer: 0
   m_Name: ProxyLabel
   m_TagString: Untagged
@@ -41,9 +42,9 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
-  m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 80, y: 22.47}
-  m_Pivot: {x: 0.5, y: 0.5}
+  m_AnchoredPosition: {x: 34.58069, y: -11.234985}
+  m_SizeDelta: {x: 74.5807, y: 31.7204}
+  m_Pivot: {x: 1, y: 0}
 --- !u!222 &7484216084306982808
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -64,7 +65,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_Material: {fileID: 2100000, guid: 97507d59c53e646799f56a1031eef6b7, type: 2}
+  m_Material: {fileID: 2100000, guid: b33f91875cac84d99b38d27d92e471f4, type: 2}
   m_Color: {r: 1, g: 1, b: 1, a: 0.5137255}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
@@ -203,6 +204,19 @@ MonoBehaviour:
   m_colorProperty: _Color
   m_normalColor: {r: 1, g: 1, b: 1, a: 1}
   m_selectedColor: {r: 1, g: 0, b: 0, a: 1}
+--- !u!114 &5983480220058251615
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4235160468344426946}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 56549cdaaf4d81e4387b02698fd3daa0, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  borderRadius: {x: 10, y: 10, z: 10, w: 10}
 --- !u!1 &6856314460656858343
 GameObject:
   m_ObjectHideFlags: 0
@@ -239,7 +253,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 2.1, y: -14.1}
+  m_AnchoredPosition: {x: 15.8, y: -14.3}
   m_SizeDelta: {x: 95.8759, y: 47.0971}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!23 &895752930558632877
@@ -340,7 +354,7 @@ MonoBehaviour:
   m_enableAutoSizing: 0
   m_fontSizeMin: 72
   m_fontSizeMax: 150
-  m_fontStyle: 1
+  m_fontStyle: 0
   m_HorizontalAlignment: 1
   m_VerticalAlignment: 256
   m_textAlignment: 65535
