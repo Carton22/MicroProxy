@@ -5095,6 +5095,10 @@ MonoBehaviour:
   - {fileID: 838558378}
   m_selectFirstOnShow: 1
   m_debugLog: 0
+  m_logger: {fileID: 0}
+  m_rightHand: {fileID: 1924298972}
+  m_pinchStrengthThreshold: 0.7
+  m_doubleTapMaxIntervalSeconds: 0.4
 --- !u!1 &870136038 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 4235160468344426946, guid: a9088ffdc24df41fba5fd6cb1eaf3ead, type: 3}
@@ -5536,6 +5540,10 @@ MonoBehaviour:
   - {fileID: 1886000777}
   m_selectFirstOnShow: 1
   m_debugLog: 0
+  m_logger: {fileID: 0}
+  m_rightHand: {fileID: 1924298972}
+  m_pinchStrengthThreshold: 0.7
+  m_doubleTapMaxIntervalSeconds: 0.4
 --- !u!1001 &934372671
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -6005,6 +6013,10 @@ MonoBehaviour:
   - {fileID: 1846479924}
   m_selectFirstOnShow: 1
   m_debugLog: 0
+  m_logger: {fileID: 0}
+  m_rightHand: {fileID: 1924298972}
+  m_pinchStrengthThreshold: 0.7
+  m_doubleTapMaxIntervalSeconds: 0.4
 --- !u!1001 &1052829064
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -6788,7 +6800,11 @@ MonoBehaviour:
   - {fileID: 1109226585}
   - {fileID: 1846479924}
   m_selectFirstOnShow: 1
-  m_debugLog: 0
+  m_debugLog: 1
+  m_logger: {fileID: 1561124091}
+  m_rightHand: {fileID: 1924298972}
+  m_pinchStrengthThreshold: 0.7
+  m_doubleTapMaxIntervalSeconds: 0.4
 --- !u!1 &1209851484
 GameObject:
   m_ObjectHideFlags: 0
@@ -8077,7 +8093,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ae4b5d70827bf4436b9dc03fa33b0eb0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_textTarget: {fileID: 1729798102}
+  m_textTarget: {fileID: 2145431615}
   m_showDebugLog: 1
 --- !u!1001 &1600931724
 PrefabInstance:
@@ -10146,7 +10162,11 @@ MonoBehaviour:
   - {fileID: 1632133443}
   - {fileID: 838558378}
   m_selectFirstOnShow: 1
-  m_debugLog: 0
+  m_debugLog: 1
+  m_logger: {fileID: 1561124091}
+  m_rightHand: {fileID: 1924298972}
+  m_pinchStrengthThreshold: 0.7
+  m_doubleTapMaxIntervalSeconds: 0.4
 --- !u!1001 &1783306832
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -10437,6 +10457,10 @@ MonoBehaviour:
   - {fileID: 400488250}
   m_selectFirstOnShow: 1
   m_debugLog: 0
+  m_logger: {fileID: 0}
+  m_rightHand: {fileID: 1924298972}
+  m_pinchStrengthThreshold: 0.7
+  m_doubleTapMaxIntervalSeconds: 0.4
 --- !u!1 &1831507684 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 4235160468344426946, guid: a9088ffdc24df41fba5fd6cb1eaf3ead, type: 3}
@@ -12066,6 +12090,10 @@ MonoBehaviour:
   - {fileID: 421155423}
   m_selectFirstOnShow: 1
   m_debugLog: 0
+  m_logger: {fileID: 0}
+  m_rightHand: {fileID: 1924298972}
+  m_pinchStrengthThreshold: 0.7
+  m_doubleTapMaxIntervalSeconds: 0.4
 --- !u!1001 &2112224214
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -12295,7 +12323,11 @@ MonoBehaviour:
   - {fileID: 421155423}
   - {fileID: 23524099}
   m_selectFirstOnShow: 1
-  m_debugLog: 0
+  m_debugLog: 1
+  m_logger: {fileID: 1561124091}
+  m_rightHand: {fileID: 1924298972}
+  m_pinchStrengthThreshold: 0.7
+  m_doubleTapMaxIntervalSeconds: 0.4
 --- !u!1001 &2139366418
 PrefabInstance:
   m_ObjectHideFlags: 0
