@@ -159,8 +159,8 @@ public class CanvasRayIntersectionVisualizer : MonoBehaviour
                 bool isSelected = IsMarkerSelected(i);
                 ApplyCircleMaterial(m_markerInstances[i], isSelected);
                 ApplyCircleSize(m_markerInstances[i], isSelected);
-                // Only show circles for markers bound to the currently selected label.
-                m_markerInstances[i].gameObject.SetActive(isSelected);
+                // Always show circles for markers that are raycasting/hit; selection only affects style and lines.
+                m_markerInstances[i].gameObject.SetActive(true);
             }
 
             // Draw line from circle to its corresponding label
