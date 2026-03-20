@@ -32,6 +32,7 @@ public class MiniCameraMarkerDraw : MonoBehaviour
     [SerializeField] private float m_circleSize = 12f;
 
     private RectTransform[] m_circleInstances;
+    private readonly List<Transform> m_markerTargetsBuffer = new();
 
     private void Update()
     {
@@ -155,9 +156,29 @@ public class MiniCameraMarkerDraw : MonoBehaviour
     private int GetActiveTargetCount(out IReadOnlyList<Transform> targetList)
     {
         targetList = null;
-        if (m_runtimeTargetSource == null || m_runtimeTargetSource.GetRuntimeTargetCount() == 0)
+        if (m_runtimeTargetSource == null)
             return 0;
+
+        // Prefer all marker children under MarkerParent so restored markers are included too.
+        var markerParent = m_runtimeTargetSource.GetMarkerParentTransform();
+        if (markerParent != null && markerParent.childCount > 0)
+        {
+            m_markerTargetsBuffer.Clear();
+            for (int i = 0; i < markerParent.childCount; i++)
+            {
+                var child = markerParent.GetChild(i);
+                if (child != null)
+                    m_markerTargetsBuffer.Add(child);
+            }
+
+            targetList = m_markerTargetsBuffer;
+            return m_markerTargetsBuffer.Count;
+        }
+
+        if (m_runtimeTargetSource.GetRuntimeTargetCount() == 0)
+            return 0;
+
         targetList = m_runtimeTargetSource.GetRuntimeTargets();
-        return targetList.Count;
+        return targetList != null ? targetList.Count : 0;
     }
 }

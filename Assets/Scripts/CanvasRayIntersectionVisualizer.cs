@@ -59,7 +59,7 @@ public class CanvasRayIntersectionVisualizer : MonoBehaviour
         if (m_labelManagers.Count == 0)
         {
             // Fallback: include all label managers in the scene (including inactive).
-            var found = FindObjectsByType<ProxyLabelManager>(FindObjectsInactive.Include, FindObjectsSortMode.None);
+            var found = FindObjectsByType<ProxyLabelManager>(true);
             for (int i = 0; i < found.Length; i++)
             {
                 var lm = found[i];

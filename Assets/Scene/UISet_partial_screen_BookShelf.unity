@@ -6123,7 +6123,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_pinchTargetSpawner: {fileID: 1942878147}
-  m_hideWorldMarkers: 0
+  m_hideWorldMarkers: 1
 --- !u!1001 &815475048
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -10011,7 +10011,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5191280226305392922, guid: 58eee23691c63485ba7ef961e1ceeb74, type: 3}
       propertyPath: m_Enabled
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 5191280226305392922, guid: 58eee23691c63485ba7ef961e1ceeb74, type: 3}
       propertyPath: m_cameraAccess
@@ -12466,7 +12466,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 1288145368}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 0}
-  m_Enabled: 0
+  m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: d8be86b360e3460ab4048e58e05bd601, type: 3}
   m_Name: 
