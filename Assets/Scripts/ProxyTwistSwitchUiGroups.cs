@@ -61,6 +61,13 @@ public class ProxyTwistSwitchUiGroups : MonoBehaviour
 
     private void OnStartPinchAndTwist()
     {
+        if (ProxySetDrillDownController.ShouldReserveTwistForDrillDown())
+        {
+            if (m_debugLog)
+                Debug.Log("[ProxyTwistSwitchUiGroups] Twist reserved for drill-down navigation.");
+            return;
+        }
+
         int count = m_groups.Count;
         if (count == 0)
             return;
@@ -184,4 +191,3 @@ public class ProxyTwistSwitchUiGroups : MonoBehaviour
             sel.Select();
     }
 }
-

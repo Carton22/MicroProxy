@@ -687,11 +687,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7191250308198253915, guid: a9088ffdc24df41fba5fd6cb1eaf3ead, type: 3}
       propertyPath: m_SizeDelta.x
-      value: 60
+      value: 100
       objectReference: {fileID: 0}
     - target: {fileID: 7191250308198253915, guid: a9088ffdc24df41fba5fd6cb1eaf3ead, type: 3}
       propertyPath: m_SizeDelta.y
-      value: 30
+      value: 50
       objectReference: {fileID: 0}
     - target: {fileID: 7191250308198253915, guid: a9088ffdc24df41fba5fd6cb1eaf3ead, type: 3}
       propertyPath: m_LocalPosition.x
@@ -723,7 +723,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7191250308198253915, guid: a9088ffdc24df41fba5fd6cb1eaf3ead, type: 3}
       propertyPath: m_AnchoredPosition.x
-      value: 30
+      value: 50
       objectReference: {fileID: 0}
     - target: {fileID: 7191250308198253915, guid: a9088ffdc24df41fba5fd6cb1eaf3ead, type: 3}
       propertyPath: m_AnchoredPosition.y
@@ -929,7 +929,7 @@ MonoBehaviour:
   m_ChildAlignment: 3
   m_StartCorner: 0
   m_StartAxis: 0
-  m_CellSize: {x: 60, y: 30}
+  m_CellSize: {x: 100, y: 50}
   m_Spacing: {x: 8, y: 8}
   m_Constraint: 1
   m_ConstraintCount: 1
@@ -2529,10 +2529,9 @@ MonoBehaviour:
   - {fileID: 838558378}
   - {fileID: 421155423}
   m_selectFirstOnShow: 1
+  m_twistEventSource: {fileID: 251487948}
+  m_positiveTwistDrillsDown: 1
   m_logger: {fileID: 1561124091}
-  m_rightHand: {fileID: 1924298972}
-  m_pinchStrengthThreshold: 0.7
-  m_doubleTapMaxIntervalSeconds: 0.4
 --- !u!1001 &392357092
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -3034,9 +3033,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ae00ed8fcdcb24372825e70a9987e4cf, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_labelManager: {fileID: 1272610422}
+  m_labelManager: {fileID: 0}
+  m_proxySetsRoot: {fileID: 269540402}
   m_twistEventSource: {fileID: 456180475}
-  twistPerStep: 0.05
+  twistPerStep: 0.08
   m_clearMultiSelectOnStart: 1
   m_debugLog: 0
 --- !u!1001 &472357246
@@ -3746,10 +3746,9 @@ MonoBehaviour:
   - {fileID: 153306082}
   - {fileID: 1165099136}
   m_selectFirstOnShow: 1
+  m_twistEventSource: {fileID: 251487948}
+  m_positiveTwistDrillsDown: 1
   m_logger: {fileID: 1561124091}
-  m_rightHand: {fileID: 1924298972}
-  m_pinchStrengthThreshold: 0.7
-  m_doubleTapMaxIntervalSeconds: 0.4
 --- !u!1001 &628386042
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -4959,10 +4958,9 @@ MonoBehaviour:
   - {fileID: 23524099}
   - {fileID: 1846479924}
   m_selectFirstOnShow: 1
+  m_twistEventSource: {fileID: 251487948}
+  m_positiveTwistDrillsDown: 1
   m_logger: {fileID: 1561124091}
-  m_rightHand: {fileID: 1924298972}
-  m_pinchStrengthThreshold: 0.7
-  m_doubleTapMaxIntervalSeconds: 0.4
 --- !u!1 &775361878
 GameObject:
   m_ObjectHideFlags: 0
@@ -5347,10 +5345,9 @@ MonoBehaviour:
   - {fileID: 1239170438}
   - {fileID: 838558378}
   m_selectFirstOnShow: 1
-  m_logger: {fileID: 0}
-  m_rightHand: {fileID: 1924298972}
-  m_pinchStrengthThreshold: 0.7
-  m_doubleTapMaxIntervalSeconds: 0.4
+  m_twistEventSource: {fileID: 251487948}
+  m_positiveTwistDrillsDown: 1
+  m_logger: {fileID: 1561124091}
 --- !u!1001 &861503032
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -5592,10 +5589,9 @@ MonoBehaviour:
   - {fileID: 1775201227}
   - {fileID: 236015877}
   m_selectFirstOnShow: 1
+  m_twistEventSource: {fileID: 251487948}
+  m_positiveTwistDrillsDown: 1
   m_logger: {fileID: 1561124091}
-  m_rightHand: {fileID: 1924298972}
-  m_pinchStrengthThreshold: 0.7
-  m_doubleTapMaxIntervalSeconds: 0.4
 --- !u!1 &870136038 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 4235160468344426946, guid: a9088ffdc24df41fba5fd6cb1eaf3ead, type: 3}
@@ -6036,10 +6032,9 @@ MonoBehaviour:
   m_childrenToEnable:
   - {fileID: 1886000777}
   m_selectFirstOnShow: 1
-  m_logger: {fileID: 0}
-  m_rightHand: {fileID: 1924298972}
-  m_pinchStrengthThreshold: 0.7
-  m_doubleTapMaxIntervalSeconds: 0.4
+  m_twistEventSource: {fileID: 251487948}
+  m_positiveTwistDrillsDown: 1
+  m_logger: {fileID: 1561124091}
 --- !u!1001 &934372671
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -6508,10 +6503,9 @@ MonoBehaviour:
   - {fileID: 1886000777}
   - {fileID: 1846479924}
   m_selectFirstOnShow: 1
-  m_logger: {fileID: 0}
-  m_rightHand: {fileID: 1924298972}
-  m_pinchStrengthThreshold: 0.7
-  m_doubleTapMaxIntervalSeconds: 0.4
+  m_twistEventSource: {fileID: 251487948}
+  m_positiveTwistDrillsDown: 1
+  m_logger: {fileID: 1561124091}
 --- !u!1001 &1052829064
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -7349,10 +7343,9 @@ MonoBehaviour:
   - {fileID: 603689869}
   - {fileID: 1756159387}
   m_selectFirstOnShow: 1
+  m_twistEventSource: {fileID: 251487948}
+  m_positiveTwistDrillsDown: 1
   m_logger: {fileID: 1561124091}
-  m_rightHand: {fileID: 1924298972}
-  m_pinchStrengthThreshold: 0.7
-  m_doubleTapMaxIntervalSeconds: 0.4
 --- !u!1 &1144808057
 GameObject:
   m_ObjectHideFlags: 0
@@ -7641,11 +7634,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7191250308198253915, guid: a9088ffdc24df41fba5fd6cb1eaf3ead, type: 3}
       propertyPath: m_SizeDelta.x
-      value: 60
+      value: 100
       objectReference: {fileID: 0}
     - target: {fileID: 7191250308198253915, guid: a9088ffdc24df41fba5fd6cb1eaf3ead, type: 3}
       propertyPath: m_SizeDelta.y
-      value: 30
+      value: 50
       objectReference: {fileID: 0}
     - target: {fileID: 7191250308198253915, guid: a9088ffdc24df41fba5fd6cb1eaf3ead, type: 3}
       propertyPath: m_LocalPosition.x
@@ -7677,11 +7670,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7191250308198253915, guid: a9088ffdc24df41fba5fd6cb1eaf3ead, type: 3}
       propertyPath: m_AnchoredPosition.x
-      value: 30
+      value: 50
       objectReference: {fileID: 0}
     - target: {fileID: 7191250308198253915, guid: a9088ffdc24df41fba5fd6cb1eaf3ead, type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: -338
+      value: -358
       objectReference: {fileID: 0}
     - target: {fileID: 7191250308198253915, guid: a9088ffdc24df41fba5fd6cb1eaf3ead, type: 3}
       propertyPath: m_LocalEulerAnglesHint.x
@@ -7727,10 +7720,9 @@ MonoBehaviour:
   - {fileID: 1109226585}
   - {fileID: 1846479924}
   m_selectFirstOnShow: 1
+  m_twistEventSource: {fileID: 251487948}
+  m_positiveTwistDrillsDown: 1
   m_logger: {fileID: 1561124091}
-  m_rightHand: {fileID: 1924298972}
-  m_pinchStrengthThreshold: 0.7
-  m_doubleTapMaxIntervalSeconds: 0.4
 --- !u!1 &1209851484
 GameObject:
   m_ObjectHideFlags: 0
@@ -10599,10 +10591,9 @@ MonoBehaviour:
   - {fileID: 507316294}
   - {fileID: 10819134}
   m_selectFirstOnShow: 1
+  m_twistEventSource: {fileID: 251487948}
+  m_positiveTwistDrillsDown: 1
   m_logger: {fileID: 1561124091}
-  m_rightHand: {fileID: 1924298972}
-  m_pinchStrengthThreshold: 0.7
-  m_doubleTapMaxIntervalSeconds: 0.4
 --- !u!1001 &1695723015
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -10843,10 +10834,9 @@ MonoBehaviour:
   - {fileID: 1239170438}
   - {fileID: 1353770945}
   m_selectFirstOnShow: 1
+  m_twistEventSource: {fileID: 251487948}
+  m_positiveTwistDrillsDown: 1
   m_logger: {fileID: 1561124091}
-  m_rightHand: {fileID: 1924298972}
-  m_pinchStrengthThreshold: 0.7
-  m_doubleTapMaxIntervalSeconds: 0.4
 --- !u!114 &1711459072 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 2184060436030677583, guid: 927c1b782bb796b4b9b433d533cbccca, type: 3}
@@ -11029,10 +11019,9 @@ MonoBehaviour:
   - {fileID: 1410576277}
   - {fileID: 1109226585}
   m_selectFirstOnShow: 1
+  m_twistEventSource: {fileID: 251487948}
+  m_positiveTwistDrillsDown: 1
   m_logger: {fileID: 1561124091}
-  m_rightHand: {fileID: 1924298972}
-  m_pinchStrengthThreshold: 0.7
-  m_doubleTapMaxIntervalSeconds: 0.4
 --- !u!1001 &1721288808
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -11916,10 +11905,9 @@ MonoBehaviour:
   - {fileID: 23524099}
   - {fileID: 1846479924}
   m_selectFirstOnShow: 1
+  m_twistEventSource: {fileID: 251487948}
+  m_positiveTwistDrillsDown: 1
   m_logger: {fileID: 1561124091}
-  m_rightHand: {fileID: 1924298972}
-  m_pinchStrengthThreshold: 0.7
-  m_doubleTapMaxIntervalSeconds: 0.4
 --- !u!1001 &1757337950
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -12161,10 +12149,9 @@ MonoBehaviour:
   - {fileID: 389259087}
   - {fileID: 765265547}
   m_selectFirstOnShow: 1
+  m_twistEventSource: {fileID: 251487948}
+  m_positiveTwistDrillsDown: 1
   m_logger: {fileID: 1561124091}
-  m_rightHand: {fileID: 1924298972}
-  m_pinchStrengthThreshold: 0.7
-  m_doubleTapMaxIntervalSeconds: 0.4
 --- !u!1 &1774586779
 GameObject:
   m_ObjectHideFlags: 0
@@ -12243,10 +12230,9 @@ MonoBehaviour:
   - {fileID: 1632133443}
   - {fileID: 838558378}
   m_selectFirstOnShow: 1
+  m_twistEventSource: {fileID: 251487948}
+  m_positiveTwistDrillsDown: 1
   m_logger: {fileID: 1561124091}
-  m_rightHand: {fileID: 1924298972}
-  m_pinchStrengthThreshold: 0.7
-  m_doubleTapMaxIntervalSeconds: 0.4
 --- !u!1001 &1783306832
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -12536,10 +12522,9 @@ MonoBehaviour:
   - {fileID: 1165099136}
   - {fileID: 400488250}
   m_selectFirstOnShow: 1
-  m_logger: {fileID: 0}
-  m_rightHand: {fileID: 1924298972}
-  m_pinchStrengthThreshold: 0.7
-  m_doubleTapMaxIntervalSeconds: 0.4
+  m_twistEventSource: {fileID: 251487948}
+  m_positiveTwistDrillsDown: 1
+  m_logger: {fileID: 1561124091}
 --- !u!1 &1831507684 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 4235160468344426946, guid: a9088ffdc24df41fba5fd6cb1eaf3ead, type: 3}
@@ -13456,7 +13441,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!114 &1964644602
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -14296,10 +14281,9 @@ MonoBehaviour:
   - {fileID: 1632133443}
   - {fileID: 421155423}
   m_selectFirstOnShow: 1
-  m_logger: {fileID: 0}
-  m_rightHand: {fileID: 1924298972}
-  m_pinchStrengthThreshold: 0.7
-  m_doubleTapMaxIntervalSeconds: 0.4
+  m_twistEventSource: {fileID: 251487948}
+  m_positiveTwistDrillsDown: 1
+  m_logger: {fileID: 1561124091}
 --- !u!1001 &2112224214
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -14434,11 +14418,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7191250308198253915, guid: a9088ffdc24df41fba5fd6cb1eaf3ead, type: 3}
       propertyPath: m_SizeDelta.x
-      value: 60
+      value: 100
       objectReference: {fileID: 0}
     - target: {fileID: 7191250308198253915, guid: a9088ffdc24df41fba5fd6cb1eaf3ead, type: 3}
       propertyPath: m_SizeDelta.y
-      value: 30
+      value: 50
       objectReference: {fileID: 0}
     - target: {fileID: 7191250308198253915, guid: a9088ffdc24df41fba5fd6cb1eaf3ead, type: 3}
       propertyPath: m_LocalPosition.x
@@ -14470,11 +14454,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7191250308198253915, guid: a9088ffdc24df41fba5fd6cb1eaf3ead, type: 3}
       propertyPath: m_AnchoredPosition.x
-      value: 30
+      value: 50
       objectReference: {fileID: 0}
     - target: {fileID: 7191250308198253915, guid: a9088ffdc24df41fba5fd6cb1eaf3ead, type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: -262
+      value: -242
       objectReference: {fileID: 0}
     - target: {fileID: 7191250308198253915, guid: a9088ffdc24df41fba5fd6cb1eaf3ead, type: 3}
       propertyPath: m_LocalEulerAnglesHint.x
@@ -14529,10 +14513,9 @@ MonoBehaviour:
   - {fileID: 421155423}
   - {fileID: 23524099}
   m_selectFirstOnShow: 1
+  m_twistEventSource: {fileID: 251487948}
+  m_positiveTwistDrillsDown: 1
   m_logger: {fileID: 1561124091}
-  m_rightHand: {fileID: 1924298972}
-  m_pinchStrengthThreshold: 0.7
-  m_doubleTapMaxIntervalSeconds: 0.4
 --- !u!1001 &2139366418
 PrefabInstance:
   m_ObjectHideFlags: 0

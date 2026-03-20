@@ -51,6 +51,13 @@ public class ProxyTwistMultiSelect : MonoBehaviour
 
     private void OnStartPinchAndTwist()
     {
+        if (ProxySetDrillDownController.ShouldReserveTwistForDrillDown())
+        {
+            if (m_debugLog)
+                Debug.Log("[ProxyTwistMultiSelect] Twist reserved for drill-down navigation.");
+            return;
+        }
+
         if (m_proxyCreator == null) return;
         m_anchorIndex = m_proxyCreator.GetSelectedLabelIndex();
         if (m_anchorIndex < 0)

@@ -34,31 +34,85 @@ public class ProxySetDrillDownController : MonoBehaviour, IPointerClickHandler, 
     [Tooltip("If true, selects the first Selectable under the enabled children.")]
     [SerializeField] private bool m_selectFirstOnShow = true;
 
+    [Header("Left-hand pinch twist")]
+    [Tooltip("Optional left-hand twist source. When assigned, twisting one way drills down and the opposite way returns to parent.")]
+    [SerializeField] private PinchAndTwistEventSource m_twistEventSource;
+    [Tooltip("If true, positive twist drills down and negative twist returns to parent. If false, the mapping is reversed.")]
+    [SerializeField] private bool m_positiveTwistDrillsDown = true;
+    [Range(0.05f, 0.75f)]
+    [Tooltip("Minimum absolute normalized twist required before changing between parent and child.")]
+    [SerializeField] private static float m_twistThresholdNormalized = 0.08f;
+
     [Header("Debug")]
     [Tooltip("If true, logs when a drill-down switch happens.")]
     [SerializeField] static private bool m_debugLog = false;
     [Tooltip("Optional shared logger used for debug output. Falls back to Debug.Log if not assigned.")]
     [SerializeField] private SharedLogger m_logger;
-
-    [Header("Right-hand double tap (back)")]
-    [Tooltip("Optional right hand. If assigned, a thumb+middle double tap returns from child view to parent view.")]
-    [SerializeField] private OVRHand m_rightHand;
-    [Range(0f, 1f)]
-    [SerializeField] private float m_pinchStrengthThreshold = 0.7f;
-    [SerializeField] private float m_doubleTapMaxIntervalSeconds = 0.4f;
     private bool m_registeredAsChildView;
+    private bool m_subscribedToTwistEvents;
+    private bool m_inTwistGesture;
+    private bool m_twistConsumed;
+
+    public static bool ShouldReserveTwistForDrillDown()
+    {
+        if (IsAnyDrillDownChildViewActive)
+            return true;
+
+        return TryGetSelectedDrillDownController(out _);
+    }
+
+    public static bool ShouldReserveTwistForDrillDown(PinchAndTwistEventSource twistEventSource)
+    {
+        if (twistEventSource == null)
+            return ShouldReserveTwistForDrillDown();
+
+        if (TryGetSelectedDrillDownController(out var selectedController) &&
+            selectedController.IsUsingTwistEventSource(twistEventSource))
+        {
+            return true;
+        }
+
+        if (!IsAnyDrillDownChildViewActive)
+            return false;
+
+        var controllers = FindObjectsByType<ProxySetDrillDownController>(FindObjectsInactive.Include, FindObjectsSortMode.None);
+        for (int i = 0; i < controllers.Length; i++)
+        {
+            var controller = controllers[i];
+            if (controller == null)
+                continue;
+
+            if (controller.IsInChildView() && controller.IsUsingTwistEventSource(twistEventSource))
+                return true;
+        }
+
+        return false;
+    }
 
     public void OnPointerClick(PointerEventData eventData) => HandlePress();
 
     public void OnSubmit(BaseEventData eventData) => HandlePress();
 
+    private void Reset()
+    {
+        AssignDefaultTwistEventSourceIfNeeded();
+    }
+
+    private void OnValidate()
+    {
+        AssignDefaultTwistEventSourceIfNeeded();
+    }
+
     private void OnEnable()
     {
+        ResolveTwistEventSource();
+        SubscribeToTwistEvents();
         UpdateGlobalDrillDownState(IsInChildView());
     }
 
     private void OnDisable()
     {
+        UnsubscribeFromTwistEvents();
         UpdateGlobalDrillDownState(false);
     }
 
@@ -77,8 +131,8 @@ public class ProxySetDrillDownController : MonoBehaviour, IPointerClickHandler, 
             m_childrenRootToShow.SetActive(true);
 
         // Important: this component may get disabled with the parent root.
-        // Install/update a relay on children root so double-tap back keeps working in child view.
-        ConfigureBackRelay();
+        // Install/update a relay on children root so gesture-based return keeps working in child view.
+        ConfigureChildViewRelay();
 
         // Inside the children root:
         // - disable all direct child containers
@@ -168,7 +222,7 @@ public class ProxySetDrillDownController : MonoBehaviour, IPointerClickHandler, 
         }
 
         if (m_debugLog)
-            LogDebug($"[ProxySetDrillDownController] Double tap back to parent from {gameObject.name}");
+            LogDebug($"[ProxySetDrillDownController] Return to parent from {gameObject.name}");
 
         // Restore focus to the label node this controller is attached to.
         if (EventSystem.current != null && gameObject.activeInHierarchy)
@@ -184,6 +238,154 @@ public class ProxySetDrillDownController : MonoBehaviour, IPointerClickHandler, 
         UpdateGlobalDrillDownState(IsInChildView());
     }
 
+    private static bool TryGetSelectedDrillDownController(out ProxySetDrillDownController controller)
+    {
+        controller = null;
+
+        var selected = EventSystem.current != null ? EventSystem.current.currentSelectedGameObject : null;
+        if (selected == null)
+            return false;
+
+        controller = selected.GetComponentInParent<ProxySetDrillDownController>();
+        if (controller == null)
+            return false;
+
+        if (!controller.CanDrillDownFromSelection(selected))
+        {
+            controller = null;
+            return false;
+        }
+
+        return true;
+    }
+
+    private bool CanDrillDownFromCurrentSelection()
+    {
+        if (IsInChildView())
+            return false;
+
+        var selected = EventSystem.current != null ? EventSystem.current.currentSelectedGameObject : null;
+        return CanDrillDownFromSelection(selected);
+    }
+
+    private bool CanDrillDownFromSelection(GameObject selected)
+    {
+        if (!isActiveAndEnabled)
+            return false;
+
+        if (m_childrenToEnable == null || m_childrenToEnable.Count == 0)
+            return false;
+
+        if (selected == null)
+            return false;
+
+        return selected == gameObject || selected.transform.IsChildOf(transform);
+    }
+
+    private bool IsUsingTwistEventSource(PinchAndTwistEventSource twistEventSource)
+    {
+        return m_twistEventSource == twistEventSource;
+    }
+
+    private void ResolveTwistEventSource()
+    {
+        AssignDefaultTwistEventSourceIfNeeded();
+    }
+
+    private void AssignDefaultTwistEventSourceIfNeeded()
+    {
+        if (m_twistEventSource != null)
+            return;
+
+        m_twistEventSource = GetComponent<PinchAndTwistEventSource>();
+        if (m_twistEventSource != null)
+            return;
+
+        m_twistEventSource = FindPreferredLeftTwistEventSource();
+    }
+
+    private static PinchAndTwistEventSource FindPreferredLeftTwistEventSource()
+    {
+        var sources = FindObjectsByType<PinchAndTwistEventSource>(FindObjectsInactive.Exclude, FindObjectsSortMode.None);
+        PinchAndTwistEventSource fallback = null;
+
+        for (int i = 0; i < sources.Length; i++)
+        {
+            var source = sources[i];
+            if (source == null)
+                continue;
+
+            if (fallback == null)
+                fallback = source;
+
+            string sourceName = source.gameObject.name;
+            if (!string.IsNullOrEmpty(sourceName) &&
+                sourceName.IndexOf("left", System.StringComparison.OrdinalIgnoreCase) >= 0)
+            {
+                return source;
+            }
+        }
+
+        return fallback;
+    }
+
+    private void SubscribeToTwistEvents()
+    {
+        if (m_twistEventSource == null || m_subscribedToTwistEvents)
+            return;
+
+        m_twistEventSource.OnStartPinchAndTwist.AddListener(OnStartPinchAndTwist);
+        m_twistEventSource.OnPinchAndTwist.AddListener(OnPinchAndTwist);
+        m_twistEventSource.OnEndPinchAndTwist.AddListener(OnEndPinchAndTwist);
+        m_subscribedToTwistEvents = true;
+    }
+
+    private void UnsubscribeFromTwistEvents()
+    {
+        if (m_twistEventSource == null || !m_subscribedToTwistEvents)
+            return;
+
+        m_twistEventSource.OnStartPinchAndTwist.RemoveListener(OnStartPinchAndTwist);
+        m_twistEventSource.OnPinchAndTwist.RemoveListener(OnPinchAndTwist);
+        m_twistEventSource.OnEndPinchAndTwist.RemoveListener(OnEndPinchAndTwist);
+        m_subscribedToTwistEvents = false;
+        ResetTwistGesture();
+    }
+
+    private void OnStartPinchAndTwist()
+    {
+        if (!CanDrillDownFromCurrentSelection())
+            return;
+
+        m_inTwistGesture = true;
+        m_twistConsumed = false;
+        LogDebug($"[ProxySetDrillDownController] Twist started for drill-down on {gameObject.name}.");
+    }
+
+    private void OnPinchAndTwist(float signedNormalized)
+    {
+        if (!m_inTwistGesture || m_twistConsumed)
+            return;
+
+        if (!IsTwistTowardChild(signedNormalized))
+            return;
+
+        m_twistConsumed = true;
+        LogDebug($"[ProxySetDrillDownController] Twist -> child view on {gameObject.name} ({signedNormalized:F2}).");
+        HandlePress();
+    }
+
+    private void OnEndPinchAndTwist()
+    {
+        ResetTwistGesture();
+    }
+
+    private void ResetTwistGesture()
+    {
+        m_inTwistGesture = false;
+        m_twistConsumed = false;
+    }
+
     private void LogDebug(string message)
     {
         if (!m_debugLog)
@@ -195,97 +397,132 @@ public class ProxySetDrillDownController : MonoBehaviour, IPointerClickHandler, 
             Debug.Log(message);
     }
 
-    private void ConfigureBackRelay()
+    private bool IsTwistTowardChild(float signedNormalized)
+    {
+        if (Mathf.Abs(signedNormalized) < m_twistThresholdNormalized)
+            return false;
+
+        return m_positiveTwistDrillsDown ? signedNormalized > 0f : signedNormalized < 0f;
+    }
+
+    private bool IsTwistTowardParent(float signedNormalized)
+    {
+        if (Mathf.Abs(signedNormalized) < m_twistThresholdNormalized)
+            return false;
+
+        return m_positiveTwistDrillsDown ? signedNormalized < 0f : signedNormalized > 0f;
+    }
+
+    private void ConfigureChildViewRelay()
     {
         if (m_childrenRootToShow == null)
             return;
 
-        var relay = m_childrenRootToShow.GetComponent<BackGestureRelay>();
+        var relay = m_childrenRootToShow.GetComponent<ChildViewGestureRelay>();
         if (relay == null)
-            relay = m_childrenRootToShow.AddComponent<BackGestureRelay>();
+            relay = m_childrenRootToShow.AddComponent<ChildViewGestureRelay>();
 
         relay.Configure(
             this,
-            m_rightHand,
-            m_pinchStrengthThreshold,
-            m_doubleTapMaxIntervalSeconds,
+            m_twistEventSource,
             m_debugLog,
             m_logger
         );
     }
 
-    private sealed class BackGestureRelay : MonoBehaviour
+    private sealed class ChildViewGestureRelay : MonoBehaviour
     {
         private ProxySetDrillDownController m_owner;
-        private OVRHand m_rightHand;
-        private float m_pinchStrengthThreshold;
-        private float m_doubleTapMaxIntervalSeconds;
+        private PinchAndTwistEventSource m_twistEventSource;
         private bool m_debugLog;
         private SharedLogger m_logger;
-
-        private bool m_isPinching;
-        private float m_lastTapTime = -1f;
+        private bool m_subscribedToTwistEvents;
+        private bool m_inTwistGesture;
+        private bool m_twistConsumed;
 
         public void Configure(
             ProxySetDrillDownController owner,
-            OVRHand rightHand,
-            float pinchStrengthThreshold,
-            float doubleTapMaxIntervalSeconds,
+            PinchAndTwistEventSource twistEventSource,
             bool debugLog,
             SharedLogger logger)
         {
             m_owner = owner;
-            m_rightHand = rightHand;
-            m_pinchStrengthThreshold = pinchStrengthThreshold;
-            m_doubleTapMaxIntervalSeconds = doubleTapMaxIntervalSeconds;
+            m_twistEventSource = twistEventSource;
             m_debugLog = debugLog;
             m_logger = logger;
+            RefreshTwistSubscriptions();
         }
 
-        private void Update()
+        private void OnEnable()
+        {
+            RefreshTwistSubscriptions();
+        }
+
+        private void OnDisable()
+        {
+            RemoveTwistSubscriptions();
+            ResetTwistGesture();
+        }
+
+        private void RefreshTwistSubscriptions()
+        {
+            RemoveTwistSubscriptions();
+
+            if (!isActiveAndEnabled || m_twistEventSource == null)
+                return;
+
+            m_twistEventSource.OnStartPinchAndTwist.AddListener(OnStartPinchAndTwist);
+            m_twistEventSource.OnPinchAndTwist.AddListener(OnPinchAndTwist);
+            m_twistEventSource.OnEndPinchAndTwist.AddListener(OnEndPinchAndTwist);
+            m_subscribedToTwistEvents = true;
+        }
+
+        private void RemoveTwistSubscriptions()
+        {
+            if (m_twistEventSource == null || !m_subscribedToTwistEvents)
+                return;
+
+            m_twistEventSource.OnStartPinchAndTwist.RemoveListener(OnStartPinchAndTwist);
+            m_twistEventSource.OnPinchAndTwist.RemoveListener(OnPinchAndTwist);
+            m_twistEventSource.OnEndPinchAndTwist.RemoveListener(OnEndPinchAndTwist);
+            m_subscribedToTwistEvents = false;
+        }
+
+        private void OnStartPinchAndTwist()
         {
             if (m_owner == null || !m_owner.IsInChildView())
                 return;
 
-            if (m_rightHand == null)
-            {
-                LogDebug("[ProxySetDrillDownController] Back relay: m_rightHand is null.");
+            m_inTwistGesture = true;
+            m_twistConsumed = false;
+            LogDebug($"[ProxySetDrillDownController] Twist started for parent return on {m_owner.gameObject.name}.");
+        }
+
+        private void OnPinchAndTwist(float signedNormalized)
+        {
+            if (m_owner == null || !m_owner.IsInChildView())
                 return;
-            }
 
-            if (!m_rightHand.IsDataValid)
-            {
-                m_isPinching = false;
-                LogDebug("[ProxySetDrillDownController] Back relay: right hand data invalid.");
+            if (!m_inTwistGesture || m_twistConsumed)
                 return;
-            }
 
-            float pinch = m_rightHand.GetFingerPinchStrength(OVRHand.HandFinger.Middle);
-            bool pinchDown = pinch >= m_pinchStrengthThreshold;
+            if (!m_owner.IsTwistTowardParent(signedNormalized))
+                return;
 
-            if (pinchDown)
-            {
-                if (!m_isPinching)
-                {
-                    m_isPinching = true;
-                    float now = Time.time;
-                    if (m_lastTapTime >= 0f && (now - m_lastTapTime) <= m_doubleTapMaxIntervalSeconds)
-                    {
-                        m_lastTapTime = -1f;
-                        LogDebug("[ProxySetDrillDownController] Back relay: double tap detected.");
-                        m_owner.ReturnToParentView();
-                    }
-                    else
-                    {
-                        m_lastTapTime = now;
-                        LogDebug("[ProxySetDrillDownController] Back relay: first tap recorded.");
-                    }
-                }
-            }
-            else
-            {
-                m_isPinching = false;
-            }
+            m_twistConsumed = true;
+            LogDebug($"[ProxySetDrillDownController] Twist -> parent view from {m_owner.gameObject.name} ({signedNormalized:F2}).");
+            m_owner.ReturnToParentView();
+        }
+
+        private void OnEndPinchAndTwist()
+        {
+            ResetTwistGesture();
+        }
+
+        private void ResetTwistGesture()
+        {
+            m_inTwistGesture = false;
+            m_twistConsumed = false;
         }
 
         private void LogDebug(string message)
@@ -332,4 +569,3 @@ public class ProxySetDrillDownController : MonoBehaviour, IPointerClickHandler, 
         m_registeredAsChildView = false;
     }
 }
-
