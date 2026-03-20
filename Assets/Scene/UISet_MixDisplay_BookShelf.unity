@@ -1548,7 +1548,7 @@ MonoBehaviour:
   m_CellSize: {x: 80, y: 35}
   m_Spacing: {x: 8, y: 8}
   m_Constraint: 1
-  m_ConstraintCount: 2
+  m_ConstraintCount: 1
 --- !u!114 &243943087
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1619,7 +1619,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 243943084}
-  m_Enabled: 0
+  m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 1382c1e499c6f4bae9ea89e2e0570cc8, type: 3}
   m_Name: 
@@ -1628,9 +1628,22 @@ MonoBehaviour:
   m_viewport: {fileID: 0}
   m_content: {fileID: 243943085}
   m_gridLayout: {fileID: 243943086}
-  m_visibleRowCount: 10
+  m_visibleRowCount: 5
   m_centerSelectedLabel: 1
   m_clampToContentBounds: 1
+  m_scrollSmoothTime: 0.12
+  m_visualLerpSpeed: 12
+  m_focusScale: 1.08
+  m_edgeScale: 0.84
+  m_hiddenScale: 0.62
+  m_sideBend: 24
+  m_rowBend: 14
+  m_focusAnchorY: 0
+  m_edgeAlpha: 0.4
+  m_hiddenAlpha: 0
+  m_disableRaycastsForHiddenItems: 1
+  m_hideLabelsCompletelyOutsideWindow: 1
+  m_hardCullAlphaThreshold: 0.02
 --- !u!1 &251487946
 GameObject:
   m_ObjectHideFlags: 0
@@ -3033,11 +3046,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ae00ed8fcdcb24372825e70a9987e4cf, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_labelManager: {fileID: 0}
   m_proxySetsRoot: {fileID: 269540402}
   m_twistEventSource: {fileID: 456180475}
   twistPerStep: 0.08
-  m_clearMultiSelectOnStart: 1
   m_debugLog: 0
 --- !u!1001 &472357246
 PrefabInstance:
