@@ -219,6 +219,7 @@ public class UINavigator : MonoBehaviour
     bool TrySwitchToPreviousProxySet()
     {
         if (m_labelManager == null) return false;
+        if (!IsSelectionInsideActiveManagedProxySet()) return false;
         if (!TryGetSelectedColumnInfo(out int col, out _) || col != 0) return false;
 
         if (!m_labelManager.TrySwitchToPreviousLabelsParent())
@@ -237,6 +238,7 @@ public class UINavigator : MonoBehaviour
     bool TrySwitchToNextProxySet()
     {
         if (m_labelManager == null) return false;
+        if (!IsSelectionInsideActiveManagedProxySet()) return false;
         if (!TryGetSelectedColumnInfo(out int col, out int columnCount) || col != columnCount - 1) return false;
 
         if (!m_labelManager.TrySwitchToNextLabelsParent())
@@ -253,5 +255,25 @@ public class UINavigator : MonoBehaviour
         if (root == null) return null;
         var sel = root.GetComponentInChildren<Selectable>(false);
         return sel != null ? sel.gameObject : null;
+    }
+
+    /// <summary>
+    /// Returns true only when the current EventSystem selection is inside
+    /// the active labels parent managed by ProxyLabelManager.
+    /// </summary>
+    bool IsSelectionInsideActiveManagedProxySet()
+    {
+        if (m_labelManager == null || EventSystem.current == null)
+            return false;
+
+        var activeParent = m_labelManager.GetActiveLabelsParent();
+        if (activeParent == null)
+            return false;
+
+        var selected = EventSystem.current.currentSelectedGameObject;
+        if (selected == null)
+            return false;
+
+        return selected == activeParent.gameObject || selected.transform.IsChildOf(activeParent);
     }
 }
