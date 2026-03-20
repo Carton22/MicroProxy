@@ -5,6 +5,7 @@ using Meta.XR.Samples;
 using PassthroughCameraSamples.CameraToWorld;
 using UnityEngine;
 using UnityEngine.Assertions;
+using UnityEngine.UI;
 
 public class MyCameraToWorldManager : MonoBehaviour
 {
@@ -17,11 +18,13 @@ public class MyCameraToWorldManager : MonoBehaviour
         [Tooltip("If true, the canvas displays the live passthrough. If false, the canvas is used for ray-casting only (e.g. void canvas).")]
         [SerializeField] private bool m_streamCameraToCanvas = true;
 
+        private Vector2Int m_appliedResolution;
+
         /// <summary>
         /// RectTransform to use as the parent for 2D bounding boxes so they align with the passthrough image on this canvas.
         /// Used by ScreenSpaceBoundingBoxDrawer when configured to draw on this canvas.
         /// </summary>
-        public RectTransform BoundingBoxOverlayRect => m_cameraCanvas != null ? m_cameraCanvas.GetComponent<RectTransform>() : null;
+        public RectTransform BoundingBoxOverlayRect => GetOverlayRectTransform();
 
         private IEnumerator Start()
         {
@@ -39,14 +42,31 @@ public class MyCameraToWorldManager : MonoBehaviour
                 yield return null;
             }
 
-            ScaleCameraCanvas();
+            RefreshCanvasGeometry(force: true);
             if (m_streamCameraToCanvas && m_cameraCanvas != null)
                 m_cameraCanvas.ResumeStreamingFromCamera();
         }
 
         private void Update()
         {
+            RefreshCanvasGeometry();
             UpdateMarkerPoses();
+        }
+
+        private void RefreshCanvasGeometry(bool force = false)
+        {
+            if (m_cameraCanvas == null || m_cameraAccess == null || !m_cameraAccess.IsPlaying)
+                return;
+
+            var currentResolution = m_cameraAccess.CurrentResolution;
+            if (currentResolution.x <= 0 || currentResolution.y <= 0)
+                return;
+
+            if (!force && currentResolution == m_appliedResolution)
+                return;
+
+            ScaleCameraCanvas();
+            m_appliedResolution = currentResolution;
         }
 
         /// <summary>
@@ -54,14 +74,46 @@ public class MyCameraToWorldManager : MonoBehaviour
         /// </summary>
         private void ScaleCameraCanvas()
         {
-            var cameraCanvasRectTransform = m_cameraCanvas.GetComponentInChildren<RectTransform>();
+            var cameraCanvasRectTransform = GetCanvasRootRectTransform();
+            if (cameraCanvasRectTransform == null)
+                return;
+
+            var currentResolution = m_cameraAccess.CurrentResolution;
+            if (currentResolution.x > 0 && currentResolution.y > 0)
+            {
+                var resolutionSize = new Vector2(currentResolution.x, currentResolution.y);
+                cameraCanvasRectTransform.sizeDelta = resolutionSize;
+
+                var overlayRectTransform = GetOverlayRectTransform();
+                if (overlayRectTransform != null && overlayRectTransform != cameraCanvasRectTransform)
+                    overlayRectTransform.sizeDelta = resolutionSize;
+            }
+
             var leftSidePointInCamera = m_cameraAccess.ViewportPointToRay(new Vector2(0f, 0.5f));
             var rightSidePointInCamera = m_cameraAccess.ViewportPointToRay(new Vector2(1f, 0.5f));
             var horizontalFoVDegrees = Vector3.Angle(leftSidePointInCamera.direction, rightSidePointInCamera.direction);
             var horizontalFoVRadians = horizontalFoVDegrees / 180 * Math.PI;
             var newCanvasWidthInMeters = 2 * m_canvasDistance * Math.Tan(horizontalFoVRadians / 2);
-            var localScale = (float)(newCanvasWidthInMeters / cameraCanvasRectTransform.sizeDelta.x);
+            var widthReference = Mathf.Max(1f, cameraCanvasRectTransform.sizeDelta.x);
+            var localScale = (float)(newCanvasWidthInMeters / widthReference);
             cameraCanvasRectTransform.localScale = new Vector3(localScale, localScale, localScale);
+        }
+
+        private RectTransform GetCanvasRootRectTransform()
+        {
+            return m_cameraCanvas != null ? m_cameraCanvas.GetComponent<RectTransform>() : null;
+        }
+
+        private RectTransform GetOverlayRectTransform()
+        {
+            if (m_cameraCanvas == null)
+                return null;
+
+            var rawImage = m_cameraCanvas.GetComponentInChildren<RawImage>(true);
+            if (rawImage != null)
+                return rawImage.rectTransform;
+
+            return GetCanvasRootRectTransform();
         }
 
         /// <summary>
