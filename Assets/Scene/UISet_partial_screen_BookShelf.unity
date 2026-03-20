@@ -3599,7 +3599,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_proxySetsRoot: {fileID: 464910814}
   m_miniCameraRect: {fileID: 1398737964}
-  m_leftGap: 0.005
+  m_leftGap: 0
   m_verticalOffset: 0
   m_keepAlignedContinuously: 1
   m_startupRefreshFrames: 6

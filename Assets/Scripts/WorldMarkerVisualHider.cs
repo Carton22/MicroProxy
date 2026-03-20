@@ -24,23 +24,47 @@ public class WorldMarkerVisualHider : MonoBehaviour
         m_hideWorldMarkers = hide;
     }
 
+    private void OnEnable()
+    {
+        ApplyVisibility();
+    }
+
     private void LateUpdate()
+    {
+        ApplyVisibility();
+    }
+
+    private void ApplyVisibility()
     {
         if (m_pinchTargetSpawner == null)
             return;
+
+        bool visible = !m_hideWorldMarkers;
+        var markerParent = m_pinchTargetSpawner.GetMarkerParentTransform();
+        if (markerParent != null && markerParent.childCount > 0)
+        {
+            for (int i = 0; i < markerParent.childCount; i++)
+            {
+                var child = markerParent.GetChild(i);
+                if (child == null)
+                    continue;
+
+                SetMarkerVisualsVisible(child.gameObject, visible);
+            }
+            return;
+        }
 
         IReadOnlyList<Transform> targets = m_pinchTargetSpawner.GetRuntimeTargets();
         if (targets == null)
             return;
 
-        bool hide = m_hideWorldMarkers;
         for (int i = 0; i < targets.Count; i++)
         {
             var t = targets[i];
             if (t == null)
                 continue;
 
-            SetMarkerVisualsVisible(t.gameObject, !hide);
+            SetMarkerVisualsVisible(t.gameObject, visible);
         }
     }
 
