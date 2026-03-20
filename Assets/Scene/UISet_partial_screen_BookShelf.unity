@@ -1368,7 +1368,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &186719076
 Transform:
   m_ObjectHideFlags: 0
@@ -3533,6 +3533,7 @@ GameObject:
   m_Component:
   - component: {fileID: 464910814}
   - component: {fileID: 464910813}
+  - component: {fileID: 464910815}
   m_Layer: 0
   m_Name: ScreenUI
   m_TagString: Untagged
@@ -3584,6 +3585,25 @@ Transform:
   - {fileID: 1692032550}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &464910815
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 464910812}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3a74fe6f5d4f4d8e8e56b9db37bce0f1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_proxySetsRoot: {fileID: 464910814}
+  m_miniCameraRect: {fileID: 1398737964}
+  m_leftGap: 0.005
+  m_verticalOffset: 0
+  m_keepAlignedContinuously: 1
+  m_startupRefreshFrames: 6
+  m_hiddenAlphaThreshold: 0.05
 --- !u!1001 &466736873
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -5257,7 +5277,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1382c1e499c6f4bae9ea89e2e0570cc8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_labelManager: {fileID: 0}
+  m_labelManager: {fileID: 1828976393}
   m_viewport: {fileID: 0}
   m_content: {fileID: 638657149}
   m_gridLayout: {fileID: 638657145}
@@ -10571,7 +10591,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   target: {fileID: 1744462753}
   rotationSource: {fileID: 1926222040}
-  distance: 0.8
+  distance: 1
   inheritRotation: 1
   yawOnly: 0
   positionFollowSpeed: 100

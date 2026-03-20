@@ -69,6 +69,7 @@ public class ProxyLabelHorizonScroller : MonoBehaviour
     private float m_smoothedWindowCenterRow;
     private float m_windowCenterVelocity;
     private bool m_hasInitializedWindowCenter;
+    private int m_startupRefreshFramesRemaining;
 
     private void Reset()
     {
@@ -96,6 +97,7 @@ public class ProxyLabelHorizonScroller : MonoBehaviour
     private void OnEnable()
     {
         EnsureReferences();
+        m_startupRefreshFramesRemaining = 3;
         RebuildAuthoredLayout(force: true);
         SnapToCurrentSelection();
     }
@@ -105,6 +107,7 @@ public class ProxyLabelHorizonScroller : MonoBehaviour
         RestoreAuthoredVisuals();
         m_hasInitializedWindowCenter = false;
         m_windowCenterVelocity = 0f;
+        m_startupRefreshFramesRemaining = 0;
     }
 
     private void LateUpdate()
@@ -113,9 +116,16 @@ public class ProxyLabelHorizonScroller : MonoBehaviour
         if (m_content == null || !m_content.gameObject.activeInHierarchy)
             return;
 
-        RebuildAuthoredLayout(force: false);
+        bool needsStartupRefresh = m_startupRefreshFramesRemaining > 0;
+        RebuildAuthoredLayout(force: needsStartupRefresh);
         if (m_labelStates.Count == 0)
             return;
+
+        if (needsStartupRefresh)
+        {
+            SnapToCurrentSelection();
+            m_startupRefreshFramesRemaining--;
+        }
 
         int selectedIndex = FindSelectedIndex();
         if (selectedIndex < 0)
