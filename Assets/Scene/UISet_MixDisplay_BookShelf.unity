@@ -587,7 +587,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   blockId: 8b26b298-7bf4-490e-b245-a039c0184303
-  instanceId: 928dc02e-30a4-472f-9288-1acde023349d
+  instanceId: b8f83037-c897-45b0-be21-e66177d72ae0
   version: 1
   installationRoutineCheckpoint:
     _installationRoutineId: 
@@ -5705,7 +5705,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   blockId: f0540b20-dfd6-420e-b20d-c270f88dc77e
-  instanceId: e844bf44-a7a4-4579-9e23-9a27bcc6d12e
+  instanceId: e41e4748-8d03-48cb-9aa4-a638ecdd39f9
   version: 1
   installationRoutineCheckpoint:
     _installationRoutineId: 
@@ -9861,7 +9861,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   blockId: e47682b9-c270-40b1-b16d-90b627a5ce1b
-  instanceId: 3d2b5898-e754-4841-a8a7-8c42ae992182
+  instanceId: b9139188-a8a4-49a7-8533-61da33495c3e
   version: 1
   installationRoutineCheckpoint:
     _installationRoutineId: 
@@ -13245,7 +13245,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   blockId: 8b26b298-7bf4-490e-b245-a039c0184303
-  instanceId: 44a4e165-964f-46bb-9f76-3e8936514922
+  instanceId: dc49627d-1548-459f-ae96-0bdd5c6d40c8
   version: 1
   installationRoutineCheckpoint:
     _installationRoutineId: 
@@ -13266,7 +13266,7 @@ GameObject:
   - component: {fileID: 1942878148}
   - component: {fileID: 1942878147}
   m_Layer: 0
-  m_Name: PinchTargetMnager
+  m_Name: PinchTargetManager
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -15383,8 +15383,8 @@ SceneRoots:
   - {fileID: 1942878148}
   - {fileID: 1968332518}
   - {fileID: 1272610421}
-  - {fileID: 1964644603}
   - {fileID: 577421379}
+  - {fileID: 1964644603}
   - {fileID: 538600078}
   - {fileID: 1492379410}
   - {fileID: 1099541779}

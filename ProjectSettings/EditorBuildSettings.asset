@@ -6,8 +6,8 @@ EditorBuildSettings:
   serializedVersion: 2
   m_Scenes:
   - enabled: 1
-    path: Assets/Scene/2D_screen_BookShelf.unity
-    guid: b21ad8043664948698ea5cbe038e1ed5
+    path: Assets/Scene/UISet_partial_screen_BookShelf.unity
+    guid: 72a86a8f829a445b48c1c59f100ffa44
   m_configObjects:
     Unity.XR.Oculus.Settings: {fileID: 11400000, guid: f2bf97b3acdb64248a707c407c9fc54e, type: 2}
     com.unity.xr.management.loader_settings: {fileID: 11400000, guid: a971eac5e950046e586c5e153e32d05c, type: 2}
