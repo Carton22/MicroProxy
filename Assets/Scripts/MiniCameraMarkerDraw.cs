@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using Meta.XR.Samples;
 using Meta.XR;
+using UnityEngine.UI;
 
 /// <summary>
 /// Uses the same raycasting as the big camera-to-world canvas but draws circles
@@ -28,11 +29,52 @@ public class MiniCameraMarkerDraw : MonoBehaviour
     [SerializeField] private PinchTargetSpawner m_runtimeTargetSource;
 
     [Header("Circle size")]
-    [Tooltip("Size of each circle on the mini canvas (width and height).")]
-    [SerializeField] private float m_circleSize = 12f;
+    [Tooltip("Size of the selected circle on the mini canvas (width and height).")]
+    [SerializeField] private float m_selectedCircleSize = 18f;
+    [Tooltip("Size of unselected circles on the mini canvas (width and height).")]
+    [SerializeField] private float m_unselectedCircleSize = 12f;
+
+    [Header("Circle materials")]
+    [Tooltip("Material for the circle that corresponds to the currently selected label.")]
+    [SerializeField] private Material m_selectedCircleMaterial;
+    [Tooltip("Material for circles that are raycasting/hit but not selected.")]
+    [SerializeField] private Material m_unselectedCircleMaterial;
+
+    [Tooltip("Label managers used to resolve which proxy-set label is selected and which label is bound to each marker index.")]
+    [SerializeField] private List<ProxyLabelManager> m_labelManagers = new();
 
     private RectTransform[] m_circleInstances;
     private readonly List<Transform> m_markerTargetsBuffer = new();
+
+    private void Awake()
+    {
+        if (m_labelManagers == null)
+            m_labelManagers = new List<ProxyLabelManager>();
+
+        if (m_labelManagers.Count == 0)
+        {
+            var found = FindObjectsByType<ProxyLabelManager>(FindObjectsInactive.Include, FindObjectsSortMode.None);
+            for (int i = 0; i < found.Length; i++)
+            {
+                var labelManager = found[i];
+                if (labelManager == null)
+                    continue;
+
+                bool exists = false;
+                for (int j = 0; j < m_labelManagers.Count; j++)
+                {
+                    if (m_labelManagers[j] == labelManager)
+                    {
+                        exists = true;
+                        break;
+                    }
+                }
+
+                if (!exists)
+                    m_labelManagers.Add(labelManager);
+            }
+        }
+    }
 
     private void Update()
     {
@@ -103,10 +145,13 @@ public class MiniCameraMarkerDraw : MonoBehaviour
 
             if (m_circleInstances[i] != null)
             {
+                bool isSelected = IsMarkerSelected(i);
                 m_circleInstances[i].gameObject.SetActive(true);
                 m_circleInstances[i].SetParent(m_miniCanvas, false);
                 m_circleInstances[i].anchoredPosition = new Vector2(localX, localY);
-                m_circleInstances[i].sizeDelta = new Vector2(m_circleSize, m_circleSize);
+                float circleSize = isSelected ? m_selectedCircleSize : m_unselectedCircleSize;
+                m_circleInstances[i].sizeDelta = new Vector2(circleSize, circleSize);
+                ApplyCircleMaterial(m_circleInstances[i], isSelected);
             }
         }
 
@@ -180,5 +225,62 @@ public class MiniCameraMarkerDraw : MonoBehaviour
 
         targetList = m_runtimeTargetSource.GetRuntimeTargets();
         return targetList != null ? targetList.Count : 0;
+    }
+
+    private bool IsMarkerSelected(int markerIndex) =>
+        TryGetSelectedLabelRectForMarkerIndex(markerIndex, out _);
+
+    private bool TryGetSelectedLabelRectForMarkerIndex(int markerIndex, out RectTransform selectedLabelRect)
+    {
+        selectedLabelRect = null;
+
+        if (markerIndex < 0)
+            return false;
+
+        if (m_labelManagers == null || m_labelManagers.Count == 0)
+            return false;
+
+        for (int i = 0; i < m_labelManagers.Count; i++)
+        {
+            var labelManager = m_labelManagers[i];
+            if (labelManager == null)
+                continue;
+
+            int selectedIndex = labelManager.GetSelectedLabelIndex();
+            if (selectedIndex < 0)
+                continue;
+
+            var selectedLabel = labelManager.GetLabelRectTransform(selectedIndex);
+            if (selectedLabel == null)
+                continue;
+
+            var markerLabel = labelManager.GetLabelRectTransformForMarkerIndex(markerIndex);
+            if (markerLabel != null && markerLabel == selectedLabel)
+            {
+                selectedLabelRect = selectedLabel;
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    private void ApplyCircleMaterial(RectTransform circle, bool selected)
+    {
+        if (circle == null)
+            return;
+
+        var image = circle.GetComponent<Image>();
+        if (image == null)
+            image = circle.GetComponentInChildren<Image>(true);
+        if (image == null)
+            return;
+
+        var targetMaterial = selected ? m_selectedCircleMaterial : m_unselectedCircleMaterial;
+        if (targetMaterial == null)
+            return;
+
+        if (image.material != targetMaterial)
+            image.material = targetMaterial;
     }
 }

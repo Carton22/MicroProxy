@@ -3599,7 +3599,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_proxySetsRoot: {fileID: 464910814}
   m_miniCameraRect: {fileID: 1398737964}
-  m_leftGap: 0
+  m_proxySetsX: 0.35
   m_verticalOffset: 0
   m_keepAlignedContinuously: 1
   m_startupRefreshFrames: 6
@@ -3881,7 +3881,12 @@ MonoBehaviour:
   m_miniCanvas: {fileID: 1153379194}
   m_circlePrefab: {fileID: 2171317211530993139, guid: 19fc067d4b97843779d2e4ece10959c7, type: 3}
   m_runtimeTargetSource: {fileID: 1942878147}
-  m_circleSize: 12
+  m_selectedCircleSize: 18
+  m_unselectedCircleSize: 12
+  m_selectedCircleMaterial: {fileID: 2100000, guid: effc973398d194f8e8d7ea2e54e09a3a, type: 2}
+  m_unselectedCircleMaterial: {fileID: 2100000, guid: 90e7333d471314c8c844daf3259827dd, type: 2}
+  m_labelManagers:
+  - {fileID: 1828976393}
 --- !u!1 &486655517
 GameObject:
   m_ObjectHideFlags: 0
@@ -5284,8 +5289,8 @@ MonoBehaviour:
   m_visibleRowCount: 5
   m_centerSelectedLabel: 1
   m_clampToContentBounds: 1
-  m_scrollSmoothTime: 0.12
-  m_visualLerpSpeed: 12
+  m_scrollSmoothTime: 0.07
+  m_visualLerpSpeed: 18
   m_focusScale: 1.08
   m_edgeScale: 0.84
   m_hiddenScale: 0.62

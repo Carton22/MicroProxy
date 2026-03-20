@@ -5,7 +5,7 @@ public class ProxySetMiniCameraAligner : MonoBehaviour
 {
     [SerializeField] private Transform m_proxySetsRoot;
     [SerializeField] private RectTransform m_miniCameraRect;
-    [SerializeField] private float m_leftGap = 0.035f;
+    [SerializeField] private float m_proxySetsX = 0.42f;
     [SerializeField] private float m_verticalOffset;
     [SerializeField] private bool m_keepAlignedContinuously = true;
     [SerializeField] private int m_startupRefreshFrames = 6;
@@ -21,7 +21,6 @@ public class ProxySetMiniCameraAligner : MonoBehaviour
 
     private void OnValidate()
     {
-        m_leftGap = Mathf.Max(0f, m_leftGap);
         m_startupRefreshFrames = Mathf.Max(0, m_startupRefreshFrames);
         m_hiddenAlphaThreshold = Mathf.Clamp01(m_hiddenAlphaThreshold);
     }
@@ -35,7 +34,7 @@ public class ProxySetMiniCameraAligner : MonoBehaviour
     private void LateUpdate()
     {
         EnsureReferences();
-        if (m_proxySetsRoot == null || m_miniCameraRect == null)
+        if (m_proxySetsRoot == null)
             return;
 
         if (!m_keepAlignedContinuously && m_refreshFramesRemaining <= 0)
@@ -56,11 +55,9 @@ public class ProxySetMiniCameraAligner : MonoBehaviour
 
     private void AlignAllProxySets()
     {
-        if (!TryGetBoundsInRootSpace(m_miniCameraRect, out Bounds miniCameraBounds))
-            return;
-
-        float targetRightX = miniCameraBounds.min.x - m_leftGap;
-        float targetCenterY = miniCameraBounds.center.y + m_verticalOffset;
+        Bounds miniCameraBounds = default;
+        bool hasMiniCameraBounds = m_miniCameraRect != null && TryGetBoundsInRootSpace(m_miniCameraRect, out miniCameraBounds);
+        float targetCenterY = hasMiniCameraBounds ? miniCameraBounds.center.y + m_verticalOffset : 0f;
 
         for (int i = 0; i < m_proxySetsRoot.childCount; i++)
         {
@@ -68,17 +65,16 @@ public class ProxySetMiniCameraAligner : MonoBehaviour
             if (proxySetRect == null)
                 continue;
 
-            if (!TryGetProxySetBoundsInRootSpace(proxySetRect, out Bounds proxySetBounds))
+            Vector2 nextAnchoredPosition = proxySetRect.anchoredPosition;
+            nextAnchoredPosition.x = m_proxySetsX;
+
+            if (hasMiniCameraBounds && TryGetProxySetBoundsInRootSpace(proxySetRect, out Bounds proxySetBounds))
+                nextAnchoredPosition.y += targetCenterY - proxySetBounds.center.y;
+
+            if ((nextAnchoredPosition - proxySetRect.anchoredPosition).sqrMagnitude <= 0.0000001f)
                 continue;
 
-            Vector2 delta = new Vector2(
-                targetRightX - proxySetBounds.max.x,
-                targetCenterY - proxySetBounds.center.y);
-
-            if (delta.sqrMagnitude <= 0.0000001f)
-                continue;
-
-            proxySetRect.anchoredPosition += delta;
+            proxySetRect.anchoredPosition = nextAnchoredPosition;
         }
     }
 
