@@ -220,6 +220,7 @@ public class UINavigator : MonoBehaviour
     {
         if (m_labelManager == null) return false;
         if (!IsSelectionInsideActiveManagedProxySet()) return false;
+        if (ProxySetDrillDownController.IsAnyDrillDownChildViewActive) return false;
         if (!TryGetSelectedColumnInfo(out int col, out _) || col != 0) return false;
 
         if (!m_labelManager.TrySwitchToPreviousLabelsParent())
@@ -239,6 +240,7 @@ public class UINavigator : MonoBehaviour
     {
         if (m_labelManager == null) return false;
         if (!IsSelectionInsideActiveManagedProxySet()) return false;
+        if (ProxySetDrillDownController.IsAnyDrillDownChildViewActive) return false;
         if (!TryGetSelectedColumnInfo(out int col, out int columnCount) || col != columnCount - 1) return false;
 
         if (!m_labelManager.TrySwitchToNextLabelsParent())

@@ -14,6 +14,12 @@ using UnityEngine.UI;
 /// </summary>
 public class ProxyLabelManager : MonoBehaviour
 {
+    private struct ActiveStateRecord
+    {
+        public GameObject Target;
+        public bool ActiveSelf;
+    }
+
     [Header("Authored labels")]
     [Tooltip("Possible parents whose direct children are proxy label GameObjects. Exactly one should be active in the hierarchy at a time.")]
     [SerializeField] private List<Transform> m_labelParents = new();
@@ -27,6 +33,59 @@ public class ProxyLabelManager : MonoBehaviour
     private int m_selectionMin;
     private int m_selectionMax;
     private bool m_selectionRangeOverride;
+    private readonly Dictionary<Transform, List<ActiveStateRecord>> m_authoredChildStates = new();
+
+    private void Awake()
+    {
+        CacheAuthoredChildStates();
+    }
+
+    private void CacheAuthoredChildStates()
+    {
+        m_authoredChildStates.Clear();
+
+        for (int i = 0; i < m_labelParents.Count; i++)
+        {
+            var parent = m_labelParents[i];
+            if (parent == null)
+                continue;
+
+            var records = new List<ActiveStateRecord>();
+            var descendants = parent.GetComponentsInChildren<Transform>(true);
+            for (int j = 0; j < descendants.Length; j++)
+            {
+                var descendant = descendants[j];
+                if (descendant == null || descendant == parent)
+                    continue;
+
+                records.Add(new ActiveStateRecord
+                {
+                    Target = descendant.gameObject,
+                    ActiveSelf = descendant.gameObject.activeSelf
+                });
+            }
+
+            m_authoredChildStates[parent] = records;
+        }
+    }
+
+    private void RestoreAuthoredChildStates(Transform parent)
+    {
+        if (parent == null)
+            return;
+
+        if (!m_authoredChildStates.TryGetValue(parent, out var records))
+            return;
+
+        for (int i = 0; i < records.Count; i++)
+        {
+            var record = records[i];
+            if (record.Target == null)
+                continue;
+
+            record.Target.SetActive(record.ActiveSelf);
+        }
+    }
 
     public Transform GetActiveLabelsParent()
     {
@@ -74,6 +133,7 @@ public class ProxyLabelManager : MonoBehaviour
 
         if (current != null)
             current.gameObject.SetActive(false);
+        RestoreAuthoredChildStates(previous);
         previous.gameObject.SetActive(true);
         return true;
     }
@@ -95,6 +155,7 @@ public class ProxyLabelManager : MonoBehaviour
 
         if (current != null)
             current.gameObject.SetActive(false);
+        RestoreAuthoredChildStates(next);
         next.gameObject.SetActive(true);
         return true;
     }
@@ -254,4 +315,3 @@ public class ProxyLabelManager : MonoBehaviour
         maxIndex = m_selectionMax;
     }
 }
-

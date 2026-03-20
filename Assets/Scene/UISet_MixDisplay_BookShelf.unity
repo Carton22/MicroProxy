@@ -2487,7 +2487,10 @@ PrefabInstance:
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 4235160468344426946, guid: a9088ffdc24df41fba5fd6cb1eaf3ead, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 389259097}
   m_SourcePrefab: {fileID: 100100000, guid: a9088ffdc24df41fba5fd6cb1eaf3ead, type: 3}
 --- !u!224 &389259086 stripped
 RectTransform:
@@ -2499,6 +2502,37 @@ GameObject:
   m_CorrespondingSourceObject: {fileID: 4235160468344426946, guid: a9088ffdc24df41fba5fd6cb1eaf3ead, type: 3}
   m_PrefabInstance: {fileID: 389259085}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &389259097
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 389259087}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8c23af966c1154cfeb68c1a09b6e4c9a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_levelRootToHideOnDrillDown: {fileID: 1909228615}
+  m_childrenRootToShow: {fileID: 243943084}
+  m_childrenToEnable:
+  - {fileID: 1831507684}
+  - {fileID: 67604647}
+  - {fileID: 414167385}
+  - {fileID: 870136038}
+  - {fileID: 373793061}
+  - {fileID: 1452637937}
+  - {fileID: 1053617559}
+  - {fileID: 400488250}
+  - {fileID: 1632133443}
+  - {fileID: 838558378}
+  - {fileID: 421155423}
+  m_selectFirstOnShow: 1
+  m_logger: {fileID: 1561124091}
+  m_rightHand: {fileID: 1924298972}
+  m_pinchStrengthThreshold: 0.7
+  m_doubleTapMaxIntervalSeconds: 0.4
 --- !u!1001 &392357092
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -4886,7 +4920,10 @@ PrefabInstance:
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 4235160468344426946, guid: a9088ffdc24df41fba5fd6cb1eaf3ead, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 765265557}
   m_SourcePrefab: {fileID: 100100000, guid: a9088ffdc24df41fba5fd6cb1eaf3ead, type: 3}
 --- !u!224 &765265546 stripped
 RectTransform:
@@ -4898,6 +4935,34 @@ GameObject:
   m_CorrespondingSourceObject: {fileID: 4235160468344426946, guid: a9088ffdc24df41fba5fd6cb1eaf3ead, type: 3}
   m_PrefabInstance: {fileID: 765265545}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &765265557
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 765265547}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8c23af966c1154cfeb68c1a09b6e4c9a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_levelRootToHideOnDrillDown: {fileID: 1909228615}
+  m_childrenRootToShow: {fileID: 243943084}
+  m_childrenToEnable:
+  - {fileID: 1239170438}
+  - {fileID: 1353770945}
+  - {fileID: 1886000777}
+  - {fileID: 710865942}
+  - {fileID: 153306082}
+  - {fileID: 1165099136}
+  - {fileID: 23524099}
+  - {fileID: 1846479924}
+  m_selectFirstOnShow: 1
+  m_logger: {fileID: 1561124091}
+  m_rightHand: {fileID: 1924298972}
+  m_pinchStrengthThreshold: 0.7
+  m_doubleTapMaxIntervalSeconds: 0.4
 --- !u!1 &775361878
 GameObject:
   m_ObjectHideFlags: 0
@@ -5497,9 +5562,6 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 4235160468344426946, guid: a9088ffdc24df41fba5fd6cb1eaf3ead, type: 3}
       insertIndex: -1
       addedObject: {fileID: 861503035}
-    - targetCorrespondingSourceObject: {fileID: 6856314460656858343, guid: a9088ffdc24df41fba5fd6cb1eaf3ead, type: 3}
-      insertIndex: -1
-      addedObject: {fileID: 0}
   m_SourcePrefab: {fileID: 100100000, guid: a9088ffdc24df41fba5fd6cb1eaf3ead, type: 3}
 --- !u!224 &861503033 stripped
 RectTransform:
@@ -8334,10 +8396,7 @@ PrefabInstance:
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents:
-    - targetCorrespondingSourceObject: {fileID: 6856314460656858343, guid: a9088ffdc24df41fba5fd6cb1eaf3ead, type: 3}
-      insertIndex: -1
-      addedObject: {fileID: 0}
+    m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: a9088ffdc24df41fba5fd6cb1eaf3ead, type: 3}
 --- !u!224 &1288892466 stripped
 RectTransform:
@@ -9196,10 +9255,7 @@ PrefabInstance:
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents:
-    - targetCorrespondingSourceObject: {fileID: 6856314460656858343, guid: a9088ffdc24df41fba5fd6cb1eaf3ead, type: 3}
-      insertIndex: -1
-      addedObject: {fileID: 0}
+    m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: a9088ffdc24df41fba5fd6cb1eaf3ead, type: 3}
 --- !u!224 &1506167082 stripped
 RectTransform:
@@ -10511,9 +10567,6 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 4235160468344426946, guid: a9088ffdc24df41fba5fd6cb1eaf3ead, type: 3}
       insertIndex: -1
       addedObject: {fileID: 1686094855}
-    - targetCorrespondingSourceObject: {fileID: 6856314460656858343, guid: a9088ffdc24df41fba5fd6cb1eaf3ead, type: 3}
-      insertIndex: -1
-      addedObject: {fileID: 0}
   m_SourcePrefab: {fileID: 100100000, guid: a9088ffdc24df41fba5fd6cb1eaf3ead, type: 3}
 --- !u!224 &1686094853 stripped
 RectTransform:
@@ -10788,6 +10841,7 @@ MonoBehaviour:
   - {fileID: 414167385}
   - {fileID: 870136038}
   - {fileID: 1239170438}
+  - {fileID: 1353770945}
   m_selectFirstOnShow: 1
   m_logger: {fileID: 1561124091}
   m_rightHand: {fileID: 1924298972}
@@ -10938,7 +10992,10 @@ PrefabInstance:
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 4235160468344426946, guid: a9088ffdc24df41fba5fd6cb1eaf3ead, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1720276097}
   m_SourcePrefab: {fileID: 100100000, guid: a9088ffdc24df41fba5fd6cb1eaf3ead, type: 3}
 --- !u!224 &1720276086 stripped
 RectTransform:
@@ -10950,6 +11007,32 @@ GameObject:
   m_CorrespondingSourceObject: {fileID: 4235160468344426946, guid: a9088ffdc24df41fba5fd6cb1eaf3ead, type: 3}
   m_PrefabInstance: {fileID: 1720276085}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &1720276097
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1720276087}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8c23af966c1154cfeb68c1a09b6e4c9a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_levelRootToHideOnDrillDown: {fileID: 1909228615}
+  m_childrenRootToShow: {fileID: 243943084}
+  m_childrenToEnable:
+  - {fileID: 968612332}
+  - {fileID: 1345826163}
+  - {fileID: 939080230}
+  - {fileID: 1435631947}
+  - {fileID: 1410576277}
+  - {fileID: 1109226585}
+  m_selectFirstOnShow: 1
+  m_logger: {fileID: 1561124091}
+  m_rightHand: {fileID: 1924298972}
+  m_pinchStrengthThreshold: 0.7
+  m_doubleTapMaxIntervalSeconds: 0.4
 --- !u!1001 &1721288808
 PrefabInstance:
   m_ObjectHideFlags: 0

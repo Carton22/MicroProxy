@@ -12,6 +12,13 @@ using UnityEngine.UI;
 /// </summary>
 public class ProxySetDrillDownController : MonoBehaviour, IPointerClickHandler, ISubmitHandler
 {
+    /// <summary>
+    /// Global state: true when any drill-down controller is currently in child view.
+    /// </summary>
+    public static bool IsAnyDrillDownChildViewActive => s_activeChildViewCount > 0;
+
+    private static int s_activeChildViewCount;
+
     [Header("Level visibility")]
     [Tooltip("Root object for the current proxy set level. This GameObject will be set inactive when drilling down.")]
     [SerializeField] private GameObject m_levelRootToHideOnDrillDown;
@@ -39,10 +46,21 @@ public class ProxySetDrillDownController : MonoBehaviour, IPointerClickHandler, 
     [Range(0f, 1f)]
     [SerializeField] private float m_pinchStrengthThreshold = 0.7f;
     [SerializeField] private float m_doubleTapMaxIntervalSeconds = 0.4f;
+    private bool m_registeredAsChildView;
 
     public void OnPointerClick(PointerEventData eventData) => HandlePress();
 
     public void OnSubmit(BaseEventData eventData) => HandlePress();
+
+    private void OnEnable()
+    {
+        UpdateGlobalDrillDownState(IsInChildView());
+    }
+
+    private void OnDisable()
+    {
+        UpdateGlobalDrillDownState(false);
+    }
 
     private void HandlePress()
     {
@@ -119,6 +137,8 @@ public class ProxySetDrillDownController : MonoBehaviour, IPointerClickHandler, 
 
         if (m_selectFirstOnShow)
             SelectFirstSelectableUnder(firstEnabledSelectableRoot);
+
+        UpdateGlobalDrillDownState(IsInChildView());
     }
 
     private bool IsInChildView()
@@ -160,6 +180,8 @@ public class ProxySetDrillDownController : MonoBehaviour, IPointerClickHandler, 
             if (selectable != null)
                 selectable.Select();
         }
+
+        UpdateGlobalDrillDownState(IsInChildView());
     }
 
     private void LogDebug(string message)
@@ -289,6 +311,25 @@ public class ProxySetDrillDownController : MonoBehaviour, IPointerClickHandler, 
 
         EventSystem.current.SetSelectedGameObject(selectable.gameObject);
         selectable.Select();
+    }
+
+    private void UpdateGlobalDrillDownState(bool inChildView)
+    {
+        if (inChildView)
+        {
+            if (m_registeredAsChildView)
+                return;
+
+            s_activeChildViewCount++;
+            m_registeredAsChildView = true;
+            return;
+        }
+
+        if (!m_registeredAsChildView)
+            return;
+
+        s_activeChildViewCount = Mathf.Max(0, s_activeChildViewCount - 1);
+        m_registeredAsChildView = false;
     }
 }
 
