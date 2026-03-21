@@ -1,8 +1,8 @@
 using System.Collections.Generic;
-using TMPro;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
+using TMPro;
 
 /// <summary>
 /// Creates a wheel-like focus window for proxy labels.
@@ -19,8 +19,7 @@ public class ProxyLabelHorizonScroller : MonoBehaviour
         public Vector2 AuthoredAnchoredPosition;
         public Vector3 AuthoredScale;
         public TMP_Text[] Texts;
-        public Color[] AuthoredTextColors;
-        public Renderer[] TextRenderers;
+        public bool[] AuthoredTextRaycastTargets;
     }
 
     [Header("Label source")]
@@ -183,7 +182,8 @@ public class ProxyLabelHorizonScroller : MonoBehaviour
         bool needsRefresh = force
             || m_labelStates.Count == 0
             || m_content.childCount != m_lastChildCount
-            || currentSize != m_lastContentSize;
+            || currentSize != m_lastContentSize
+            || HasInvalidCachedState();
 
         if (!needsRefresh)
             return;
@@ -207,16 +207,10 @@ public class ProxyLabelHorizonScroller : MonoBehaviour
                 canvasGroup = child.gameObject.AddComponent<CanvasGroup>();
 
             var texts = child.GetComponentsInChildren<TMP_Text>(true);
-            var textColors = new Color[texts.Length];
-            var textRenderers = new Renderer[texts.Length];
-            for (int textIndex = 0; textIndex < texts.Length; textIndex++)
+            var authoredTextRaycastTargets = new bool[texts.Length];
+            for (int t = 0; t < texts.Length; t++)
             {
-                var text = texts[textIndex];
-                if (text == null)
-                    continue;
-
-                textColors[textIndex] = text.color;
-                textRenderers[textIndex] = text.GetComponent<Renderer>();
+                authoredTextRaycastTargets[t] = TryGetRaycastTarget(texts[t], out bool raycastTarget) && raycastTarget;
             }
 
             m_labelStates.Add(new LabelVisualState
@@ -226,8 +220,7 @@ public class ProxyLabelHorizonScroller : MonoBehaviour
                 AuthoredAnchoredPosition = child.anchoredPosition,
                 AuthoredScale = child.localScale,
                 Texts = texts,
-                AuthoredTextColors = textColors,
-                TextRenderers = textRenderers
+                AuthoredTextRaycastTargets = authoredTextRaycastTargets
             });
 
             int row = i / columnCount;
@@ -274,7 +267,7 @@ public class ProxyLabelHorizonScroller : MonoBehaviour
         float scrollOffsetY = m_centerSelectedLabel ? m_focusAnchorY - focusRowY : 0f;
         float halfWindow = (m_visibleRowCount - 1) * 0.5f;
         float softWindow = halfWindow + 0.85f;
-
+        bool needsCacheRefresh = false;
         for (int i = 0; i < m_labelStates.Count; i++)
         {
             var state = m_labelStates[i];
@@ -306,27 +299,94 @@ public class ProxyLabelHorizonScroller : MonoBehaviour
             if (isSelected)
                 targetAlpha = 1f;
 
+            // Hard-hide anything outside the visible wheel window (so you only see 5 rows, not a
+            // larger "soft" band).
+            if (m_hideLabelsCompletelyOutsideWindow)
+            {
+                float absRowDeltaFromWindowCenter = Mathf.Abs(row - m_smoothedWindowCenterRow);
+                if (absRowDeltaFromWindowCenter > halfWindow + 0.001f)
+                    targetAlpha = 0f;
+            }
+
             state.Rect.anchoredPosition = Vector2.Lerp(state.Rect.anchoredPosition, targetAnchoredPosition, lerpFactor);
             state.Rect.localScale = Vector3.Lerp(state.Rect.localScale, state.AuthoredScale * targetScaleFactor, lerpFactor);
             float appliedAlpha = Mathf.Lerp(state.CanvasGroup.alpha, targetAlpha, lerpFactor);
             state.CanvasGroup.alpha = appliedAlpha;
+
+            // Some label prefabs/text setups may ignore parent alpha (or keep raycast state).
+            // Mirror the wheel culling by disabling TMP rendering once a row is meant to be hidden.
+            if (state.Texts != null && state.Texts.Length > 0)
+            {
+                // Require both the current smoothed alpha and the intended target alpha so text
+                // does not linger after a row has been culled from the visible window.
+                bool shouldRender = targetAlpha > m_hardCullAlphaThreshold
+                    && appliedAlpha > m_hardCullAlphaThreshold;
+                for (int t = 0; t < state.Texts.Length; t++)
+                {
+                    var text = state.Texts[t];
+                    if (text == null)
+                    {
+                        needsCacheRefresh = true;
+                        continue;
+                    }
+
+                    if (!shouldRender)
+                    {
+                        if (!TrySetTextEnabled(state, t, false))
+                        {
+                            needsCacheRefresh = true;
+                            continue;
+                        }
+
+                        if (m_disableRaycastsForHiddenItems)
+                        {
+                            if (!TrySetTextRaycastTarget(state, t, false))
+                                needsCacheRefresh = true;
+                        }
+                    }
+                    else
+                    {
+                        if (!TrySetTextEnabled(state, t, true))
+                        {
+                            needsCacheRefresh = true;
+                            continue;
+                        }
+
+                        if (m_disableRaycastsForHiddenItems)
+                        {
+                            bool allowRaycast = targetAlpha > 0.1f;
+                            bool authoredRaycast = state.AuthoredTextRaycastTargets != null && t < state.AuthoredTextRaycastTargets.Length
+                                ? state.AuthoredTextRaycastTargets[t]
+                                : true;
+                            if (!TrySetTextRaycastTarget(state, t, allowRaycast && authoredRaycast))
+                                needsCacheRefresh = true;
+                        }
+                        else
+                        {
+                            if (state.AuthoredTextRaycastTargets != null && t < state.AuthoredTextRaycastTargets.Length)
+                            {
+                                if (!TrySetTextRaycastTarget(state, t, state.AuthoredTextRaycastTargets[t]))
+                                    needsCacheRefresh = true;
+                            }
+                        }
+                    }
+                }
+            }
 
             if (m_disableRaycastsForHiddenItems)
             {
                 bool isVisibleEnough = targetAlpha > 0.1f;
                 state.CanvasGroup.blocksRaycasts = isVisibleEnough;
             }
-
-            // Keep TMP renderers enabled and hide via alpha instead. Toggling world-space TMP
-            // renderers on/off during the wheel animation can leave some labels stuck invisible.
-            bool shouldRender = !m_hideLabelsCompletelyOutsideWindow || appliedAlpha > m_hardCullAlphaThreshold || isSelected;
-            ApplyTextAlpha(state, shouldRender ? appliedAlpha : 0f);
-            SetTextRenderersEnabled(state, true);
         }
+
+        if (needsCacheRefresh)
+            InvalidateCachedLayout();
     }
 
     private void RestoreAuthoredVisuals()
     {
+        bool needsCacheRefresh = false;
         for (int i = 0; i < m_labelStates.Count; i++)
         {
             var state = m_labelStates[i];
@@ -342,9 +402,34 @@ public class ProxyLabelHorizonScroller : MonoBehaviour
                 state.CanvasGroup.blocksRaycasts = true;
             }
 
-            ApplyTextAlpha(state, 1f);
-            SetTextRenderersEnabled(state, true);
+            if (state.Texts != null && state.Texts.Length > 0)
+            {
+                for (int t = 0; t < state.Texts.Length; t++)
+                {
+                    var text = state.Texts[t];
+                    if (text == null)
+                    {
+                        needsCacheRefresh = true;
+                        continue;
+                    }
+
+                    if (!TrySetTextEnabled(state, t, true))
+                    {
+                        needsCacheRefresh = true;
+                        continue;
+                    }
+
+                    if (state.AuthoredTextRaycastTargets != null && t < state.AuthoredTextRaycastTargets.Length)
+                    {
+                        if (!TrySetTextRaycastTarget(state, t, state.AuthoredTextRaycastTargets[t]))
+                            needsCacheRefresh = true;
+                    }
+                }
+            }
         }
+
+        if (needsCacheRefresh)
+            InvalidateCachedLayout();
     }
 
     private int FindSelectedIndex()
@@ -437,36 +522,98 @@ public class ProxyLabelHorizonScroller : MonoBehaviour
         return 1f - inverse * inverse * inverse;
     }
 
-    private static void ApplyTextAlpha(LabelVisualState state, float alphaMultiplier)
+    private bool HasInvalidCachedState()
     {
-        if (state.Texts == null || state.AuthoredTextColors == null)
-            return;
-
-        int count = Mathf.Min(state.Texts.Length, state.AuthoredTextColors.Length);
-        for (int i = 0; i < count; i++)
+        for (int i = 0; i < m_labelStates.Count; i++)
         {
-            var text = state.Texts[i];
-            if (text == null)
+            var state = m_labelStates[i];
+            if (state.Rect == null || state.CanvasGroup == null)
+                return true;
+
+            if (state.Texts == null)
                 continue;
 
-            var color = state.AuthoredTextColors[i];
-            color.a *= alphaMultiplier;
-            text.color = color;
+            for (int t = 0; t < state.Texts.Length; t++)
+            {
+                if (state.Texts[t] == null)
+                    return true;
+            }
+        }
+
+        return false;
+    }
+
+    private void InvalidateCachedLayout()
+    {
+        m_lastChildCount = -1;
+        m_lastContentSize = Vector2.zero;
+    }
+
+    private static bool TryGetRaycastTarget(TMP_Text text, out bool raycastTarget)
+    {
+        raycastTarget = false;
+        if (text == null)
+            return false;
+
+        try
+        {
+            raycastTarget = text.raycastTarget;
+            return true;
+        }
+        catch (MissingReferenceException)
+        {
+            return false;
         }
     }
 
-    private static void SetTextRenderersEnabled(LabelVisualState state, bool enabled)
+    private static bool TrySetTextEnabled(LabelVisualState state, int textIndex, bool enabled)
     {
-        if (state.TextRenderers == null)
-            return;
+        if (!TryGetText(state, textIndex, out TMP_Text text))
+            return false;
 
-        for (int i = 0; i < state.TextRenderers.Length; i++)
+        try
         {
-            var renderer = state.TextRenderers[i];
-            if (renderer == null)
-                continue;
-
-            renderer.enabled = enabled;
+            text.enabled = enabled;
+            return true;
+        }
+        catch (MissingReferenceException)
+        {
+            state.Texts[textIndex] = null;
+            return false;
         }
     }
+
+    private static bool TrySetTextRaycastTarget(LabelVisualState state, int textIndex, bool raycastTarget)
+    {
+        if (!TryGetText(state, textIndex, out TMP_Text text))
+            return false;
+
+        try
+        {
+            text.raycastTarget = raycastTarget;
+            return true;
+        }
+        catch (MissingReferenceException)
+        {
+            state.Texts[textIndex] = null;
+            return false;
+        }
+    }
+
+    private static bool TryGetText(LabelVisualState state, int textIndex, out TMP_Text text)
+    {
+        text = null;
+        if (state.Texts == null || textIndex < 0 || textIndex >= state.Texts.Length)
+            return false;
+
+        text = state.Texts[textIndex];
+        if (text == null)
+        {
+            state.Texts[textIndex] = null;
+            return false;
+        }
+
+        return true;
+    }
+
 }
