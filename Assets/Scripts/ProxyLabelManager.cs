@@ -200,7 +200,7 @@ public class ProxyLabelManager : MonoBehaviour
     public int GetLabelCount()
     {
         var parent = GetActiveLabelsParent();
-        return parent != null ? parent.childCount : 0;
+        return CountVisibleChildren(parent);
     }
 
     /// <summary>
@@ -212,10 +212,7 @@ public class ProxyLabelManager : MonoBehaviour
         if (parent == null)
             return null;
 
-        if (index < 0 || index >= parent.childCount)
-            return null;
-
-        return parent.GetChild(index) as RectTransform;
+        return GetVisibleChildAtIndex(parent, index);
     }
 
     /// <summary>
@@ -266,15 +263,20 @@ public class ProxyLabelManager : MonoBehaviour
             return -1;
 
         // Accept selection on the child itself or any nested descendant.
+        int visibleIndex = 0;
         for (int i = 0; i < parent.childCount; i++)
         {
             var child = parent.GetChild(i);
-            if (child == null) continue;
+            if (child == null || !child.gameObject.activeInHierarchy)
+                continue;
+
             if (current == child.gameObject || current.transform.IsChildOf(child))
             {
-                LogSelectedIndex(i, child.gameObject.name);
-                return i;
+                LogSelectedIndex(visibleIndex, child.gameObject.name);
+                return visibleIndex;
             }
+
+            visibleIndex++;
         }
 
         return -1;
@@ -297,17 +299,58 @@ public class ProxyLabelManager : MonoBehaviour
         if (parent == null || EventSystem.current == null)
             return;
 
-        int count = parent.childCount;
+        int count = CountVisibleChildren(parent);
         if (count <= 0)
             return;
 
         index = Mathf.Clamp(index, 0, count - 1);
-        var go = parent.GetChild(index).gameObject;
+        var child = GetVisibleChildAtIndex(parent, index);
+        if (child == null)
+            return;
+
+        var go = child.gameObject;
         EventSystem.current.SetSelectedGameObject(go);
 
         var sel = go.GetComponent<Selectable>();
         if (sel != null)
             sel.Select();
+    }
+
+    private static int CountVisibleChildren(Transform parent)
+    {
+        if (parent == null)
+            return 0;
+
+        int count = 0;
+        for (int i = 0; i < parent.childCount; i++)
+        {
+            var child = parent.GetChild(i);
+            if (child != null && child.gameObject.activeInHierarchy)
+                count++;
+        }
+
+        return count;
+    }
+
+    private static RectTransform GetVisibleChildAtIndex(Transform parent, int index)
+    {
+        if (parent == null || index < 0)
+            return null;
+
+        int visibleIndex = 0;
+        for (int i = 0; i < parent.childCount; i++)
+        {
+            var child = parent.GetChild(i) as RectTransform;
+            if (child == null || !child.gameObject.activeInHierarchy)
+                continue;
+
+            if (visibleIndex == index)
+                return child;
+
+            visibleIndex++;
+        }
+
+        return null;
     }
 
     /// <summary>

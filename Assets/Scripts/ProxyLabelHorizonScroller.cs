@@ -185,11 +185,13 @@ public class ProxyLabelHorizonScroller : MonoBehaviour
             || m_labelStates.Count == 0
             || m_content.childCount != m_lastChildCount
             || currentSize != m_lastContentSize
+            || HasVisibleChildListChanged()
             || HasInvalidCachedState();
 
         if (!needsRefresh)
             return;
 
+        RestoreTrackedVisuals();
         Canvas.ForceUpdateCanvases();
         if (m_gridLayout != null)
             LayoutRebuilder.ForceRebuildLayoutImmediate(m_content);
@@ -198,10 +200,11 @@ public class ProxyLabelHorizonScroller : MonoBehaviour
         m_rowAnchoredPositions.Clear();
 
         int columnCount = GetColumnCount();
+        int visibleChildCount = 0;
         for (int i = 0; i < m_content.childCount; i++)
         {
             var child = m_content.GetChild(i) as RectTransform;
-            if (child == null)
+            if (child == null || !child.gameObject.activeInHierarchy)
                 continue;
 
             var canvasGroup = child.GetComponent<CanvasGroup>();
@@ -225,13 +228,70 @@ public class ProxyLabelHorizonScroller : MonoBehaviour
                 AuthoredTextRaycastTargets = authoredTextRaycastTargets
             });
 
-            int row = i / columnCount;
+            int row = visibleChildCount / columnCount;
             if (row >= m_rowAnchoredPositions.Count)
                 m_rowAnchoredPositions.Add(child.anchoredPosition.y);
+
+            visibleChildCount++;
         }
 
         m_lastChildCount = m_content.childCount;
         m_lastContentSize = currentSize;
+    }
+
+    private bool HasVisibleChildListChanged()
+    {
+        if (m_content == null)
+            return false;
+
+        int visibleIndex = 0;
+        for (int i = 0; i < m_content.childCount; i++)
+        {
+            var child = m_content.GetChild(i) as RectTransform;
+            if (child == null || !child.gameObject.activeInHierarchy)
+                continue;
+
+            if (visibleIndex >= m_labelStates.Count)
+                return true;
+
+            if (m_labelStates[visibleIndex].Rect != child)
+                return true;
+
+            visibleIndex++;
+        }
+
+        return visibleIndex != m_labelStates.Count;
+    }
+
+    private void RestoreTrackedVisuals()
+    {
+        for (int i = 0; i < m_labelStates.Count; i++)
+        {
+            var state = m_labelStates[i];
+            if (state.Rect == null)
+                continue;
+
+            state.Rect.anchoredPosition = state.AuthoredAnchoredPosition;
+            state.Rect.localScale = state.AuthoredScale;
+
+            if (state.CanvasGroup != null)
+            {
+                state.CanvasGroup.alpha = 1f;
+                state.CanvasGroup.blocksRaycasts = true;
+            }
+
+            if (state.Texts == null)
+                continue;
+
+            for (int t = 0; t < state.Texts.Length; t++)
+            {
+                if (!TrySetTextEnabled(state, t, true))
+                    continue;
+
+                if (state.AuthoredTextRaycastTargets != null && t < state.AuthoredTextRaycastTargets.Length)
+                    TrySetTextRaycastTarget(state, t, state.AuthoredTextRaycastTargets[t]);
+            }
+        }
     }
 
     private void SnapToCurrentSelection()

@@ -201,6 +201,13 @@ public class ProxySetDrillDownController : MonoBehaviour, IPointerClickHandler, 
         if (m_selectFirstOnShow)
             SelectFirstSelectableUnder(firstEnabledSelectableRoot);
 
+        if (m_childrenRootToShow != null)
+        {
+            Canvas.ForceUpdateCanvases();
+            if (m_childrenRootToShow.transform is RectTransform childRootRect)
+                LayoutRebuilder.ForceRebuildLayoutImmediate(childRootRect);
+        }
+
         var labelManager = ResolveOwningLabelManager();
         if (labelManager != null && m_childrenRootToShow != null)
             labelManager.SetActiveLabelsParent(m_childrenRootToShow.transform);
