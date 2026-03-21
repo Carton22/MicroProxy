@@ -6754,7 +6754,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_pinchTargetSpawner: {fileID: 1942878147}
-  m_hideWorldMarkers: 1
+  m_hideWorldMarkers: 0
 --- !u!1001 &829153834
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -16337,8 +16337,10 @@ MonoBehaviour:
   m_spatialAnchor: {fileID: 0}
   m_autoLoadOnStart: 1
   m_waitForAnchorReadySeconds: 12
-  m_outputSubfolder: MarkerSpatial
-  m_markerLayoutFileName: marker_layout.json
+  m_outputSubfolder: MarkerSpatial_Minicamera
+  m_markerLayoutFileName: marker_layout_minicamera.json
+  m_worldMarkerVisualHider: {fileID: 804318115}
+  m_hideWorldMarkersAfterLoad: 1
   m_logger: {fileID: 1561124091}
   m_enableLogging: 0
 --- !u!4 &1831850458

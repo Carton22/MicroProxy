@@ -33,6 +33,11 @@ public class MarkerSpatialAnchorPersistence : MonoBehaviour
     [SerializeField] private string m_outputSubfolder = "MarkerSpatial";
     [SerializeField] private string m_markerLayoutFileName = "marker_layout.json";
 
+    [Header("Visibility")]
+    [Tooltip("Optional. When assigned, hides world marker visuals after a marker layout is restored.")]
+    [SerializeField] private WorldMarkerVisualHider m_worldMarkerVisualHider;
+    [SerializeField] private bool m_hideWorldMarkersAfterLoad = true;
+
     [Header("Debug")]
     [SerializeField] private SharedLogger m_logger;
     [SerializeField] private bool m_enableLogging = true;
@@ -88,8 +93,6 @@ public class MarkerSpatialAnchorPersistence : MonoBehaviour
         {
             Log($"[MarkerSpatialAnchorPersistence] External create event: result={result}, anchor is null.");
         }
-
-        StartCoroutine(LoadAnchorAndMarkersCoroutine());
     }
 
     public void SaveAnchorAndMarkers()
@@ -121,6 +124,15 @@ public class MarkerSpatialAnchorPersistence : MonoBehaviour
     {
         ResolveReferences();
         yield return WaitForAnchorReadyCoroutine("load");
+
+        // Do not restore markers until we have an actual spatial anchor to restore them against.
+        // This keeps pinch placement editable before the user loads an anchor/layout.
+        if (m_spatialAnchor == null)
+        {
+            Log("[MarkerSpatialAnchorPersistence] Load skipped: no spatial anchor is loaded yet.");
+            yield break;
+        }
+
         if (!EnsureMarkerParentUnderAnchorRoot())
         {
             LogError("[MarkerSpatialAnchorPersistence] Load aborted: missing marker parent or anchor root.");
@@ -285,6 +297,9 @@ public class MarkerSpatialAnchorPersistence : MonoBehaviour
             SetMarkerText(child, record.text);
         }
 
+        if (m_hideWorldMarkersAfterLoad && m_worldMarkerVisualHider != null)
+            m_worldMarkerVisualHider.SetHideWorldMarkers(true);
+
         // After restoring markers from anchor layout, stop pinch-spawner from moving them.
         if (m_spawner != null)
             m_spawner.SetTargetPlacementLocked(true);
@@ -353,4 +368,3 @@ public class MarkerSpatialAnchorPersistence : MonoBehaviour
             tmp.text = text;
     }
 }
-
