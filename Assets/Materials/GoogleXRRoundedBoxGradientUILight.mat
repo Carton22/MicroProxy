@@ -7,7 +7,7 @@ Material:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: WhiteRoundedBoxGradientUILight
+  m_Name: GoogleXRRoundedBoxGradientUILight
   m_Shader: {fileID: 4800000, guid: 983d900999c507547af1b3742fc83ef9, type: 3}
   m_Parent: {fileID: 0}
   m_ModifiedSerializedProperties: 0
@@ -43,14 +43,14 @@ Material:
     - _UseUIAlphaClip: 0
     - _ZWrite: 0
     m_Colors:
-    - _BorderColorA: {r: 1, g: 1, b: 1, a: 0.99215686}
-    - _BorderColorB: {r: 0.82, g: 0.87, b: 0.95, a: 0.70980394}
+    - _BorderColorA: {r: 1, g: 1, b: 1, a: 1}
+    - _BorderColorB: {r: 0.8627451, g: 0.81176466, b: 1, a: 0.8}
     - _BorderLine: {r: -1, g: 1, b: -0.4, a: -1.59}
     - _BorderRadius: {r: 0, g: 0, b: 0, a: 0}
     - _CenterOffset: {r: 0, g: 0, b: 0, a: 0}
     - _Color: {r: 1, g: 1, b: 1, a: 1}
-    - _ColorA: {r: 0.97999996, g: 0.98999995, b: 1, a: 0.67058825}
-    - _ColorB: {r: 0.78999996, g: 0.8399999, b: 0.92, a: 0.8117647}
+    - _ColorA: {r: 1, g: 1, b: 1, a: 0.05882353}
+    - _ColorB: {r: 0.8509804, g: 0.8, b: 1, a: 0.12941177}
     - _Line: {r: 1, g: -0.9, b: 0.5, a: 1.87}
   m_BuildTextureStacks: []
   m_AllowLocking: 1

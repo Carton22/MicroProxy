@@ -63,7 +63,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_Material: {fileID: 2100000, guid: 97507d59c53e646799f56a1031eef6b7, type: 2}
+  m_Material: {fileID: 2100000, guid: b33f91875cac84d99b38d27d92e471f4, type: 2}
   m_Color: {r: 0.754361, g: 0.9415987, b: 0.9811321, a: 0.5137255}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
