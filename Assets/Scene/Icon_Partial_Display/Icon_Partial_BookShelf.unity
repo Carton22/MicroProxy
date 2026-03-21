@@ -1970,12 +1970,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 23af82c83b0d450e9bd82407838de5b5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_transitionDuration: 0.24
-  m_sideOffsetMultiplier: 0.72
+  m_transitionDuration: 0.3
+  m_sideOffsetMultiplier: 0.8
   m_centerScale: 1
-  m_sideScale: 0.88
+  m_sideScale: 0.9
+  m_incomingScaleOvershoot: 1.1
   m_centerAlpha: 1
-  m_sideAlpha: 0.18
+  m_sideAlpha: 0.1
   m_disableOutgoingRaycasts: 1
 --- !u!1 &318768596
 GameObject:

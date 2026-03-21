@@ -29,17 +29,29 @@ public sealed class ProxySetHorizontalTransitionPlayer : MonoBehaviour
     }
 
     [Header("Horizontal transition")]
-    [SerializeField] private float m_transitionDuration = 0.24f;
-    [SerializeField] private float m_sideOffsetMultiplier = 0.72f;
+    [SerializeField] private float m_transitionDuration = 0.3f;
+    [SerializeField] private float m_sideOffsetMultiplier = 0.8f;
     [SerializeField] private float m_centerScale = 1f;
-    [SerializeField] private float m_sideScale = 0.88f;
+    [SerializeField] private float m_sideScale = 0.9f;
+    [SerializeField] private float m_incomingScaleOvershoot = 1.1f;
     [Range(0f, 1f)] [SerializeField] private float m_centerAlpha = 1f;
-    [Range(0f, 1f)] [SerializeField] private float m_sideAlpha = 0.18f;
+    [Range(0f, 1f)] [SerializeField] private float m_sideAlpha = 0.1f;
     [SerializeField] private bool m_disableOutgoingRaycasts = true;
 
     private Coroutine m_transitionCoroutine;
 
     public bool IsTransitioning => m_transitionCoroutine != null;
+
+    private void OnValidate()
+    {
+        m_transitionDuration = Mathf.Max(0.01f, m_transitionDuration);
+        m_sideOffsetMultiplier = Mathf.Max(0f, m_sideOffsetMultiplier);
+        m_centerScale = Mathf.Max(0.01f, m_centerScale);
+        m_sideScale = Mathf.Max(0.01f, m_sideScale);
+        m_incomingScaleOvershoot = Mathf.Max(0f, m_incomingScaleOvershoot);
+        m_centerAlpha = Mathf.Clamp01(m_centerAlpha);
+        m_sideAlpha = Mathf.Clamp01(m_sideAlpha);
+    }
 
     public static ProxySetHorizontalTransitionPlayer GetOn(Transform commonParent)
     {
@@ -116,6 +128,11 @@ public sealed class ProxySetHorizontalTransitionPlayer : MonoBehaviour
         incoming.localScale = incomingSnapshot.LocalScale * m_sideScale;
         incomingSnapshot.CanvasGroup.alpha = incomingSnapshot.Alpha * m_sideAlpha;
 
+        Vector3 outgoingStartScale = outgoingSnapshot.LocalScale * m_centerScale;
+        Vector3 outgoingEndScale = outgoingSnapshot.LocalScale * m_sideScale;
+        Vector3 incomingStartScale = incomingSnapshot.LocalScale * m_sideScale;
+        Vector3 incomingEndScale = incomingSnapshot.LocalScale * m_centerScale;
+
         float duration = Mathf.Max(0.01f, m_transitionDuration);
         float elapsed = 0f;
 
@@ -123,38 +140,42 @@ public sealed class ProxySetHorizontalTransitionPlayer : MonoBehaviour
         {
             elapsed += Time.unscaledDeltaTime;
             float t = Mathf.Clamp01(elapsed / duration);
-            float eased = Mathf.SmoothStep(0f, 1f, t);
+            float outgoingMoveT = EaseInOutCubic(t);
+            float incomingMoveT = EaseOutCubic(t);
+            float outgoingFadeT = EaseInCubic(t);
+            float incomingFadeT = EaseOutCubic(t);
+            float incomingScaleT = EaseOutBack(t, m_incomingScaleOvershoot);
 
             outgoing.anchoredPosition = Vector2.Lerp(
                 outgoingSnapshot.AnchoredPosition,
                 outgoingSnapshot.AnchoredPosition + sideOffset,
-                eased
+                outgoingMoveT
             );
             outgoing.localScale = Vector3.Lerp(
-                outgoingSnapshot.LocalScale * m_centerScale,
-                outgoingSnapshot.LocalScale * m_sideScale,
-                eased
+                outgoingStartScale,
+                outgoingEndScale,
+                outgoingMoveT
             );
             outgoingSnapshot.CanvasGroup.alpha = Mathf.Lerp(
                 outgoingSnapshot.Alpha * m_centerAlpha,
                 outgoingSnapshot.Alpha * m_sideAlpha,
-                eased
+                outgoingFadeT
             );
 
             incoming.anchoredPosition = Vector2.Lerp(
                 incomingSnapshot.AnchoredPosition - sideOffset,
                 incomingSnapshot.AnchoredPosition,
-                eased
+                incomingMoveT
             );
-            incoming.localScale = Vector3.Lerp(
-                incomingSnapshot.LocalScale * m_sideScale,
-                incomingSnapshot.LocalScale * m_centerScale,
-                eased
+            incoming.localScale = Vector3.LerpUnclamped(
+                incomingStartScale,
+                incomingEndScale,
+                incomingScaleT
             );
             incomingSnapshot.CanvasGroup.alpha = Mathf.Lerp(
                 incomingSnapshot.Alpha * m_sideAlpha,
                 incomingSnapshot.Alpha * m_centerAlpha,
-                eased
+                incomingFadeT
             );
 
             yield return null;
@@ -231,7 +252,40 @@ public sealed class ProxySetHorizontalTransitionPlayer : MonoBehaviour
     {
         float outgoingWidth = outgoing.rect.width;
         float incomingWidth = incoming.rect.width;
+        float parentWidth = 0f;
+        if (outgoing.parent is RectTransform parentRect)
+            parentWidth = parentRect.rect.width;
         float fallback = 600f;
-        return Mathf.Max(outgoingWidth, incomingWidth, fallback);
+        return Mathf.Max(outgoingWidth, incomingWidth, parentWidth, fallback);
+    }
+
+    private static float EaseInCubic(float t)
+    {
+        t = Mathf.Clamp01(t);
+        return t * t * t;
+    }
+
+    private static float EaseOutCubic(float t)
+    {
+        t = 1f - Mathf.Clamp01(1f - t);
+        float inv = 1f - t;
+        return 1f - (inv * inv * inv);
+    }
+
+    private static float EaseInOutCubic(float t)
+    {
+        t = Mathf.Clamp01(t);
+        return t < 0.5f
+            ? 4f * t * t * t
+            : 1f - Mathf.Pow(-2f * t + 2f, 3f) * 0.5f;
+    }
+
+    private static float EaseOutBack(float t, float overshoot)
+    {
+        t = Mathf.Clamp01(t);
+        float c1 = overshoot;
+        float c3 = c1 + 1f;
+        float x = t - 1f;
+        return 1f + c3 * x * x * x + c1 * x * x;
     }
 }
