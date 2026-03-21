@@ -50,6 +50,7 @@ public class CanvasRayIntersectionVisualizer : MonoBehaviour
     private RectTransform[] m_markerInstances;
     private LineRenderer[] m_lineInstances;
     private readonly List<Transform> m_markerTargetsBuffer = new();
+    private readonly Vector3[] m_rectWorldCorners = new Vector3[4];
 
     private void Awake()
     {
@@ -348,11 +349,14 @@ public class CanvasRayIntersectionVisualizer : MonoBehaviour
         // Draw a bent polyline: circle -> bend point -> label.
         // Compute bend point in canvas local space, then convert to world.
         var canvasRect = canvasTransform;
-        var rect = canvasRect.rect;
 
         // Local positions on canvas
-        Vector3 circleLocal = canvasRect.InverseTransformPoint(circle.position);
-        Vector3 labelLocal = canvasRect.InverseTransformPoint(labelRect.position);
+        Vector3 circleLocal = canvasRect.InverseTransformPoint(GetRectWorldCenter(circle));
+        if (!TryProjectRectCenterOntoCanvas(labelRect, canvasRect, out Vector3 labelLocal))
+        {
+            line.gameObject.SetActive(false);
+            return;
+        }
 
         // Bend X is interpolated between circle and label X; Y matches the label.
         float bendX = Mathf.Lerp(circleLocal.x, labelLocal.x, m_bendXFactor);
@@ -378,6 +382,48 @@ public class CanvasRayIntersectionVisualizer : MonoBehaviour
         line.SetPosition(0, circlePadded);
         line.SetPosition(1, bendLocal);
         line.SetPosition(2, labelPadded);
+    }
+
+    private bool TryProjectRectCenterOntoCanvas(
+        RectTransform sourceRect,
+        RectTransform canvasTransform,
+        out Vector3 localCanvasPoint)
+    {
+        localCanvasPoint = default;
+
+        if (sourceRect == null || canvasTransform == null || m_cameraAccess == null)
+            return false;
+
+        if (!m_cameraAccess.IsPlaying)
+            return false;
+
+        Vector3 worldCenter = GetRectWorldCenter(sourceRect);
+        var camPose = m_cameraAccess.GetCameraPose();
+        Vector3 camPos = camPose.position;
+        Vector3 rayDirection = worldCenter - camPos;
+        if (rayDirection.sqrMagnitude <= 0.000001f)
+            return false;
+
+        var ray = new Ray(camPos, rayDirection.normalized);
+        var plane = new Plane(canvasTransform.forward, canvasTransform.position);
+        if (!plane.Raycast(ray, out float distanceAlongRay) || distanceAlongRay < 0f)
+            return false;
+
+        Vector3 hitWorld = ray.GetPoint(distanceAlongRay);
+        localCanvasPoint = canvasTransform.InverseTransformPoint(hitWorld);
+        return true;
+    }
+
+    private Vector3 GetRectWorldCenter(RectTransform rect)
+    {
+        if (rect == null)
+            return Vector3.zero;
+
+        rect.GetWorldCorners(m_rectWorldCorners);
+        return (m_rectWorldCorners[0]
+            + m_rectWorldCorners[1]
+            + m_rectWorldCorners[2]
+            + m_rectWorldCorners[3]) * 0.25f;
     }
 
     private bool IsMarkerSelected(int markerIndex) =>
