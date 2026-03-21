@@ -33,6 +33,7 @@ public class PinchTargetSpawner : MonoBehaviour
     [Header("Pinch thresholds")]
     [SerializeField] [Range(0f, 1f)] private float m_pinchStartStrength = 0.6f;
     [SerializeField] [Range(0f, 1f)] private float m_pinchReleaseStrength = 0.35f;
+    [SerializeField] private bool m_lockTargetPlacement;
 
     // Pool of marker transforms under the spawn parent (child objects containing a TextMeshPro).
     private readonly List<Transform> m_markerPool = new();
@@ -80,6 +81,12 @@ public class PinchTargetSpawner : MonoBehaviour
 
     private void Update()
     {
+        if (m_lockTargetPlacement)
+        {
+            m_wasPinching = false;
+            return;
+        }
+
         if (m_leftHand == null || m_targetPrefab == null)
             return;
 
@@ -166,6 +173,16 @@ public class PinchTargetSpawner : MonoBehaviour
     /// Useful for external systems (e.g. spatial-anchor persistence) that need to re-parent/save marker roots.
     /// </summary>
     public Transform GetMarkerParentTransform() => GetMarkerParent();
+
+    /// <summary>
+    /// When locked, pinch updates no longer create/reposition markers.
+    /// </summary>
+    public void SetTargetPlacementLocked(bool isLocked)
+    {
+        m_lockTargetPlacement = isLocked;
+        if (isLocked)
+            m_wasPinching = false;
+    }
 
     /// <summary>
     /// Remove all runtime targets and destroy their GameObjects. Call to clear pinch markers.

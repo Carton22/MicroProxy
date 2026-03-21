@@ -285,6 +285,10 @@ public class MarkerSpatialAnchorPersistence : MonoBehaviour
             SetMarkerText(child, record.text);
         }
 
+        // After restoring markers from anchor layout, stop pinch-spawner from moving them.
+        if (m_spawner != null)
+            m_spawner.SetTargetPlacementLocked(true);
+
         string anchorUuid = m_spatialAnchor != null ? m_spatialAnchor.Uuid.ToString() : "null";
         Log($"[MarkerSpatialAnchorPersistence] Marker layout loaded: {path} (count={layout.markers.Count}) anchorUuid={anchorUuid}");
     }
