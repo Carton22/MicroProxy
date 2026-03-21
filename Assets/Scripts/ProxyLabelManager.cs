@@ -33,11 +33,13 @@ public class ProxyLabelManager : MonoBehaviour
     private int m_selectionMin;
     private int m_selectionMax;
     private bool m_selectionRangeOverride;
+    private int m_runtimeActiveLabelsParentIndex = -1;
     private readonly Dictionary<Transform, List<ActiveStateRecord>> m_authoredChildStates = new();
 
     private void Awake()
     {
         CacheAuthoredChildStates();
+        m_runtimeActiveLabelsParentIndex = FindFirstActiveLabelsParentIndex();
     }
 
     private void CacheAuthoredChildStates()
@@ -89,22 +91,40 @@ public class ProxyLabelManager : MonoBehaviour
 
     public Transform GetActiveLabelsParent()
     {
-        for (int i = 0; i < m_labelParents.Count; i++)
-        {
-            var parent = m_labelParents[i];
-            if (parent != null && parent.gameObject.activeInHierarchy)
-                return parent;
-        }
-        return null;
+        int activeIndex = GetActiveLabelsParentIndex();
+        return GetLabelsParentAtIndex(activeIndex);
     }
 
     private int GetActiveLabelsParentIndex()
     {
+        if (IsValidLabelsParentIndex(m_runtimeActiveLabelsParentIndex))
+        {
+            var runtimeParent = GetLabelsParentAtIndex(m_runtimeActiveLabelsParentIndex);
+            if (runtimeParent != null && runtimeParent.gameObject.activeInHierarchy)
+                return m_runtimeActiveLabelsParentIndex;
+        }
+
+        int activeIndex = FindFirstActiveLabelsParentIndex();
+        if (activeIndex >= 0)
+        {
+            m_runtimeActiveLabelsParentIndex = activeIndex;
+            return activeIndex;
+        }
+
+        if (TryGetSelectedLabelsParentIndex(out int selectedIndex))
+        {
+            m_runtimeActiveLabelsParentIndex = selectedIndex;
+            return selectedIndex;
+        }
+
         for (int i = 0; i < m_labelParents.Count; i++)
         {
             var parent = m_labelParents[i];
-            if (parent != null && parent.gameObject.activeInHierarchy)
+            if (parent != null)
+            {
+                m_runtimeActiveLabelsParentIndex = i;
                 return i;
+            }
         }
         return -1;
     }
@@ -122,20 +142,7 @@ public class ProxyLabelManager : MonoBehaviour
     /// </summary>
     public bool TrySwitchToPreviousLabelsParent()
     {
-        int activeIndex = GetActiveLabelsParentIndex();
-        if (activeIndex <= 0)
-            return false;
-
-        var current = GetLabelsParentAtIndex(activeIndex);
-        var previous = GetLabelsParentAtIndex(activeIndex - 1);
-        if (previous == null)
-            return false;
-
-        if (current != null)
-            current.gameObject.SetActive(false);
-        RestoreAuthoredChildStates(previous);
-        previous.gameObject.SetActive(true);
-        return true;
+        return TrySwitchToPreviousLabelsParent(ProxySetHorizontalTransitionDirection.ToLeft);
     }
 
     /// <summary>
@@ -144,20 +151,50 @@ public class ProxyLabelManager : MonoBehaviour
     /// </summary>
     public bool TrySwitchToNextLabelsParent()
     {
+        return TrySwitchToNextLabelsParent(ProxySetHorizontalTransitionDirection.ToRight);
+    }
+
+    public bool TrySwitchToPreviousLabelsParent(ProxySetHorizontalTransitionDirection direction)
+    {
+        int activeIndex = GetActiveLabelsParentIndex();
+        if (activeIndex <= 0)
+            return false;
+
+        return TrySwitchToLabelsParentIndex(activeIndex - 1, direction);
+    }
+
+    public bool TrySwitchToNextLabelsParent(ProxySetHorizontalTransitionDirection direction)
+    {
         int activeIndex = GetActiveLabelsParentIndex();
         if (activeIndex < 0 || activeIndex >= m_labelParents.Count - 1)
             return false;
 
-        var current = GetLabelsParentAtIndex(activeIndex);
-        var next = GetLabelsParentAtIndex(activeIndex + 1);
-        if (next == null)
-            return false;
+        return TrySwitchToLabelsParentIndex(activeIndex + 1, direction);
+    }
 
-        if (current != null)
-            current.gameObject.SetActive(false);
-        RestoreAuthoredChildStates(next);
-        next.gameObject.SetActive(true);
-        return true;
+    public bool ContainsLabelsParent(Transform parent)
+    {
+        return FindBestLabelsParentIndex(parent, m_runtimeActiveLabelsParentIndex) >= 0;
+    }
+
+    public void SetActiveLabelsParent(Transform parent)
+    {
+        int index = FindBestLabelsParentIndex(parent, m_runtimeActiveLabelsParentIndex);
+        if (index >= 0)
+            m_runtimeActiveLabelsParentIndex = index;
+    }
+
+    public bool IsTransitioning
+    {
+        get
+        {
+            var activeParent = GetLabelsParentAtIndex(GetActiveLabelsParentIndex());
+            if (activeParent == null || activeParent.parent == null)
+                return false;
+
+            var player = ProxySetHorizontalTransitionPlayer.GetOn(activeParent.parent);
+            return player != null && player.IsTransitioning;
+        }
     }
 
     public int GetLabelCount()
@@ -313,5 +350,150 @@ public class ProxyLabelManager : MonoBehaviour
 
         minIndex = m_selectionMin;
         maxIndex = m_selectionMax;
+    }
+
+    private bool TrySwitchToLabelsParentIndex(int targetIndex, ProxySetHorizontalTransitionDirection direction)
+    {
+        if (IsTransitioning)
+            return false;
+
+        if (!IsValidLabelsParentIndex(targetIndex))
+            return false;
+
+        int activeIndex = GetActiveLabelsParentIndex();
+        var current = GetLabelsParentAtIndex(activeIndex);
+        var target = GetLabelsParentAtIndex(targetIndex);
+        if (target == null)
+            return false;
+
+        RestoreAuthoredChildStates(target);
+        target.gameObject.SetActive(true);
+        m_runtimeActiveLabelsParentIndex = targetIndex;
+
+        if (current == null || current == target)
+            return true;
+
+        if (TryPlayHorizontalTransition(current, target, direction))
+            return true;
+
+        current.gameObject.SetActive(false);
+        return true;
+    }
+
+    private bool TryPlayHorizontalTransition(
+        Transform outgoing,
+        Transform incoming,
+        ProxySetHorizontalTransitionDirection direction)
+    {
+        var outgoingRect = outgoing as RectTransform;
+        var incomingRect = incoming as RectTransform;
+        if (outgoingRect == null || incomingRect == null)
+            return false;
+
+        if (outgoingRect.parent == null || outgoingRect.parent != incomingRect.parent)
+            return false;
+
+        var player = ProxySetHorizontalTransitionPlayer.GetOrCreate(outgoingRect.parent);
+        if (player == null)
+            return false;
+
+        return player.TryPlay(
+            outgoingRect,
+            incomingRect,
+            direction,
+            () =>
+            {
+                if (outgoing != null)
+                    outgoing.gameObject.SetActive(false);
+            }
+        );
+    }
+
+    private int FindFirstActiveLabelsParentIndex()
+    {
+        for (int i = 0; i < m_labelParents.Count; i++)
+        {
+            var parent = m_labelParents[i];
+            if (parent != null && parent.gameObject.activeInHierarchy)
+                return i;
+        }
+
+        return -1;
+    }
+
+    private bool TryGetSelectedLabelsParentIndex(out int selectedIndex)
+    {
+        selectedIndex = -1;
+
+        var current = EventSystem.current != null ? EventSystem.current.currentSelectedGameObject : null;
+        if (current == null)
+            return false;
+
+        int bestIndex = -1;
+        int bestDistance = int.MaxValue;
+
+        for (int i = 0; i < m_labelParents.Count; i++)
+        {
+            var parent = m_labelParents[i];
+            if (parent == null)
+                continue;
+
+            if (current != parent.gameObject && !current.transform.IsChildOf(parent))
+                continue;
+
+            if (i == m_runtimeActiveLabelsParentIndex)
+            {
+                selectedIndex = i;
+                return true;
+            }
+
+            int distance = m_runtimeActiveLabelsParentIndex >= 0
+                ? Mathf.Abs(i - m_runtimeActiveLabelsParentIndex)
+                : i;
+
+            if (bestIndex >= 0 && distance >= bestDistance)
+                continue;
+
+            bestIndex = i;
+            bestDistance = distance;
+        }
+
+        if (bestIndex < 0)
+            return false;
+
+        selectedIndex = bestIndex;
+        return true;
+    }
+
+    private int FindBestLabelsParentIndex(Transform parent, int preferredIndex)
+    {
+        if (parent == null)
+            return -1;
+
+        int bestIndex = -1;
+        int bestDistance = int.MaxValue;
+
+        for (int i = 0; i < m_labelParents.Count; i++)
+        {
+            if (m_labelParents[i] != parent)
+                continue;
+
+            if (i == preferredIndex)
+                return i;
+
+            int distance = preferredIndex >= 0 ? Mathf.Abs(i - preferredIndex) : i;
+            if (bestIndex >= 0 && distance >= bestDistance)
+                continue;
+
+            bestIndex = i;
+            bestDistance = distance;
+        }
+
+        return bestIndex;
+    }
+
+    private bool IsValidLabelsParentIndex(int index)
+    {
+        return index >= 0 && index < m_labelParents.Count && m_labelParents[index] != null;
     }
 }

@@ -1886,6 +1886,7 @@ GameObject:
   - component: {fileID: 269540402}
   - component: {fileID: 269540401}
   - component: {fileID: 269540403}
+  - component: {fileID: 269540404}
   m_Layer: 0
   m_Name: ScreenUI
   m_TagString: Untagged
@@ -1956,6 +1957,25 @@ MonoBehaviour:
   m_keepAlignedContinuously: 1
   m_startupRefreshFrames: 6
   m_hiddenAlphaThreshold: 0.05
+--- !u!114 &269540404
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 269540400}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 23af82c83b0d450e9bd82407838de5b5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_transitionDuration: 0.24
+  m_sideOffsetMultiplier: 0.72
+  m_centerScale: 1
+  m_sideScale: 0.88
+  m_centerAlpha: 1
+  m_sideAlpha: 0.18
+  m_disableOutgoingRaycasts: 1
 --- !u!1 &318768596
 GameObject:
   m_ObjectHideFlags: 0
@@ -5908,9 +5928,6 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 4235160468344426946, guid: a9088ffdc24df41fba5fd6cb1eaf3ead, type: 3}
       insertIndex: -1
       addedObject: {fileID: 1131747128}
-    - targetCorrespondingSourceObject: {fileID: 789804525493875455, guid: a9088ffdc24df41fba5fd6cb1eaf3ead, type: 3}
-      insertIndex: -1
-      addedObject: {fileID: 0}
   m_SourcePrefab: {fileID: 100100000, guid: a9088ffdc24df41fba5fd6cb1eaf3ead, type: 3}
 --- !u!224 &1131747126 stripped
 RectTransform:
@@ -10005,9 +10022,6 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 4235160468344426946, guid: a9088ffdc24df41fba5fd6cb1eaf3ead, type: 3}
       insertIndex: -1
       addedObject: {fileID: 1757337953}
-    - targetCorrespondingSourceObject: {fileID: 789804525493875455, guid: a9088ffdc24df41fba5fd6cb1eaf3ead, type: 3}
-      insertIndex: -1
-      addedObject: {fileID: 0}
   m_SourcePrefab: {fileID: 100100000, guid: a9088ffdc24df41fba5fd6cb1eaf3ead, type: 3}
 --- !u!224 &1757337951 stripped
 RectTransform:

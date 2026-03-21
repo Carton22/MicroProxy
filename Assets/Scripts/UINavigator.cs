@@ -22,11 +22,27 @@ public class UINavigator : MonoBehaviour
     }
 
     // Call these from your custom events or input
-    public void MoveUp() => SendMove(MoveDirection.Up, Vector2.up);
-    public void MoveDown() => SendMove(MoveDirection.Down, Vector2.down);
+    public void MoveUp()
+    {
+        if (IsNavigationLocked())
+            return;
+
+        SendMove(MoveDirection.Up, Vector2.up);
+    }
+
+    public void MoveDown()
+    {
+        if (IsNavigationLocked())
+            return;
+
+        SendMove(MoveDirection.Down, Vector2.down);
+    }
 
     public void MoveLeft()
     {
+        if (IsNavigationLocked())
+            return;
+
         if (TrySwitchToPreviousProxySet())
             return;
         SendMove(MoveDirection.Left, Vector2.left);
@@ -34,16 +50,28 @@ public class UINavigator : MonoBehaviour
 
     public void MoveRight()
     {
+        if (IsNavigationLocked())
+            return;
+
         if (TrySwitchToNextProxySet())
             return;
         SendMove(MoveDirection.Right, Vector2.right);
     }
 
-    public void ClickSelected() => SendSubmit();
+    public void ClickSelected()
+    {
+        if (IsNavigationLocked())
+            return;
+
+        SendSubmit();
+    }
 
     // Optionally expose a vector based move if you prefer
     public void Move(Vector2 dir)
     {
+        if (IsNavigationLocked())
+            return;
+
         if (dir.sqrMagnitude < 0.001f) return;
         dir.Normalize();
         if (Mathf.Abs(dir.x) > Mathf.Abs(dir.y))
@@ -223,7 +251,7 @@ public class UINavigator : MonoBehaviour
         if (ProxySetDrillDownController.IsAnyDrillDownChildViewActive) return false;
         if (!TryGetSelectedColumnInfo(out int col, out _) || col != 0) return false;
 
-        if (!m_labelManager.TrySwitchToPreviousLabelsParent())
+        if (!m_labelManager.TrySwitchToPreviousLabelsParent(ProxySetHorizontalTransitionDirection.ToLeft))
             return false;
 
         var newRoot = m_labelManager.GetActiveLabelsParent();
@@ -243,7 +271,7 @@ public class UINavigator : MonoBehaviour
         if (ProxySetDrillDownController.IsAnyDrillDownChildViewActive) return false;
         if (!TryGetSelectedColumnInfo(out int col, out int columnCount) || col != columnCount - 1) return false;
 
-        if (!m_labelManager.TrySwitchToNextLabelsParent())
+        if (!m_labelManager.TrySwitchToNextLabelsParent(ProxySetHorizontalTransitionDirection.ToRight))
             return false;
 
         var newRoot = m_labelManager.GetActiveLabelsParent();
@@ -277,5 +305,10 @@ public class UINavigator : MonoBehaviour
             return false;
 
         return selected == activeParent.gameObject || selected.transform.IsChildOf(activeParent);
+    }
+
+    bool IsNavigationLocked()
+    {
+        return m_labelManager != null && m_labelManager.IsTransitioning;
     }
 }

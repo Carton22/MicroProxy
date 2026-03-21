@@ -52,6 +52,7 @@ public class ProxySetDrillDownController : MonoBehaviour, IPointerClickHandler, 
     private bool m_subscribedToTwistEvents;
     private bool m_inTwistGesture;
     private bool m_twistConsumed;
+    private ProxyLabelManager m_cachedLabelManager;
 
     public static bool ShouldReserveTwistForDrillDown()
     {
@@ -112,20 +113,28 @@ public class ProxySetDrillDownController : MonoBehaviour, IPointerClickHandler, 
 
     private void OnDisable()
     {
+        bool keepRegisteredChildView = m_registeredAsChildView && IsInChildView();
         UnsubscribeFromTwistEvents();
+
+        if (!keepRegisteredChildView)
+            UpdateGlobalDrillDownState(false);
+    }
+
+    private void OnDestroy()
+    {
         UpdateGlobalDrillDownState(false);
     }
 
     private void HandlePress()
     {
+        if (IsInChildView() || IsTransitioningBetweenViews())
+            return;
+
         if (m_childrenToEnable == null || m_childrenToEnable.Count == 0)
             return;
 
         if (m_debugLog)
             LogDebug($"[ProxySetDrillDownController] DrillDown from {gameObject.name}. children={m_childrenToEnable.Count}");
-
-        if (m_levelRootToHideOnDrillDown != null)
-            m_levelRootToHideOnDrillDown.SetActive(false);
 
         if (m_childrenRootToShow != null)
             m_childrenRootToShow.SetActive(true);
@@ -192,7 +201,20 @@ public class ProxySetDrillDownController : MonoBehaviour, IPointerClickHandler, 
         if (m_selectFirstOnShow)
             SelectFirstSelectableUnder(firstEnabledSelectableRoot);
 
-        UpdateGlobalDrillDownState(IsInChildView());
+        var labelManager = ResolveOwningLabelManager();
+        if (labelManager != null && m_childrenRootToShow != null)
+            labelManager.SetActiveLabelsParent(m_childrenRootToShow.transform);
+
+        if (!TryPlayTransition(
+                m_levelRootToHideOnDrillDown,
+                m_childrenRootToShow,
+                ProxySetHorizontalTransitionDirection.ToRight,
+                HideParentRoot))
+        {
+            HideParentRoot();
+        }
+
+        UpdateGlobalDrillDownState(true);
     }
 
     private bool IsInChildView()
@@ -205,24 +227,18 @@ public class ProxySetDrillDownController : MonoBehaviour, IPointerClickHandler, 
 
     private void ReturnToParentView()
     {
+        if (IsTransitioningBetweenViews())
+            return;
+
         if (m_levelRootToHideOnDrillDown != null)
             m_levelRootToHideOnDrillDown.SetActive(true);
 
-        if (m_childrenRootToShow != null)
-        {
-            // Hide all direct children under the child root, then hide the root.
-            var rootTf = m_childrenRootToShow.transform;
-            for (int i = 0; i < rootTf.childCount; i++)
-            {
-                var childTf = rootTf.GetChild(i);
-                if (childTf != null)
-                    childTf.gameObject.SetActive(false);
-            }
-            m_childrenRootToShow.SetActive(false);
-        }
-
         if (m_debugLog)
             LogDebug($"[ProxySetDrillDownController] Return to parent from {gameObject.name}");
+
+        var labelManager = ResolveOwningLabelManager();
+        if (labelManager != null && m_levelRootToHideOnDrillDown != null)
+            labelManager.SetActiveLabelsParent(m_levelRootToHideOnDrillDown.transform);
 
         // Restore focus to the label node this controller is attached to.
         if (EventSystem.current != null && gameObject.activeInHierarchy)
@@ -235,7 +251,16 @@ public class ProxySetDrillDownController : MonoBehaviour, IPointerClickHandler, 
                 selectable.Select();
         }
 
-        UpdateGlobalDrillDownState(IsInChildView());
+        if (!TryPlayTransition(
+                m_childrenRootToShow,
+                m_levelRootToHideOnDrillDown,
+                ProxySetHorizontalTransitionDirection.ToLeft,
+                HideChildRoot))
+        {
+            HideChildRoot();
+        }
+
+        UpdateGlobalDrillDownState(false);
     }
 
     private static bool TryGetSelectedDrillDownController(out ProxySetDrillDownController controller)
@@ -261,6 +286,9 @@ public class ProxySetDrillDownController : MonoBehaviour, IPointerClickHandler, 
 
     private bool CanDrillDownFromCurrentSelection()
     {
+        if (IsTransitioningBetweenViews())
+            return false;
+
         if (IsInChildView())
             return false;
 
@@ -567,5 +595,106 @@ public class ProxySetDrillDownController : MonoBehaviour, IPointerClickHandler, 
 
         s_activeChildViewCount = Mathf.Max(0, s_activeChildViewCount - 1);
         m_registeredAsChildView = false;
+    }
+
+    private ProxyLabelManager ResolveOwningLabelManager()
+    {
+        if (m_cachedLabelManager != null &&
+            (m_cachedLabelManager.ContainsLabelsParent(m_levelRootToHideOnDrillDown != null ? m_levelRootToHideOnDrillDown.transform : null) ||
+             m_cachedLabelManager.ContainsLabelsParent(m_childrenRootToShow != null ? m_childrenRootToShow.transform : null)))
+        {
+            return m_cachedLabelManager;
+        }
+
+        var managers = FindObjectsByType<ProxyLabelManager>(FindObjectsInactive.Include, FindObjectsSortMode.None);
+        for (int i = 0; i < managers.Length; i++)
+        {
+            var manager = managers[i];
+            if (manager == null)
+                continue;
+
+            bool managesParent = m_levelRootToHideOnDrillDown != null &&
+                manager.ContainsLabelsParent(m_levelRootToHideOnDrillDown.transform);
+            bool managesChild = m_childrenRootToShow != null &&
+                manager.ContainsLabelsParent(m_childrenRootToShow.transform);
+            if (!managesParent && !managesChild)
+                continue;
+
+            m_cachedLabelManager = manager;
+            return manager;
+        }
+
+        return null;
+    }
+
+    private bool IsTransitioningBetweenViews()
+    {
+        var player = GetTransitionPlayer(createIfMissing: false);
+        return player != null && player.IsTransitioning;
+    }
+
+    private bool TryPlayTransition(
+        GameObject outgoingRoot,
+        GameObject incomingRoot,
+        ProxySetHorizontalTransitionDirection direction,
+        System.Action onComplete)
+    {
+        if (outgoingRoot == null || incomingRoot == null)
+            return false;
+
+        var outgoingRect = outgoingRoot.transform as RectTransform;
+        var incomingRect = incomingRoot.transform as RectTransform;
+        if (outgoingRect == null || incomingRect == null)
+            return false;
+
+        if (outgoingRect.parent == null || outgoingRect.parent != incomingRect.parent)
+            return false;
+
+        var player = GetTransitionPlayer(createIfMissing: true);
+        if (player == null)
+            return false;
+
+        incomingRoot.SetActive(true);
+        return player.TryPlay(outgoingRect, incomingRect, direction, onComplete);
+    }
+
+    private ProxySetHorizontalTransitionPlayer GetTransitionPlayer(bool createIfMissing)
+    {
+        Transform parentTransform = null;
+
+        if (m_levelRootToHideOnDrillDown != null)
+            parentTransform = m_levelRootToHideOnDrillDown.transform.parent;
+
+        if (parentTransform == null && m_childrenRootToShow != null)
+            parentTransform = m_childrenRootToShow.transform.parent;
+
+        if (parentTransform == null)
+            return null;
+
+        return createIfMissing
+            ? ProxySetHorizontalTransitionPlayer.GetOrCreate(parentTransform)
+            : ProxySetHorizontalTransitionPlayer.GetOn(parentTransform);
+    }
+
+    private void HideParentRoot()
+    {
+        if (m_levelRootToHideOnDrillDown != null)
+            m_levelRootToHideOnDrillDown.SetActive(false);
+    }
+
+    private void HideChildRoot()
+    {
+        if (m_childrenRootToShow == null)
+            return;
+
+        var rootTf = m_childrenRootToShow.transform;
+        for (int i = 0; i < rootTf.childCount; i++)
+        {
+            var childTf = rootTf.GetChild(i);
+            if (childTf != null)
+                childTf.gameObject.SetActive(false);
+        }
+
+        m_childrenRootToShow.SetActive(false);
     }
 }

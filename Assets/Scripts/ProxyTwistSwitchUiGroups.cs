@@ -61,6 +61,9 @@ public class ProxyTwistSwitchUiGroups : MonoBehaviour
 
     private void OnStartPinchAndTwist()
     {
+        if (IsTransitioning())
+            return;
+
         if (ProxySetDrillDownController.ShouldReserveTwistForDrillDown())
         {
             if (m_debugLog)
@@ -101,10 +104,21 @@ public class ProxyTwistSwitchUiGroups : MonoBehaviour
         if (stepOffset == m_lastStepOffset)
             return;
 
+        int targetIndex = Mathf.Clamp(m_startGroupIndex + stepOffset, 0, count - 1);
+        int currentIndex = GetCurrentGroupIndex();
+        if (currentIndex < 0)
+            currentIndex = GetFirstActiveGroupIndex();
+
+        if (currentIndex == targetIndex || IsTransitioning())
+            return;
+
         m_lastStepOffset = stepOffset;
 
-        int targetIndex = Mathf.Clamp(m_startGroupIndex + stepOffset, 0, count - 1);
-        ActivateGroup(targetIndex);
+        var direction = targetIndex > currentIndex
+            ? ProxySetHorizontalTransitionDirection.ToRight
+            : ProxySetHorizontalTransitionDirection.ToLeft;
+
+        ActivateGroup(targetIndex, direction);
 
         if (m_debugLog)
             Debug.Log($"[ProxyTwistSwitchUiGroups] Twist={signedNormalized:F2} -> group {targetIndex}");
@@ -150,27 +164,103 @@ public class ProxyTwistSwitchUiGroups : MonoBehaviour
         for (int i = 0; i < m_groups.Count; i++)
         {
             var g = m_groups[i];
-            if (g != null && selT.IsChildOf(g))
+            if (g != null && (selected == g.gameObject || selT.IsChildOf(g)))
                 return i;
         }
         return -1;
     }
 
-    private void ActivateGroup(int targetIndex)
+    private void ActivateGroup(int targetIndex, ProxySetHorizontalTransitionDirection direction)
     {
         targetIndex = Mathf.Clamp(targetIndex, 0, m_groups.Count - 1);
+        int currentIndex = GetFirstActiveGroupIndex();
+        Transform currentRoot = currentIndex >= 0 ? m_groups[currentIndex] : null;
+        Transform targetRoot = m_groups[targetIndex];
+        if (targetRoot == null)
+            return;
 
         for (int i = 0; i < m_groups.Count; i++)
         {
+            if (i == currentIndex || i == targetIndex)
+                continue;
+
             var g = m_groups[i];
             if (g != null)
-                g.gameObject.SetActive(i == targetIndex);
+                g.gameObject.SetActive(false);
         }
 
-        var targetRoot = m_groups[targetIndex];
+        targetRoot.gameObject.SetActive(true);
+        UpdateOwningLabelManager(targetRoot);
+
+        if (currentRoot != null && currentRoot != targetRoot)
+        {
+            if (!TryPlayTransition(currentRoot, targetRoot, direction))
+                currentRoot.gameObject.SetActive(false);
+        }
+
         var first = FindFirstSelectableIn(targetRoot);
         if (first != null)
             Select(first);
+    }
+
+    private void UpdateOwningLabelManager(Transform targetRoot)
+    {
+        if (targetRoot == null)
+            return;
+
+        var managers = FindObjectsByType<ProxyLabelManager>(FindObjectsInactive.Include, FindObjectsSortMode.None);
+        for (int i = 0; i < managers.Length; i++)
+        {
+            var manager = managers[i];
+            if (manager == null || !manager.ContainsLabelsParent(targetRoot))
+                continue;
+
+            manager.SetActiveLabelsParent(targetRoot);
+            return;
+        }
+    }
+
+    private bool IsTransitioning()
+    {
+        int activeIndex = GetFirstActiveGroupIndex();
+        if (activeIndex < 0)
+            return false;
+
+        var activeRoot = m_groups[activeIndex];
+        if (activeRoot == null || activeRoot.parent == null)
+            return false;
+
+        var player = ProxySetHorizontalTransitionPlayer.GetOn(activeRoot.parent);
+        return player != null && player.IsTransitioning;
+    }
+
+    private bool TryPlayTransition(
+        Transform outgoing,
+        Transform incoming,
+        ProxySetHorizontalTransitionDirection direction)
+    {
+        var outgoingRect = outgoing as RectTransform;
+        var incomingRect = incoming as RectTransform;
+        if (outgoingRect == null || incomingRect == null)
+            return false;
+
+        if (outgoingRect.parent == null || outgoingRect.parent != incomingRect.parent)
+            return false;
+
+        var player = ProxySetHorizontalTransitionPlayer.GetOrCreate(outgoingRect.parent);
+        if (player == null)
+            return false;
+
+        return player.TryPlay(
+            outgoingRect,
+            incomingRect,
+            direction,
+            () =>
+            {
+                if (outgoing != null)
+                    outgoing.gameObject.SetActive(false);
+            }
+        );
     }
 
     private static GameObject FindFirstSelectableIn(Transform root)
