@@ -310,7 +310,6 @@ public class ProxyLabelHorizonScroller : MonoBehaviour
             state.Rect.localScale = Vector3.Lerp(state.Rect.localScale, state.AuthoredScale * targetScaleFactor, lerpFactor);
             float appliedAlpha = Mathf.Lerp(state.CanvasGroup.alpha, targetAlpha, lerpFactor);
             state.CanvasGroup.alpha = appliedAlpha;
-            ApplyTextAlpha(state, appliedAlpha);
 
             if (m_disableRaycastsForHiddenItems)
             {
@@ -318,8 +317,11 @@ public class ProxyLabelHorizonScroller : MonoBehaviour
                 state.CanvasGroup.blocksRaycasts = isVisibleEnough;
             }
 
+            // Keep TMP renderers enabled and hide via alpha instead. Toggling world-space TMP
+            // renderers on/off during the wheel animation can leave some labels stuck invisible.
             bool shouldRender = !m_hideLabelsCompletelyOutsideWindow || appliedAlpha > m_hardCullAlphaThreshold || isSelected;
-            SetTextRenderersEnabled(state, shouldRender);
+            ApplyTextAlpha(state, shouldRender ? appliedAlpha : 0f);
+            SetTextRenderersEnabled(state, true);
         }
     }
 

@@ -4,7 +4,7 @@ using UnityEngine;
 public class ProxySetMiniCameraAligner : MonoBehaviour
 {
     [SerializeField] private Transform m_proxySetsRoot;
-    [SerializeField] private RectTransform m_miniCameraRect;
+    [SerializeField] private RectTransform m_AlignRect;
     [SerializeField] private float m_proxySetsX = 0.42f;
     [SerializeField] private float m_verticalOffset;
     [SerializeField] private bool m_keepAlignedContinuously = true;
@@ -56,7 +56,7 @@ public class ProxySetMiniCameraAligner : MonoBehaviour
     private void AlignAllProxySets()
     {
         Bounds miniCameraBounds = default;
-        bool hasMiniCameraBounds = m_miniCameraRect != null && TryGetBoundsInRootSpace(m_miniCameraRect, out miniCameraBounds);
+        bool hasMiniCameraBounds = m_AlignRect != null && TryGetBoundsInRootSpace(m_AlignRect, out miniCameraBounds);
         float targetCenterY = hasMiniCameraBounds ? miniCameraBounds.center.y + m_verticalOffset : 0f;
 
         for (int i = 0; i < m_proxySetsRoot.childCount; i++)
