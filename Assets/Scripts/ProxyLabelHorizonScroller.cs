@@ -49,6 +49,7 @@ public class ProxyLabelHorizonScroller : MonoBehaviour
     [SerializeField] private float m_scrollSmoothTime = 0.12f;
     [SerializeField] private float m_visualLerpSpeed = 12f;
     [SerializeField] private float m_focusScale = 1.08f;
+    [SerializeField] private float m_selectedScaleMultiplier = 1.06f;
     [SerializeField] private float m_edgeScale = 0.84f;
     [SerializeField] private float m_hiddenScale = 0.62f;
     [SerializeField] private float m_sideBend = 24f;
@@ -88,6 +89,7 @@ public class ProxyLabelHorizonScroller : MonoBehaviour
         m_scrollSmoothTime = Mathf.Max(0.01f, m_scrollSmoothTime);
         m_visualLerpSpeed = Mathf.Max(0.01f, m_visualLerpSpeed);
         m_focusScale = Mathf.Max(0.01f, m_focusScale);
+        m_selectedScaleMultiplier = Mathf.Max(1f, m_selectedScaleMultiplier);
         m_edgeScale = Mathf.Max(0.01f, m_edgeScale);
         m_hiddenScale = Mathf.Max(0.01f, m_hiddenScale);
         m_hardCullAlphaThreshold = Mathf.Clamp01(m_hardCullAlphaThreshold);
@@ -292,7 +294,7 @@ public class ProxyLabelHorizonScroller : MonoBehaviour
             float targetScaleFactor = Mathf.Lerp(m_hiddenScale, m_edgeScale, bandT);
             targetScaleFactor = Mathf.Lerp(targetScaleFactor, m_focusScale, focusT);
             if (isSelected)
-                targetScaleFactor = Mathf.Max(targetScaleFactor, m_focusScale);
+                targetScaleFactor = Mathf.Max(targetScaleFactor, m_focusScale) * m_selectedScaleMultiplier;
 
             float targetAlpha = Mathf.Lerp(m_hiddenAlpha, m_edgeAlpha, bandT);
             targetAlpha = Mathf.Lerp(targetAlpha, 1f, focusT);
