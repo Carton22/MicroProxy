@@ -1024,10 +1024,7 @@ PrefabInstance:
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents:
-    - targetCorrespondingSourceObject: {fileID: 4235160468344426946, guid: a9088ffdc24df41fba5fd6cb1eaf3ead, type: 3}
-      insertIndex: -1
-      addedObject: {fileID: 158198121}
+    m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: a9088ffdc24df41fba5fd6cb1eaf3ead, type: 3}
 --- !u!224 &158198119 stripped
 RectTransform:
@@ -1039,29 +1036,6 @@ GameObject:
   m_CorrespondingSourceObject: {fileID: 4235160468344426946, guid: a9088ffdc24df41fba5fd6cb1eaf3ead, type: 3}
   m_PrefabInstance: {fileID: 158198118}
   m_PrefabAsset: {fileID: 0}
---- !u!114 &158198121
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 158198120}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 8c23af966c1154cfeb68c1a09b6e4c9a, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  m_levelRootToHideOnDrillDown: {fileID: 1941485414}
-  m_childrenRootToShow: {fileID: 0}
-  m_childrenToEnable:
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  m_selectFirstOnShow: 1
-  m_twistEventSource: {fileID: 251487948}
-  m_positiveTwistDrillsDown: 1
-  m_logger: {fileID: 1561124091}
 --- !u!1001 &162656606
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -2182,6 +2156,10 @@ MonoBehaviour:
   m_attributeLabelsParentForManager: {fileID: 0}
   m_selectFirstSelectableInAttributeUi: 1
   m_attributeUiInactiveByDefault: 1
+  m_attributeTwistEventSource: {fileID: 0}
+  m_attributeNamesParent: {fileID: 0}
+  m_attributeTwistPerStep: 0.12
+  m_attributeButtonValueSeparator: ': '
 --- !u!114 &251487952
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2988,6 +2966,10 @@ MonoBehaviour:
   m_attributeLabelsParentForManager: {fileID: 0}
   m_selectFirstSelectableInAttributeUi: 1
   m_attributeUiInactiveByDefault: 1
+  m_attributeTwistEventSource: {fileID: 0}
+  m_attributeNamesParent: {fileID: 0}
+  m_attributeTwistPerStep: 0.12
+  m_attributeButtonValueSeparator: ': '
 --- !u!114 &456180479
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -3777,10 +3759,7 @@ PrefabInstance:
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents:
-    - targetCorrespondingSourceObject: {fileID: 4235160468344426946, guid: a9088ffdc24df41fba5fd6cb1eaf3ead, type: 3}
-      insertIndex: -1
-      addedObject: {fileID: 629584136}
+    m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: a9088ffdc24df41fba5fd6cb1eaf3ead, type: 3}
 --- !u!1 &629584134 stripped
 GameObject:
@@ -3792,26 +3771,6 @@ RectTransform:
   m_CorrespondingSourceObject: {fileID: 7191250308198253915, guid: a9088ffdc24df41fba5fd6cb1eaf3ead, type: 3}
   m_PrefabInstance: {fileID: 629584133}
   m_PrefabAsset: {fileID: 0}
---- !u!114 &629584136
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 629584134}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 8c23af966c1154cfeb68c1a09b6e4c9a, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  m_levelRootToHideOnDrillDown: {fileID: 110900254}
-  m_childrenRootToShow: {fileID: 0}
-  m_childrenToEnable:
-  - {fileID: 0}
-  m_selectFirstOnShow: 1
-  m_twistEventSource: {fileID: 251487948}
-  m_positiveTwistDrillsDown: 1
-  m_logger: {fileID: 1561124091}
 --- !u!1 &632844191
 GameObject:
   m_ObjectHideFlags: 0
@@ -4807,10 +4766,7 @@ PrefabInstance:
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents:
-    - targetCorrespondingSourceObject: {fileID: 4235160468344426946, guid: a9088ffdc24df41fba5fd6cb1eaf3ead, type: 3}
-      insertIndex: -1
-      addedObject: {fileID: 890104417}
+    m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: a9088ffdc24df41fba5fd6cb1eaf3ead, type: 3}
 --- !u!1 &890104415 stripped
 GameObject:
@@ -4822,27 +4778,6 @@ RectTransform:
   m_CorrespondingSourceObject: {fileID: 7191250308198253915, guid: a9088ffdc24df41fba5fd6cb1eaf3ead, type: 3}
   m_PrefabInstance: {fileID: 890104414}
   m_PrefabAsset: {fileID: 0}
---- !u!114 &890104417
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 890104415}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 8c23af966c1154cfeb68c1a09b6e4c9a, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  m_levelRootToHideOnDrillDown: {fileID: 808040186}
-  m_childrenRootToShow: {fileID: 0}
-  m_childrenToEnable:
-  - {fileID: 0}
-  - {fileID: 0}
-  m_selectFirstOnShow: 1
-  m_twistEventSource: {fileID: 251487948}
-  m_positiveTwistDrillsDown: 1
-  m_logger: {fileID: 1561124091}
 --- !u!1001 &897262283
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -4962,10 +4897,7 @@ PrefabInstance:
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents:
-    - targetCorrespondingSourceObject: {fileID: 4235160468344426946, guid: a9088ffdc24df41fba5fd6cb1eaf3ead, type: 3}
-      insertIndex: -1
-      addedObject: {fileID: 897262286}
+    m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: a9088ffdc24df41fba5fd6cb1eaf3ead, type: 3}
 --- !u!224 &897262284 stripped
 RectTransform:
@@ -4977,28 +4909,6 @@ GameObject:
   m_CorrespondingSourceObject: {fileID: 4235160468344426946, guid: a9088ffdc24df41fba5fd6cb1eaf3ead, type: 3}
   m_PrefabInstance: {fileID: 897262283}
   m_PrefabAsset: {fileID: 0}
---- !u!114 &897262286
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 897262285}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 8c23af966c1154cfeb68c1a09b6e4c9a, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  m_levelRootToHideOnDrillDown: {fileID: 1941485414}
-  m_childrenRootToShow: {fileID: 0}
-  m_childrenToEnable:
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  m_selectFirstOnShow: 1
-  m_twistEventSource: {fileID: 251487948}
-  m_positiveTwistDrillsDown: 1
-  m_logger: {fileID: 1561124091}
 --- !u!1 &897444003
 GameObject:
   m_ObjectHideFlags: 0
@@ -6496,10 +6406,7 @@ PrefabInstance:
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents:
-    - targetCorrespondingSourceObject: {fileID: 4235160468344426946, guid: a9088ffdc24df41fba5fd6cb1eaf3ead, type: 3}
-      insertIndex: -1
-      addedObject: {fileID: 1367661626}
+    m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: a9088ffdc24df41fba5fd6cb1eaf3ead, type: 3}
 --- !u!1 &1367661624 stripped
 GameObject:
@@ -6511,28 +6418,6 @@ RectTransform:
   m_CorrespondingSourceObject: {fileID: 7191250308198253915, guid: a9088ffdc24df41fba5fd6cb1eaf3ead, type: 3}
   m_PrefabInstance: {fileID: 1367661623}
   m_PrefabAsset: {fileID: 0}
---- !u!114 &1367661626
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1367661624}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 8c23af966c1154cfeb68c1a09b6e4c9a, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  m_levelRootToHideOnDrillDown: {fileID: 808040186}
-  m_childrenRootToShow: {fileID: 0}
-  m_childrenToEnable:
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  m_selectFirstOnShow: 1
-  m_twistEventSource: {fileID: 251487948}
-  m_positiveTwistDrillsDown: 1
-  m_logger: {fileID: 1561124091}
 --- !u!1 &1410576277 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 4235160468344426946, guid: b5dc2f0aa6464dc7b7bf9a61a4ca7260, type: 3}
@@ -7033,10 +6918,7 @@ PrefabInstance:
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents:
-    - targetCorrespondingSourceObject: {fileID: 4235160468344426946, guid: a9088ffdc24df41fba5fd6cb1eaf3ead, type: 3}
-      insertIndex: -1
-      addedObject: {fileID: 1470980323}
+    m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: a9088ffdc24df41fba5fd6cb1eaf3ead, type: 3}
 --- !u!224 &1470980321 stripped
 RectTransform:
@@ -7048,26 +6930,6 @@ GameObject:
   m_CorrespondingSourceObject: {fileID: 4235160468344426946, guid: a9088ffdc24df41fba5fd6cb1eaf3ead, type: 3}
   m_PrefabInstance: {fileID: 1470980320}
   m_PrefabAsset: {fileID: 0}
---- !u!114 &1470980323
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1470980322}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 8c23af966c1154cfeb68c1a09b6e4c9a, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  m_levelRootToHideOnDrillDown: {fileID: 1941485414}
-  m_childrenRootToShow: {fileID: 0}
-  m_childrenToEnable:
-  - {fileID: 0}
-  m_selectFirstOnShow: 1
-  m_twistEventSource: {fileID: 251487948}
-  m_positiveTwistDrillsDown: 1
-  m_logger: {fileID: 1561124091}
 --- !u!1 &1561124086
 GameObject:
   m_ObjectHideFlags: 0
@@ -7574,10 +7436,7 @@ PrefabInstance:
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents:
-    - targetCorrespondingSourceObject: {fileID: 4235160468344426946, guid: a9088ffdc24df41fba5fd6cb1eaf3ead, type: 3}
-      insertIndex: -1
-      addedObject: {fileID: 1618008168}
+    m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: a9088ffdc24df41fba5fd6cb1eaf3ead, type: 3}
 --- !u!1 &1618008166 stripped
 GameObject:
@@ -7589,27 +7448,6 @@ RectTransform:
   m_CorrespondingSourceObject: {fileID: 7191250308198253915, guid: a9088ffdc24df41fba5fd6cb1eaf3ead, type: 3}
   m_PrefabInstance: {fileID: 1618008165}
   m_PrefabAsset: {fileID: 0}
---- !u!114 &1618008168
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1618008166}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 8c23af966c1154cfeb68c1a09b6e4c9a, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  m_levelRootToHideOnDrillDown: {fileID: 808040186}
-  m_childrenRootToShow: {fileID: 0}
-  m_childrenToEnable:
-  - {fileID: 0}
-  - {fileID: 0}
-  m_selectFirstOnShow: 1
-  m_twistEventSource: {fileID: 251487948}
-  m_positiveTwistDrillsDown: 1
-  m_logger: {fileID: 1561124091}
 --- !u!1 &1629220518
 GameObject:
   m_ObjectHideFlags: 0
@@ -9351,10 +9189,7 @@ PrefabInstance:
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents:
-    - targetCorrespondingSourceObject: {fileID: 4235160468344426946, guid: a9088ffdc24df41fba5fd6cb1eaf3ead, type: 3}
-      insertIndex: -1
-      addedObject: {fileID: 1848988226}
+    m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: a9088ffdc24df41fba5fd6cb1eaf3ead, type: 3}
 --- !u!1 &1848988224 stripped
 GameObject:
@@ -9366,27 +9201,6 @@ RectTransform:
   m_CorrespondingSourceObject: {fileID: 7191250308198253915, guid: a9088ffdc24df41fba5fd6cb1eaf3ead, type: 3}
   m_PrefabInstance: {fileID: 1848988223}
   m_PrefabAsset: {fileID: 0}
---- !u!114 &1848988226
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1848988224}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 8c23af966c1154cfeb68c1a09b6e4c9a, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  m_levelRootToHideOnDrillDown: {fileID: 110900254}
-  m_childrenRootToShow: {fileID: 0}
-  m_childrenToEnable:
-  - {fileID: 0}
-  - {fileID: 0}
-  m_selectFirstOnShow: 1
-  m_twistEventSource: {fileID: 251487948}
-  m_positiveTwistDrillsDown: 1
-  m_logger: {fileID: 1561124091}
 --- !u!1001 &1849997205
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -9980,10 +9794,7 @@ PrefabInstance:
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents:
-    - targetCorrespondingSourceObject: {fileID: 4235160468344426946, guid: a9088ffdc24df41fba5fd6cb1eaf3ead, type: 3}
-      insertIndex: -1
-      addedObject: {fileID: 1856406955}
+    m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: a9088ffdc24df41fba5fd6cb1eaf3ead, type: 3}
 --- !u!224 &1856406953 stripped
 RectTransform:
@@ -9995,31 +9806,6 @@ GameObject:
   m_CorrespondingSourceObject: {fileID: 4235160468344426946, guid: a9088ffdc24df41fba5fd6cb1eaf3ead, type: 3}
   m_PrefabInstance: {fileID: 1856406952}
   m_PrefabAsset: {fileID: 0}
---- !u!114 &1856406955
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1856406954}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 8c23af966c1154cfeb68c1a09b6e4c9a, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  m_levelRootToHideOnDrillDown: {fileID: 1941485414}
-  m_childrenRootToShow: {fileID: 0}
-  m_childrenToEnable:
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  m_selectFirstOnShow: 1
-  m_twistEventSource: {fileID: 251487948}
-  m_positiveTwistDrillsDown: 1
-  m_logger: {fileID: 1561124091}
 --- !u!1 &1884619604
 GameObject:
   m_ObjectHideFlags: 0
@@ -10196,10 +9982,7 @@ PrefabInstance:
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents:
-    - targetCorrespondingSourceObject: {fileID: 4235160468344426946, guid: a9088ffdc24df41fba5fd6cb1eaf3ead, type: 3}
-      insertIndex: -1
-      addedObject: {fileID: 1903502205}
+    m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: a9088ffdc24df41fba5fd6cb1eaf3ead, type: 3}
 --- !u!224 &1903502203 stripped
 RectTransform:
@@ -10211,32 +9994,6 @@ GameObject:
   m_CorrespondingSourceObject: {fileID: 4235160468344426946, guid: a9088ffdc24df41fba5fd6cb1eaf3ead, type: 3}
   m_PrefabInstance: {fileID: 1903502202}
   m_PrefabAsset: {fileID: 0}
---- !u!114 &1903502205
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1903502204}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 8c23af966c1154cfeb68c1a09b6e4c9a, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  m_levelRootToHideOnDrillDown: {fileID: 1941485414}
-  m_childrenRootToShow: {fileID: 0}
-  m_childrenToEnable:
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  m_selectFirstOnShow: 1
-  m_twistEventSource: {fileID: 251487948}
-  m_positiveTwistDrillsDown: 1
-  m_logger: {fileID: 1561124091}
 --- !u!1 &1924298965
 GameObject:
   m_ObjectHideFlags: 0
@@ -11282,10 +11039,7 @@ PrefabInstance:
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents:
-    - targetCorrespondingSourceObject: {fileID: 4235160468344426946, guid: a9088ffdc24df41fba5fd6cb1eaf3ead, type: 3}
-      insertIndex: -1
-      addedObject: {fileID: 2139356084}
+    m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: a9088ffdc24df41fba5fd6cb1eaf3ead, type: 3}
 --- !u!1 &2139356082 stripped
 GameObject:
@@ -11297,25 +11051,6 @@ RectTransform:
   m_CorrespondingSourceObject: {fileID: 7191250308198253915, guid: a9088ffdc24df41fba5fd6cb1eaf3ead, type: 3}
   m_PrefabInstance: {fileID: 2139356081}
   m_PrefabAsset: {fileID: 0}
---- !u!114 &2139356084
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2139356082}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 8c23af966c1154cfeb68c1a09b6e4c9a, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  m_levelRootToHideOnDrillDown: {fileID: 110900254}
-  m_childrenRootToShow: {fileID: 0}
-  m_childrenToEnable: []
-  m_selectFirstOnShow: 1
-  m_twistEventSource: {fileID: 251487948}
-  m_positiveTwistDrillsDown: 1
-  m_logger: {fileID: 1561124091}
 --- !u!1001 &2139366418
 PrefabInstance:
   m_ObjectHideFlags: 0

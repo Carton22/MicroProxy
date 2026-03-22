@@ -35,11 +35,22 @@ public class ProxyLabelManager : MonoBehaviour
     private bool m_selectionRangeOverride;
     private int m_runtimeActiveLabelsParentIndex = -1;
     private readonly Dictionary<Transform, List<ActiveStateRecord>> m_authoredChildStates = new();
+    private readonly HashSet<int> m_visibleMarkerFilter = new();
+    private bool m_visibleMarkerFilterEnabled;
+    private Transform m_lastFilteredLabelsParent;
 
     private void Awake()
     {
         CacheAuthoredChildStates();
         m_runtimeActiveLabelsParentIndex = FindFirstActiveLabelsParentIndex();
+    }
+
+    private void LateUpdate()
+    {
+        if (!m_visibleMarkerFilterEnabled)
+            return;
+
+        ApplyVisibleMarkerFilterToActiveParent();
     }
 
     private void CacheAuthoredChildStates()
@@ -195,6 +206,45 @@ public class ProxyLabelManager : MonoBehaviour
             var player = ProxySetHorizontalTransitionPlayer.GetOn(activeParent.parent);
             return player != null && player.IsTransitioning;
         }
+    }
+
+    public bool HasVisibleLabelsFilter => m_visibleMarkerFilterEnabled;
+
+    public void SetVisibleLabelsForMarkerIndices(IReadOnlyList<int> markerIndices)
+    {
+        m_visibleMarkerFilter.Clear();
+
+        if (markerIndices != null)
+        {
+            for (int i = 0; i < markerIndices.Count; i++)
+            {
+                int markerIndex = markerIndices[i];
+                if (markerIndex >= 0)
+                    m_visibleMarkerFilter.Add(markerIndex);
+            }
+        }
+
+        if (m_visibleMarkerFilter.Count == 0)
+        {
+            ClearVisibleLabelsFilter();
+            return;
+        }
+
+        m_visibleMarkerFilterEnabled = true;
+        ApplyVisibleMarkerFilterToActiveParent();
+    }
+
+    public void ClearVisibleLabelsFilter()
+    {
+        if (!m_visibleMarkerFilterEnabled && m_lastFilteredLabelsParent == null)
+            return;
+
+        RestoreDirectChildrenVisibility(m_lastFilteredLabelsParent);
+        RestoreDirectChildrenVisibility(GetActiveLabelsParent());
+
+        m_visibleMarkerFilterEnabled = false;
+        m_visibleMarkerFilter.Clear();
+        m_lastFilteredLabelsParent = null;
     }
 
     public int GetLabelCount()
@@ -450,6 +500,121 @@ public class ProxyLabelManager : MonoBehaviour
                     outgoing.gameObject.SetActive(false);
             }
         );
+    }
+
+    private void ApplyVisibleMarkerFilterToActiveParent()
+    {
+        if (!m_visibleMarkerFilterEnabled)
+            return;
+
+        var parent = GetActiveLabelsParent();
+        if (parent == null)
+            return;
+
+        for (int i = 0; i < parent.childCount; i++)
+        {
+            var child = parent.GetChild(i);
+            if (child == null)
+                continue;
+
+            bool shouldShow = ShouldShowChildForVisibleMarkerFilter(child);
+            if (child.gameObject.activeSelf != shouldShow)
+                child.gameObject.SetActive(shouldShow);
+        }
+
+        m_lastFilteredLabelsParent = parent;
+        EnsureSelectionRemainsVisible(parent);
+    }
+
+    private bool ShouldShowChildForVisibleMarkerFilter(Transform child)
+    {
+        if (!m_visibleMarkerFilterEnabled)
+            return true;
+
+        if (child == null)
+            return false;
+
+        var binding = child.GetComponent<LabelMarkerBinding>();
+        var indices = binding != null ? binding.MarkerIndices : null;
+        if (indices == null || indices.Count == 0)
+            return false;
+
+        for (int i = 0; i < indices.Count; i++)
+        {
+            if (m_visibleMarkerFilter.Contains(indices[i]))
+                return true;
+        }
+
+        return false;
+    }
+
+    private void RestoreDirectChildrenVisibility(Transform parent)
+    {
+        if (parent == null)
+            return;
+
+        if (m_authoredChildStates.ContainsKey(parent))
+        {
+            RestoreAuthoredChildStates(parent);
+            return;
+        }
+
+        for (int i = 0; i < parent.childCount; i++)
+        {
+            var child = parent.GetChild(i);
+            if (child == null)
+                continue;
+
+            child.gameObject.SetActive(true);
+        }
+    }
+
+    private void EnsureSelectionRemainsVisible(Transform parent)
+    {
+        if (parent == null || EventSystem.current == null)
+            return;
+
+        var selected = EventSystem.current.currentSelectedGameObject;
+        if (selected == null)
+            return;
+
+        if (selected != parent.gameObject && !selected.transform.IsChildOf(parent))
+            return;
+
+        if (selected.activeInHierarchy)
+            return;
+
+        var firstVisible = FindFirstSelectableChild(parent);
+        if (firstVisible == null)
+        {
+            EventSystem.current.SetSelectedGameObject(null);
+            return;
+        }
+
+        EventSystem.current.SetSelectedGameObject(firstVisible.gameObject);
+        firstVisible.Select();
+    }
+
+    private static Selectable FindFirstSelectableChild(Transform parent)
+    {
+        if (parent == null)
+            return null;
+
+        for (int i = 0; i < parent.childCount; i++)
+        {
+            var child = parent.GetChild(i);
+            if (child == null || !child.gameObject.activeInHierarchy)
+                continue;
+
+            var selectable = child.GetComponent<Selectable>();
+            if (selectable == null)
+                selectable = child.GetComponentInChildren<Selectable>(false);
+
+            if (selectable != null && selectable.IsInteractable() && selectable.gameObject.activeInHierarchy)
+                return selectable;
+        }
+
+        return null;
     }
 
     private int FindFirstActiveLabelsParentIndex()

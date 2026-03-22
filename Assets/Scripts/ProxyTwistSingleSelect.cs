@@ -58,6 +58,13 @@ public class ProxyTwistSingleSelect : MonoBehaviour
             return;
         }
 
+        if (UINavigator.ShouldReserveTwistForAttributeFilter(m_twistEventSource))
+        {
+            if (m_debugLog)
+                Debug.Log("[ProxyTwistSingleSelect] Twist reserved for AttributeUI filtering.");
+            return;
+        }
+
         if (!TryResolveSelectionScope(out m_gestureScopeRoot))
             return;
 
