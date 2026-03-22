@@ -18,6 +18,8 @@ public class ProxyLabelMaterialColorOnSelect : MonoBehaviour, ISelectHandler, ID
 
     [SerializeField] private Color m_normalColor = new Color(0.75f, 0.85f, 0.9f, 1f);
     [SerializeField] private Color m_selectedColor = new Color(1f, 0.8f, 0.2f, 1f);
+    [Tooltip("Used when older prefab data still has the same color for both normal and selected states.")]
+    [SerializeField] private Color m_fallbackSelectedColor = new Color(1f, 0.8f, 0.2f, 1f);
 
     private Material m_instanceMaterial;
 
@@ -33,30 +35,34 @@ public class ProxyLabelMaterialColorOnSelect : MonoBehaviour, ISelectHandler, ID
         m_instanceMaterial = Instantiate(m_image.material);
         m_image.material = m_instanceMaterial;
 
-        ApplyColor(m_normalColor);
+        ApplyColor(GetNormalColor());
     }
 
     private void OnEnable()
     {
         // In case selection already exists when enabling.
         bool selected = EventSystem.current != null && EventSystem.current.currentSelectedGameObject == gameObject;
-        ApplyColor(selected ? m_selectedColor : m_normalColor);
+        ApplyColor(selected ? GetSelectedColor() : GetNormalColor());
     }
 
     public void OnSelect(BaseEventData eventData)
     {
-        ApplyColor(m_selectedColor);
+        ApplyColor(GetSelectedColor());
     }
 
     public void OnDeselect(BaseEventData eventData)
     {
-        ApplyColor(m_normalColor);
+        ApplyColor(GetNormalColor());
     }
 
     private void ApplyColor(Color c)
     {
         if (m_instanceMaterial == null)
+        {
+            if (m_image != null)
+                m_image.color = c;
             return;
+        }
 
         if (!string.IsNullOrEmpty(m_colorProperty) && m_instanceMaterial.HasProperty(m_colorProperty))
         {
@@ -69,5 +75,23 @@ public class ProxyLabelMaterialColorOnSelect : MonoBehaviour, ISelectHandler, ID
                 m_instanceMaterial.SetColor("_Color", c);
         }
     }
-}
 
+    private Color GetNormalColor() => m_normalColor;
+
+    private Color GetSelectedColor()
+    {
+        if (ColorsApproximatelyEqual(m_selectedColor, m_normalColor))
+            return m_fallbackSelectedColor;
+
+        return m_selectedColor;
+    }
+
+    private static bool ColorsApproximatelyEqual(Color a, Color b)
+    {
+        const float epsilon = 0.01f;
+        return Mathf.Abs(a.r - b.r) <= epsilon
+            && Mathf.Abs(a.g - b.g) <= epsilon
+            && Mathf.Abs(a.b - b.b) <= epsilon
+            && Mathf.Abs(a.a - b.a) <= epsilon;
+    }
+}

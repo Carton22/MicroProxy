@@ -312,7 +312,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5353102674760847547, guid: b5dc2f0aa6464dc7b7bf9a61a4ca7260, type: 3}
       propertyPath: m_Colors.m_ColorMultiplier
-      value: 3
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 6770948959124739245, guid: b5dc2f0aa6464dc7b7bf9a61a4ca7260, type: 3}
       propertyPath: m_Mesh
@@ -4070,7 +4070,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5353102674760847547, guid: b5dc2f0aa6464dc7b7bf9a61a4ca7260, type: 3}
       propertyPath: m_Colors.m_ColorMultiplier
-      value: 3
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 6770948959124739245, guid: b5dc2f0aa6464dc7b7bf9a61a4ca7260, type: 3}
       propertyPath: m_Mesh
@@ -7883,7 +7883,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5353102674760847547, guid: b5dc2f0aa6464dc7b7bf9a61a4ca7260, type: 3}
       propertyPath: m_Colors.m_ColorMultiplier
-      value: 3
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 6770948959124739245, guid: b5dc2f0aa6464dc7b7bf9a61a4ca7260, type: 3}
       propertyPath: m_Mesh
@@ -9337,7 +9337,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5353102674760847547, guid: b5dc2f0aa6464dc7b7bf9a61a4ca7260, type: 3}
       propertyPath: m_Colors.m_ColorMultiplier
-      value: 3
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 6770948959124739245, guid: b5dc2f0aa6464dc7b7bf9a61a4ca7260, type: 3}
       propertyPath: m_Mesh
@@ -12213,7 +12213,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5353102674760847547, guid: b5dc2f0aa6464dc7b7bf9a61a4ca7260, type: 3}
       propertyPath: m_Colors.m_ColorMultiplier
-      value: 3
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 6770948959124739245, guid: b5dc2f0aa6464dc7b7bf9a61a4ca7260, type: 3}
       propertyPath: m_Mesh
