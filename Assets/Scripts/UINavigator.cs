@@ -12,6 +12,27 @@ public class UINavigator : MonoBehaviour
     [Tooltip("ProxyLabelManager used to determine the currently active labels parent for selection.")]
     [SerializeField] private ProxyLabelManager m_labelManager;
 
+    [Header("ScreenUI ↔ AttributeUI")]
+    [Tooltip("Left column labels root (e.g. ProxyUI grid under ScreenUI). When focus is here and the user moves right, AttributeUI is shown.")]
+    [SerializeField] private Transform m_leftColumnLabelsParent;
+
+    [Tooltip("Right column root to enable (e.g. AttributeUI).")]
+    [SerializeField] private GameObject m_attributeUiRoot;
+
+    [Tooltip("If set, ProxyLabelManager.SetActiveLabelsParent is called after AttributeUI is shown (must be an entry in the manager's label parents list).")]
+    [SerializeField] private Transform m_attributeLabelsParentForManager;
+
+    [SerializeField] private bool m_selectFirstSelectableInAttributeUi = true;
+
+    [Tooltip("When true, AttributeUI is turned off when the scene loads (play mode), even if left active in the editor.")]
+    [SerializeField] private bool m_attributeUiInactiveByDefault = true;
+
+    void Awake()
+    {
+        if (m_attributeUiInactiveByDefault && m_attributeUiRoot != null)
+            m_attributeUiRoot.SetActive(false);
+    }
+
     void Start()
     {
         if (m_labelManager == null)
@@ -43,6 +64,9 @@ public class UINavigator : MonoBehaviour
         if (IsNavigationLocked())
             return;
 
+        if (TryDismissAttributeUiFromLeftSwipe())
+            return;
+
         if (TrySwitchToPreviousProxySet())
             return;
         SendMove(MoveDirection.Left, Vector2.left);
@@ -51,6 +75,9 @@ public class UINavigator : MonoBehaviour
     public void MoveRight()
     {
         if (IsNavigationLocked())
+            return;
+
+        if (TryShowAttributeUiFromLeftColumn())
             return;
 
         if (TrySwitchToNextProxySet())
@@ -194,6 +221,58 @@ public class UINavigator : MonoBehaviour
         EventSystem.current.SetSelectedGameObject(go);
         var sel = go.GetComponent<Selectable>();
         if (sel) sel.Select();
+    }
+
+    // ---------- ScreenUI left column → show AttributeUI ----------
+
+    /// <summary>
+    /// When selection is under the left column (e.g. ProxyUI) and AttributeUI is off, moving right enables AttributeUI
+    /// and optionally moves focus there. Runs before proxy-set switching so single-column grids still work.
+    /// </summary>
+    bool TryShowAttributeUiFromLeftColumn()
+    {
+        if (m_leftColumnLabelsParent == null || m_attributeUiRoot == null)
+            return false;
+        if (ProxySetDrillDownController.IsAnyDrillDownChildViewActive)
+            return false;
+
+        var selected = EventSystem.current?.currentSelectedGameObject;
+        if (selected == null)
+            return false;
+
+        if (selected != m_leftColumnLabelsParent.gameObject && !selected.transform.IsChildOf(m_leftColumnLabelsParent))
+            return false;
+
+        if (m_attributeUiRoot.activeSelf)
+            return false;
+
+        m_attributeUiRoot.SetActive(true);
+
+        if (m_labelManager != null && m_attributeLabelsParentForManager != null)
+            m_labelManager.SetActiveLabelsParent(m_attributeLabelsParentForManager);
+
+        Canvas.ForceUpdateCanvases();
+
+        if (m_selectFirstSelectableInAttributeUi)
+        {
+            var first = FindFirstSelectableIn(m_attributeUiRoot.transform);
+            if (first != null)
+                Select(first);
+        }
+
+        return true;
+    }
+
+    /// <summary>
+    /// Delegates to <see cref="AttributeUiDismissOnLeftSwipe"/> on <see cref="m_attributeUiRoot"/> when assigned.
+    /// </summary>
+    bool TryDismissAttributeUiFromLeftSwipe()
+    {
+        if (m_attributeUiRoot == null)
+            return false;
+
+        var dismiss = m_attributeUiRoot.GetComponent<AttributeUiDismissOnLeftSwipe>();
+        return dismiss != null && dismiss.TryHandleMoveLeft();
     }
 
     // ---------- Proxy set switching (grid with any fixed column count) ----------
