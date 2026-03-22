@@ -20,6 +20,10 @@ namespace PassthroughCameraSamples
         [SerializeField] private Slider zoomSlider;       // 0 to 1
         [SerializeField] private float maxZoomScale = 2f; // 1 means no zoom
 
+        [Header("Display crop")]
+        [Tooltip("Centered portion of the live camera frame to display. 0.8 means the center 80% of the frame.")]
+        [Range(0.1f, 1f)] [SerializeField] private float centerCropPercent = 0.8f;
+
         [Header("Flash and preview")]
         [SerializeField] private Image flashlight;        // White Image on top of everything
         [SerializeField] private float flashInSeconds = 0.06f;
@@ -52,6 +56,7 @@ namespace PassthroughCameraSamples
         private void OnEnable()
         {
             previewImage.texture = null;
+            ApplyLiveViewCrop();
             StartCoroutine(BindLiveTextureWhenReady());
         }
 
@@ -73,15 +78,21 @@ namespace PassthroughCameraSamples
                 : debugImage;
 
             if (mainImage != null)
+            {
                 mainImage.texture = _liveTexture;
+                ApplyLiveViewCrop();
+            }
         }
 
         private void Update()
         {
-            if (mainImage == null || zoomSlider == null) return;
+            if (mainImage == null)
+                return;
 
-            float scale = Mathf.Lerp(1f, maxZoomScale, zoomSlider.value);
+            float zoomValue = zoomSlider != null ? zoomSlider.value : 0f;
+            float scale = Mathf.Lerp(1f, maxZoomScale, zoomValue);
             mainImage.transform.localScale = new Vector3(scale, scale, 1f);
+            ApplyLiveViewCrop();
         }
 
         /// <summary>
@@ -183,6 +194,43 @@ namespace PassthroughCameraSamples
             float yMax = Mathf.Min(a.yMax, b.yMax);
             if (xMax <= xMin || yMax <= yMin) return new Rect(0, 0, 0, 0);
             return Rect.MinMaxRect(xMin, yMin, xMax, yMax);
+        }
+
+        /// <summary>
+        /// Visible camera window in normalized source UVs after applying the configured center crop and runtime zoom.
+        /// Marker overlays can use this so they line up with the cropped preview.
+        /// </summary>
+        public Rect GetVisibleNormalizedUvRect()
+        {
+            Rect visibleUv = mainImage != null ? mainImage.uvRect : GetCenteredCropUvRect();
+
+            if (mainImage == null)
+                return visibleUv;
+
+            float scaleX = Mathf.Max(0.0001f, Mathf.Abs(mainImage.rectTransform.localScale.x));
+            float scaleY = Mathf.Max(0.0001f, Mathf.Abs(mainImage.rectTransform.localScale.y));
+
+            float visibleWidth = Mathf.Clamp01(visibleUv.width / scaleX);
+            float visibleHeight = Mathf.Clamp01(visibleUv.height / scaleY);
+
+            float x = visibleUv.x + (visibleUv.width - visibleWidth) * 0.5f;
+            float y = visibleUv.y + (visibleUv.height - visibleHeight) * 0.5f;
+            return new Rect(x, y, visibleWidth, visibleHeight);
+        }
+
+        private void ApplyLiveViewCrop()
+        {
+            if (mainImage == null)
+                return;
+
+            mainImage.uvRect = GetCenteredCropUvRect();
+        }
+
+        private Rect GetCenteredCropUvRect()
+        {
+            float cropPercent = Mathf.Clamp(centerCropPercent, 0.1f, 1f);
+            float margin = (1f - cropPercent) * 0.5f;
+            return new Rect(margin, margin, cropPercent, cropPercent);
         }
 
         private Texture2D CaptureCroppedFromWebCam(WebCamTexture wct, float scale)

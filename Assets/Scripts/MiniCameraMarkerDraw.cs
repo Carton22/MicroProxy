@@ -3,6 +3,7 @@ using UnityEngine;
 using Meta.XR.Samples;
 using Meta.XR;
 using UnityEngine.UI;
+using PassthroughCameraSamples;
 
 /// <summary>
 /// Uses the same raycasting as the big camera-to-world canvas but draws circles
@@ -20,6 +21,9 @@ public class MiniCameraMarkerDraw : MonoBehaviour
     [Header("Minimized canvas")]
     [Tooltip("RectTransform of the minimized camera canvas where circles are drawn proportionally.")]
     [SerializeField] private RectTransform m_miniCanvas;
+
+    [Tooltip("Optional cropped camera-view provider. If unset, the first PassthroughCameraPictureTaker in the scene is used.")]
+    [SerializeField] private PassthroughCameraPictureTaker m_pictureTaker;
 
     [Tooltip("Circle prefab (RectTransform + Image) to place on the minimized canvas.")]
     [SerializeField] private RectTransform m_circlePrefab;
@@ -48,6 +52,9 @@ public class MiniCameraMarkerDraw : MonoBehaviour
 
     private void Awake()
     {
+        if (m_pictureTaker == null)
+            m_pictureTaker = FindFirstObjectByType<PassthroughCameraPictureTaker>();
+
         if (m_labelManagers == null)
             m_labelManagers = new List<ProxyLabelManager>();
 
@@ -136,9 +143,16 @@ public class MiniCameraMarkerDraw : MonoBehaviour
             float nx = bigRect.width > 0.001f ? Mathf.InverseLerp(bigRect.xMin, bigRect.xMax, localBig.x) : 0.5f;
             float ny = bigRect.height > 0.001f ? Mathf.InverseLerp(bigRect.yMin, bigRect.yMax, localBig.y) : 0.5f;
 
+            if (!TryMapToVisibleMiniView(nx, ny, out float croppedNx, out float croppedNy))
+            {
+                if (i < m_circleInstances.Length && m_circleInstances[i] != null)
+                    m_circleInstances[i].gameObject.SetActive(false);
+                continue;
+            }
+
             // Same proportional position on mini canvas (in mini canvas local space)
-            float localX = Mathf.Lerp(miniRect.xMin, miniRect.xMax, nx);
-            float localY = Mathf.Lerp(miniRect.yMin, miniRect.yMax, ny);
+            float localX = Mathf.Lerp(miniRect.xMin, miniRect.xMax, croppedNx);
+            float localY = Mathf.Lerp(miniRect.yMin, miniRect.yMax, croppedNy);
 
             if (m_circleInstances[i] == null && m_circlePrefab != null)
                 m_circleInstances[i] = Instantiate(m_circlePrefab, m_miniCanvas);
@@ -229,6 +243,29 @@ public class MiniCameraMarkerDraw : MonoBehaviour
 
     private bool IsMarkerSelected(int markerIndex) =>
         TryGetSelectedLabelRectForMarkerIndex(markerIndex, out _);
+
+    private bool TryMapToVisibleMiniView(float normalizedX, float normalizedY, out float mappedX, out float mappedY)
+    {
+        mappedX = 0.5f;
+        mappedY = 0.5f;
+
+        Rect visibleUvRect = m_pictureTaker != null
+            ? m_pictureTaker.GetVisibleNormalizedUvRect()
+            : new Rect(0f, 0f, 1f, 1f);
+
+        if (visibleUvRect.width <= 0.0001f || visibleUvRect.height <= 0.0001f)
+            return false;
+
+        if (normalizedX < visibleUvRect.xMin || normalizedX > visibleUvRect.xMax
+            || normalizedY < visibleUvRect.yMin || normalizedY > visibleUvRect.yMax)
+        {
+            return false;
+        }
+
+        mappedX = Mathf.InverseLerp(visibleUvRect.xMin, visibleUvRect.xMax, normalizedX);
+        mappedY = Mathf.InverseLerp(visibleUvRect.yMin, visibleUvRect.yMax, normalizedY);
+        return true;
+    }
 
     private bool TryGetSelectedLabelRectForMarkerIndex(int markerIndex, out RectTransform selectedLabelRect)
     {

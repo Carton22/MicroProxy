@@ -4681,6 +4681,7 @@ MonoBehaviour:
   m_cameraToWorldManager: {fileID: 1001865144}
   m_cameraAccess: {fileID: 1373946501}
   m_miniCanvas: {fileID: 1153379194}
+  m_pictureTaker: {fileID: 1398737965}
   m_circlePrefab: {fileID: 2171317211530993139, guid: 19fc067d4b97843779d2e4ece10959c7, type: 3}
   m_runtimeTargetSource: {fileID: 1942878147}
   m_selectedCircleSize: 18
@@ -11881,6 +11882,7 @@ MonoBehaviour:
   previewImage: {fileID: 949902567}
   zoomSlider: {fileID: 1927810934}
   maxZoomScale: 2
+  centerCropPercent: 0.685
   flashlight: {fileID: 1750010509}
   flashInSeconds: 0.06
   flashOutSeconds: 0.15
