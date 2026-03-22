@@ -42,9 +42,9 @@ public class UINavigator : MonoBehaviour
     [SerializeField] private string m_attributeButtonValueSeparator = ": ";
 
     private readonly Dictionary<Transform, string> m_cachedAttributeBaseLabels = new();
+    private readonly Dictionary<Transform, int> m_attributeFilterSelections = new();
     private readonly List<Transform> m_attributeOptionRootsBuffer = new();
-    private Transform m_activeAttributeFilterButtonRoot;
-    private int m_activeAttributeFilterOptionIndex = -1;
+    private readonly List<int> m_conjunctiveMarkerWork = new();
     private bool m_inAttributeTwistGesture;
     private Transform m_attributeGestureButtonRoot;
     private Transform m_attributeGestureOptionsRoot;
@@ -133,8 +133,8 @@ public class UINavigator : MonoBehaviour
         m_inAttributeTwistGesture = true;
         m_attributeGestureButtonRoot = attributeButtonRoot;
         m_attributeGestureOptionsRoot = optionsRoot;
-        m_attributeGestureStartOptionIndex = attributeButtonRoot == m_activeAttributeFilterButtonRoot
-            ? m_activeAttributeFilterOptionIndex
+        m_attributeGestureStartOptionIndex = m_attributeFilterSelections.TryGetValue(attributeButtonRoot, out var stored)
+            ? stored
             : -1;
         m_attributeGestureLastAppliedOptionIndex = m_attributeGestureStartOptionIndex;
     }
@@ -230,7 +230,6 @@ public class UINavigator : MonoBehaviour
             return;
 
         string baseLabel = GetOrCacheAttributeBaseLabel(attributeButtonRoot);
-        RestoreOtherAttributeButtonTexts(attributeButtonRoot);
 
         if (m_labelManager == null)
             m_labelManager = FindFirstObjectByType<ProxyLabelManager>();
@@ -238,12 +237,8 @@ public class UINavigator : MonoBehaviour
         if (optionIndex < 0)
         {
             SetAttributeButtonText(attributeButtonRoot, baseLabel);
-
-            m_activeAttributeFilterButtonRoot = null;
-            m_activeAttributeFilterOptionIndex = -1;
-
-            if (m_labelManager != null)
-                m_labelManager.ClearVisibleLabelsFilter();
+            m_attributeFilterSelections.Remove(attributeButtonRoot);
+            ReapplyConjunctiveAttributeFilter();
             return;
         }
 
@@ -254,18 +249,104 @@ public class UINavigator : MonoBehaviour
         string optionLabel = GetTextFromRoot(optionRoot);
         SetAttributeButtonText(attributeButtonRoot, FormatAttributeButtonLabel(baseLabel, optionLabel));
 
-        var binding = optionRoot != null ? optionRoot.GetComponent<LabelMarkerBinding>() : null;
-        var markerIndices = binding != null ? binding.MarkerIndices : null;
-        if (m_labelManager != null)
+        m_attributeFilterSelections[attributeButtonRoot] = optionIndex;
+        ReapplyConjunctiveAttributeFilter();
+    }
+
+    /// <summary>
+    /// Rebuilds the left-column visibility filter as the intersection of marker sets for every attribute that has a twist-selected value (AND).
+    /// </summary>
+    private void ReapplyConjunctiveAttributeFilter()
+    {
+        if (m_labelManager == null)
+            m_labelManager = FindFirstObjectByType<ProxyLabelManager>();
+
+        if (m_labelManager == null)
+            return;
+
+        if (m_attributeFilterSelections.Count == 0)
         {
-            if (markerIndices != null && markerIndices.Count > 0)
-                m_labelManager.SetVisibleLabelsForMarkerIndices(markerIndices);
-            else
-                m_labelManager.ClearVisibleLabelsFilter();
+            m_labelManager.ClearVisibleLabelsFilter();
+            return;
         }
 
-        m_activeAttributeFilterButtonRoot = attributeButtonRoot;
-        m_activeAttributeFilterOptionIndex = optionIndex;
+        HashSet<int> intersection = null;
+        bool anyConstraint = false;
+
+        foreach (var kvp in m_attributeFilterSelections)
+        {
+            if (kvp.Value < 0)
+                continue;
+
+            var attrRoot = kvp.Key;
+            if (attrRoot == null)
+                continue;
+
+            string keyLabel = GetOrCacheAttributeBaseLabel(attrRoot);
+            var optionsRoot = FindOptionsRootForAttributeKey(keyLabel);
+            if (optionsRoot == null)
+                continue;
+
+            int optionCount = BuildAttributeOptionRoots(optionsRoot, m_attributeOptionRootsBuffer);
+            if (kvp.Value >= optionCount)
+                continue;
+
+            anyConstraint = true;
+            var optionTransform = m_attributeOptionRootsBuffer[kvp.Value];
+            var binding = optionTransform != null ? optionTransform.GetComponent<LabelMarkerBinding>() : null;
+            var indices = binding != null ? binding.MarkerIndices : null;
+
+            if (indices == null || indices.Count == 0)
+            {
+                m_labelManager.SetVisibleLabelsForMarkerIndices(System.Array.Empty<int>(), emptyMeansHideAll: true);
+                return;
+            }
+
+            if (intersection == null)
+            {
+                intersection = new HashSet<int>();
+                for (int i = 0; i < indices.Count; i++)
+                {
+                    int m = indices[i];
+                    if (m >= 0)
+                        intersection.Add(m);
+                }
+            }
+            else
+            {
+                var narrowed = new HashSet<int>();
+                foreach (var marker in intersection)
+                {
+                    for (int i = 0; i < indices.Count; i++)
+                    {
+                        if (indices[i] != marker)
+                            continue;
+                        narrowed.Add(marker);
+                        break;
+                    }
+                }
+
+                intersection = narrowed;
+            }
+        }
+
+        if (!anyConstraint)
+        {
+            m_labelManager.ClearVisibleLabelsFilter();
+            return;
+        }
+
+        m_conjunctiveMarkerWork.Clear();
+        if (intersection != null)
+        {
+            foreach (var marker in intersection)
+                m_conjunctiveMarkerWork.Add(marker);
+        }
+
+        bool emptyIntersection = m_conjunctiveMarkerWork.Count == 0;
+        m_labelManager.SetVisibleLabelsForMarkerIndices(
+            m_conjunctiveMarkerWork,
+            emptyMeansHideAll: emptyIntersection);
     }
 
     private Transform ResolveAttributeNamesParent()
@@ -336,22 +417,6 @@ public class UINavigator : MonoBehaviour
         }
 
         return buffer.Count;
-    }
-
-    private void RestoreOtherAttributeButtonTexts(Transform exceptButtonRoot)
-    {
-        var attributeNamesRoot = ResolveAttributeNamesParent();
-        if (attributeNamesRoot == null)
-            return;
-
-        for (int i = 0; i < attributeNamesRoot.childCount; i++)
-        {
-            var child = attributeNamesRoot.GetChild(i);
-            if (child == null || child == exceptButtonRoot)
-                continue;
-
-            SetAttributeButtonText(child, GetOrCacheAttributeBaseLabel(child));
-        }
     }
 
     private string GetOrCacheAttributeBaseLabel(Transform attributeButtonRoot)

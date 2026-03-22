@@ -210,23 +210,49 @@ public class ProxyLabelManager : MonoBehaviour
 
     public bool HasVisibleLabelsFilter => m_visibleMarkerFilterEnabled;
 
-    public void SetVisibleLabelsForMarkerIndices(IReadOnlyList<int> markerIndices)
+    /// <param name="markerIndices">Allowed marker indices, or null to clear the filter.</param>
+    /// <param name="emptyMeansHideAll">
+    /// When true and <paramref name="markerIndices"/> is non-null with count 0, all proxy labels are hidden (conjunctive filter with empty intersection).
+    /// When false, an empty list clears the filter (legacy single-attribute behaviour).
+    /// </param>
+    public void SetVisibleLabelsForMarkerIndices(IReadOnlyList<int> markerIndices, bool emptyMeansHideAll = false)
     {
         m_visibleMarkerFilter.Clear();
 
-        if (markerIndices != null)
+        if (markerIndices == null)
         {
-            for (int i = 0; i < markerIndices.Count; i++)
+            ClearVisibleLabelsFilter();
+            return;
+        }
+
+        if (markerIndices.Count == 0)
+        {
+            if (emptyMeansHideAll)
             {
-                int markerIndex = markerIndices[i];
-                if (markerIndex >= 0)
-                    m_visibleMarkerFilter.Add(markerIndex);
+                m_visibleMarkerFilterEnabled = true;
+                ApplyVisibleMarkerFilterToActiveParent();
             }
+            else
+                ClearVisibleLabelsFilter();
+            return;
+        }
+
+        for (int i = 0; i < markerIndices.Count; i++)
+        {
+            int markerIndex = markerIndices[i];
+            if (markerIndex >= 0)
+                m_visibleMarkerFilter.Add(markerIndex);
         }
 
         if (m_visibleMarkerFilter.Count == 0)
         {
-            ClearVisibleLabelsFilter();
+            if (emptyMeansHideAll)
+            {
+                m_visibleMarkerFilterEnabled = true;
+                ApplyVisibleMarkerFilterToActiveParent();
+            }
+            else
+                ClearVisibleLabelsFilter();
             return;
         }
 
