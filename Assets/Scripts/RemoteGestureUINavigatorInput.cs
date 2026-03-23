@@ -13,12 +13,6 @@ public class RemoteGestureUINavigatorInput : MonoBehaviour
     [Header("Debug")]
     [SerializeField] private bool m_debugLog;
 
-    [Header("Debounce")]
-    [Tooltip("Ignore duplicate tap-like gesture signals that arrive too close together.")]
-    [SerializeField] private float m_tapDebounceSeconds = 0.2f;
-
-    private float m_lastTapGestureTime = -999f;
-
     private void Reset()
     {
         m_uiNavigator = GetComponent<UINavigator>();
@@ -47,13 +41,6 @@ public class RemoteGestureUINavigatorInput : MonoBehaviour
             return;
 
         string normalized = gestureType.ToLowerInvariant();
-        if (IsTapGesture(normalized))
-        {
-            float now = Time.unscaledTime;
-            if (now - m_lastTapGestureTime < Mathf.Max(0f, m_tapDebounceSeconds))
-                return;
-            m_lastTapGestureTime = now;
-        }
 
         if (m_debugLog)
             Debug.Log($"[RemoteGestureUINavigatorInput] gestureType={gestureType}");
@@ -104,14 +91,12 @@ public class RemoteGestureUINavigatorInput : MonoBehaviour
 
             case "pinch_twist_in":
             case "pinchtwistin":
-                if (!ProxySetDrillDownController.TryHandleRemoteSignedTwist(-1f))
-                    m_uiNavigator.RemotePinchAndTwist(-1f);
+                m_uiNavigator.RemotePinchAndTwist(-1f);
                 break;
 
             case "pinch_twist_out":
             case "pinchtwistout":
-                if (!ProxySetDrillDownController.TryHandleRemoteSignedTwist(1f))
-                    m_uiNavigator.RemotePinchAndTwist(1f);
+                m_uiNavigator.RemotePinchAndTwist(1f);
                 break;
 
             case "zoom_in":
@@ -131,14 +116,6 @@ public class RemoteGestureUINavigatorInput : MonoBehaviour
                     Debug.LogWarning($"[RemoteGestureUINavigatorInput] Unhandled gestureType: {gestureType}");
                 break;
         }
-    }
-
-    private static bool IsTapGesture(string normalizedGesture)
-    {
-        return normalizedGesture == "tap"
-               || normalizedGesture == "taptap"
-               || normalizedGesture == "thumb_tap"
-               || normalizedGesture == "thumbtap";
     }
 }
 
