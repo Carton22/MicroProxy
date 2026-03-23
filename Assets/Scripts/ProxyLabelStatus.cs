@@ -13,6 +13,7 @@ using UnityEngine.EventSystems;
 public class ProxyLabelStatus : MonoBehaviour, IPointerClickHandler, ISubmitHandler
 {
     [SerializeField] private TextMeshPro m_labelText;
+    private ProxyLabelPriceRandomizeOnClick m_priceRandomizer;
 
     private string m_baseText;
     private string m_nodeType;
@@ -20,6 +21,8 @@ public class ProxyLabelStatus : MonoBehaviour, IPointerClickHandler, ISubmitHand
 
     private void Awake()
     {
+        m_priceRandomizer = GetComponent<ProxyLabelPriceRandomizeOnClick>();
+
         if (m_labelText == null)
         {
             m_labelText = GetComponentInChildren<TextMeshPro>();
@@ -63,6 +66,10 @@ public class ProxyLabelStatus : MonoBehaviour, IPointerClickHandler, ISubmitHand
 
     private void HandlePress()
     {
+        // Price script owns tap text changes when present.
+        if (m_priceRandomizer != null)
+            return;
+
         if (m_labelText == null)
             return;
 

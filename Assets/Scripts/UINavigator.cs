@@ -775,14 +775,32 @@ public class UINavigator : MonoBehaviour
         var selected = EventSystem.current.currentSelectedGameObject;
         if (selected == null) return;
 
+        var submitTarget = ResolveSubmitTarget(selected);
         var data = new BaseEventData(EventSystem.current);
 
         // Works for Button, Toggle, etc.
-        if(!ExecuteEvents.Execute(selected, data, ExecuteEvents.submitHandler))
+        if(!ExecuteEvents.Execute(submitTarget, data, ExecuteEvents.submitHandler))
         {
             // Some controls only react to click
-            ExecuteEvents.Execute(selected, new PointerEventData(EventSystem.current), ExecuteEvents.pointerClickHandler);
+            ExecuteEvents.Execute(submitTarget, new PointerEventData(EventSystem.current), ExecuteEvents.pointerClickHandler);
         }
+    }
+
+    GameObject ResolveSubmitTarget(GameObject selected)
+    {
+        if (selected == null)
+            return null;
+
+        // If selection is on a text/image child, submit the nearest selectable parent (Button/Toggle/etc.).
+        var selectable = selected.GetComponentInParent<Selectable>();
+        if (selectable != null)
+            return selectable.gameObject;
+
+        var submit = selected.GetComponentInParent<ISubmitHandler>();
+        if (submit is Component submitComponent)
+            return submitComponent.gameObject;
+
+        return selected;
     }
 
     void EnsureSelection()

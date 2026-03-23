@@ -11,12 +11,6 @@ public class ProxyLabelPriceRandomizeOnClick : MonoBehaviour, IPointerClickHandl
 {
     private TMP_Text m_text;
 
-    [Tooltip("When Require Placeholder Match is on, the label text must equal this (trimmed, case-insensitive) before applying.")]
-    [SerializeField] private string m_placeholderText = "Price";
-
-    [Tooltip("If on, only clicks apply when the current text matches Placeholder Text (e.g. \"Price\"). Turn off to always set a random price on click (e.g. Book4 → $32).")]
-    [SerializeField] private bool m_requirePlaceholderMatch = true;
-
     [SerializeField] private int m_minDollars = 10;
     [SerializeField] private int m_maxDollars = 50;
 
@@ -26,6 +20,10 @@ public class ProxyLabelPriceRandomizeOnClick : MonoBehaviour, IPointerClickHandl
     [SerializeField] private bool m_ignoreSecondClickOfDoubleTap = true;
 
     private Button m_button;
+    private bool m_hasAssignedPrice;
+    private int m_assignedDollars;
+    private string m_cachedBaseLabel;
+    private bool m_priceVisible;
 
     private void Awake()
     {
@@ -50,6 +48,8 @@ public class ProxyLabelPriceRandomizeOnClick : MonoBehaviour, IPointerClickHandl
 
     private void OnButtonClicked()
     {
+        Debug.Log("OnButtonClicked");
+        Debug.Log("Try to apply random price " + m_hasAssignedPrice);
         TryApplyRandomPrice();
     }
 
@@ -66,32 +66,45 @@ public class ProxyLabelPriceRandomizeOnClick : MonoBehaviour, IPointerClickHandl
 
         if (m_ignoreSecondClickOfDoubleTap && eventData.clickCount > 1)
             return;
-
+        Debug.Log("OnPointerClick");
+        Debug.Log("Try to apply random price " + m_hasAssignedPrice);
         TryApplyRandomPrice();
     }
 
     public void OnSubmit(BaseEventData eventData)
     {
-        TryApplyRandomPrice();
+        // Do nothing
     }
 
     private void TryApplyRandomPrice()
     {
         EnsureLabelText();
+        Debug.Log("EnsureLabelText");
+        Debug.Log("m_text: " + m_text);
         if (m_text == null)
             return;
 
-        if (m_requirePlaceholderMatch)
+        if (!m_hasAssignedPrice)
         {
-            string current = m_text.text != null ? m_text.text.Trim() : string.Empty;
-            string want = m_placeholderText != null ? m_placeholderText.Trim() : string.Empty;
-            if (string.IsNullOrEmpty(want) || !string.Equals(current, want, System.StringComparison.OrdinalIgnoreCase))
-                return;
+            int lo = Mathf.Min(m_minDollars, m_maxDollars);
+            int hi = Mathf.Max(m_minDollars, m_maxDollars);
+            m_assignedDollars = Random.Range(lo, hi + 1);
+            m_hasAssignedPrice = true;
         }
 
-        int lo = Mathf.Min(m_minDollars, m_maxDollars);
-        int hi = Mathf.Max(m_minDollars, m_maxDollars);
-        int dollars = Random.Range(lo, hi + 1);
-        m_text.text = $"{m_currencyPrefix}{dollars}";
+        if (string.IsNullOrEmpty(m_cachedBaseLabel))
+            m_cachedBaseLabel = ResolveBaseLabel(m_text.text);
+        m_priceVisible = !m_priceVisible;
+        m_text.text = m_priceVisible
+            ? $"{m_cachedBaseLabel}: {m_currencyPrefix}{m_assignedDollars}"
+            : m_cachedBaseLabel;
+    }
+
+    private static string ResolveBaseLabel(string text)
+    {
+        string current = text != null ? text.Trim() : string.Empty;
+        int separatorIndex = current.IndexOf(':');
+        string baseLabel = separatorIndex >= 0 ? current.Substring(0, separatorIndex).Trim() : current;
+        return string.IsNullOrEmpty(baseLabel) ? "item" : baseLabel;
     }
 }

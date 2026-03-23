@@ -13,6 +13,12 @@ public class RemoteGestureUINavigatorInput : MonoBehaviour
     [Header("Debug")]
     [SerializeField] private bool m_debugLog;
 
+    [Header("Debounce")]
+    [Tooltip("Ignore duplicate tap-like gesture signals that arrive too close together.")]
+    [SerializeField] private float m_tapDebounceSeconds = 0.2f;
+
+    private float m_lastTapGestureTime = -999f;
+
     private void Reset()
     {
         m_uiNavigator = GetComponent<UINavigator>();
@@ -40,6 +46,15 @@ public class RemoteGestureUINavigatorInput : MonoBehaviour
         if (string.IsNullOrWhiteSpace(gestureType))
             return;
 
+        string normalized = gestureType.ToLowerInvariant();
+        if (IsTapGesture(normalized))
+        {
+            float now = Time.unscaledTime;
+            if (now - m_lastTapGestureTime < Mathf.Max(0f, m_tapDebounceSeconds))
+                return;
+            m_lastTapGestureTime = now;
+        }
+
         if (m_debugLog)
             Debug.Log($"[RemoteGestureUINavigatorInput] gestureType={gestureType}");
 
@@ -47,7 +62,7 @@ public class RemoteGestureUINavigatorInput : MonoBehaviour
             return;
 
         // Map phone gesture names into existing UINavigator movement.
-        switch (gestureType.ToLowerInvariant())
+        switch (normalized)
         {
             case "swipe_right":
             case "swiperight":
@@ -116,6 +131,14 @@ public class RemoteGestureUINavigatorInput : MonoBehaviour
                     Debug.LogWarning($"[RemoteGestureUINavigatorInput] Unhandled gestureType: {gestureType}");
                 break;
         }
+    }
+
+    private static bool IsTapGesture(string normalizedGesture)
+    {
+        return normalizedGesture == "tap"
+               || normalizedGesture == "taptap"
+               || normalizedGesture == "thumb_tap"
+               || normalizedGesture == "thumbtap";
     }
 }
 

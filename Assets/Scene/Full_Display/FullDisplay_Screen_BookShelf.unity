@@ -533,8 +533,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f1e2d3c4b5a6978890a1b2c3d4e5f607, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_placeholderText: Price
-  m_requirePlaceholderMatch: 1
   m_minDollars: 10
   m_maxDollars: 50
   m_currencyPrefix: $
@@ -1135,8 +1133,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f1e2d3c4b5a6978890a1b2c3d4e5f607, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_placeholderText: Price
-  m_requirePlaceholderMatch: 1
   m_minDollars: 10
   m_maxDollars: 50
   m_currencyPrefix: $
@@ -1853,8 +1849,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f1e2d3c4b5a6978890a1b2c3d4e5f607, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_placeholderText: Price
-  m_requirePlaceholderMatch: 1
   m_minDollars: 10
   m_maxDollars: 50
   m_currencyPrefix: $
@@ -2508,9 +2502,6 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 4235160468344426946, guid: a9088ffdc24df41fba5fd6cb1eaf3ead, type: 3}
       insertIndex: -1
       addedObject: {fileID: 377128112}
-    - targetCorrespondingSourceObject: {fileID: 789804525493875455, guid: a9088ffdc24df41fba5fd6cb1eaf3ead, type: 3}
-      insertIndex: -1
-      addedObject: {fileID: 0}
   m_SourcePrefab: {fileID: 100100000, guid: a9088ffdc24df41fba5fd6cb1eaf3ead, type: 3}
 --- !u!224 &377128110 stripped
 RectTransform:
@@ -3079,6 +3070,7 @@ MonoBehaviour:
   m_socketManager: {fileID: 622173651}
   m_uiNavigator: {fileID: 456180478}
   m_debugLog: 0
+  m_tapDebounceSeconds: 0.2
 --- !u!1 &497359176
 GameObject:
   m_ObjectHideFlags: 0
@@ -3538,8 +3530,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f1e2d3c4b5a6978890a1b2c3d4e5f607, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_placeholderText: Price
-  m_requirePlaceholderMatch: 1
   m_minDollars: 10
   m_maxDollars: 50
   m_currencyPrefix: $
@@ -3697,8 +3687,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f1e2d3c4b5a6978890a1b2c3d4e5f607, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_placeholderText: Price
-  m_requirePlaceholderMatch: 1
   m_minDollars: 10
   m_maxDollars: 50
   m_currencyPrefix: $
@@ -3856,8 +3844,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f1e2d3c4b5a6978890a1b2c3d4e5f607, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_placeholderText: Price
-  m_requirePlaceholderMatch: 1
   m_minDollars: 10
   m_maxDollars: 50
   m_currencyPrefix: $
@@ -4391,8 +4377,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f1e2d3c4b5a6978890a1b2c3d4e5f607, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_placeholderText: Price
-  m_requirePlaceholderMatch: 1
   m_minDollars: 10
   m_maxDollars: 50
   m_currencyPrefix: $
@@ -5376,8 +5360,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f1e2d3c4b5a6978890a1b2c3d4e5f607, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_placeholderText: Price
-  m_requirePlaceholderMatch: 1
   m_minDollars: 10
   m_maxDollars: 50
   m_currencyPrefix: $
@@ -5822,8 +5804,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f1e2d3c4b5a6978890a1b2c3d4e5f607, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_placeholderText: Price
-  m_requirePlaceholderMatch: 1
   m_minDollars: 10
   m_maxDollars: 50
   m_currencyPrefix: $
@@ -6787,8 +6767,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f1e2d3c4b5a6978890a1b2c3d4e5f607, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_placeholderText: Price
-  m_requirePlaceholderMatch: 1
   m_minDollars: 10
   m_maxDollars: 50
   m_currencyPrefix: $
@@ -6950,8 +6928,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f1e2d3c4b5a6978890a1b2c3d4e5f607, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_placeholderText: Price
-  m_requirePlaceholderMatch: 1
   m_minDollars: 10
   m_maxDollars: 50
   m_currencyPrefix: $
@@ -7335,6 +7311,22 @@ PrefabInstance:
       propertyPath: m_Name
       value: ProxyLabel (16)
       objectReference: {fileID: 0}
+    - target: {fileID: 5353102674760847547, guid: a9088ffdc24df41fba5fd6cb1eaf3ead, type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.size
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5353102674760847547, guid: a9088ffdc24df41fba5fd6cb1eaf3ead, type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Mode
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 5353102674760847547, guid: a9088ffdc24df41fba5fd6cb1eaf3ead, type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Target
+      value: 
+      objectReference: {fileID: 876171906}
+    - target: {fileID: 5353102674760847547, guid: a9088ffdc24df41fba5fd6cb1eaf3ead, type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_CallState
+      value: 2
+      objectReference: {fileID: 0}
     - target: {fileID: 7191250308198253915, guid: a9088ffdc24df41fba5fd6cb1eaf3ead, type: 3}
       propertyPath: m_Pivot.x
       value: 0.5
@@ -7452,8 +7444,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f1e2d3c4b5a6978890a1b2c3d4e5f607, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_placeholderText: Price
-  m_requirePlaceholderMatch: 1
   m_minDollars: 10
   m_maxDollars: 50
   m_currencyPrefix: $
@@ -7627,8 +7617,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f1e2d3c4b5a6978890a1b2c3d4e5f607, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_placeholderText: Price
-  m_requirePlaceholderMatch: 1
   m_minDollars: 10
   m_maxDollars: 50
   m_currencyPrefix: $
@@ -8138,8 +8126,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f1e2d3c4b5a6978890a1b2c3d4e5f607, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_placeholderText: Price
-  m_requirePlaceholderMatch: 1
   m_minDollars: 10
   m_maxDollars: 50
   m_currencyPrefix: $
@@ -8625,8 +8611,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f1e2d3c4b5a6978890a1b2c3d4e5f607, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_placeholderText: Price
-  m_requirePlaceholderMatch: 1
   m_minDollars: 10
   m_maxDollars: 50
   m_currencyPrefix: $
@@ -9772,8 +9756,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f1e2d3c4b5a6978890a1b2c3d4e5f607, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_placeholderText: Price
-  m_requirePlaceholderMatch: 1
   m_minDollars: 10
   m_maxDollars: 50
   m_currencyPrefix: $
@@ -9980,8 +9962,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f1e2d3c4b5a6978890a1b2c3d4e5f607, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_placeholderText: Price
-  m_requirePlaceholderMatch: 1
   m_minDollars: 10
   m_maxDollars: 50
   m_currencyPrefix: $
@@ -10325,8 +10305,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f1e2d3c4b5a6978890a1b2c3d4e5f607, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_placeholderText: Price
-  m_requirePlaceholderMatch: 1
   m_minDollars: 10
   m_maxDollars: 50
   m_currencyPrefix: $
@@ -10641,8 +10619,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f1e2d3c4b5a6978890a1b2c3d4e5f607, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_placeholderText: Price
-  m_requirePlaceholderMatch: 1
   m_minDollars: 10
   m_maxDollars: 50
   m_currencyPrefix: $
@@ -14140,8 +14116,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f1e2d3c4b5a6978890a1b2c3d4e5f607, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_placeholderText: Price
-  m_requirePlaceholderMatch: 1
   m_minDollars: 10
   m_maxDollars: 50
   m_currencyPrefix: $
@@ -14408,8 +14382,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f1e2d3c4b5a6978890a1b2c3d4e5f607, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_placeholderText: Price
-  m_requirePlaceholderMatch: 1
   m_minDollars: 10
   m_maxDollars: 50
   m_currencyPrefix: $
@@ -15229,8 +15201,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f1e2d3c4b5a6978890a1b2c3d4e5f607, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_placeholderText: Price
-  m_requirePlaceholderMatch: 1
   m_minDollars: 10
   m_maxDollars: 50
   m_currencyPrefix: $
@@ -15388,8 +15358,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f1e2d3c4b5a6978890a1b2c3d4e5f607, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_placeholderText: Price
-  m_requirePlaceholderMatch: 1
   m_minDollars: 10
   m_maxDollars: 50
   m_currencyPrefix: $
@@ -15547,8 +15515,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f1e2d3c4b5a6978890a1b2c3d4e5f607, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_placeholderText: Price
-  m_requirePlaceholderMatch: 1
   m_minDollars: 10
   m_maxDollars: 50
   m_currencyPrefix: $
@@ -15975,9 +15941,6 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 4235160468344426946, guid: a9088ffdc24df41fba5fd6cb1eaf3ead, type: 3}
       insertIndex: -1
       addedObject: {fileID: 2080659907}
-    - targetCorrespondingSourceObject: {fileID: 789804525493875455, guid: a9088ffdc24df41fba5fd6cb1eaf3ead, type: 3}
-      insertIndex: -1
-      addedObject: {fileID: 0}
   m_SourcePrefab: {fileID: 100100000, guid: a9088ffdc24df41fba5fd6cb1eaf3ead, type: 3}
 --- !u!224 &2080659905 stripped
 RectTransform:
@@ -16164,8 +16127,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f1e2d3c4b5a6978890a1b2c3d4e5f607, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_placeholderText: Price
-  m_requirePlaceholderMatch: 1
   m_minDollars: 10
   m_maxDollars: 50
   m_currencyPrefix: $
