@@ -295,12 +295,19 @@ public class ProxyLabelManager : MonoBehaviour
         if (!m_visibleMarkerFilterEnabled && m_lastFilteredLabelsParent == null)
             return;
 
+        var previousFilteredParent = m_lastFilteredLabelsParent;
+        var activeParent = GetActiveLabelsParent();
+
         RestoreDirectChildrenVisibility(m_lastFilteredLabelsParent);
-        RestoreDirectChildrenVisibility(GetActiveLabelsParent());
+        RestoreDirectChildrenVisibility(activeParent);
 
         m_visibleMarkerFilterEnabled = false;
         m_visibleMarkerFilter.Clear();
         m_lastFilteredLabelsParent = null;
+
+        ForceRefreshScrollerFor(previousFilteredParent);
+        if (activeParent != previousFilteredParent)
+            ForceRefreshScrollerFor(activeParent);
     }
 
     public int GetLabelCount()
@@ -567,6 +574,7 @@ public class ProxyLabelManager : MonoBehaviour
         if (parent == null)
             return;
 
+        bool visibilityChanged = false;
         for (int i = 0; i < parent.childCount; i++)
         {
             var child = parent.GetChild(i);
@@ -575,11 +583,17 @@ public class ProxyLabelManager : MonoBehaviour
 
             bool shouldShow = ShouldShowChildForVisibleMarkerFilter(child);
             if (child.gameObject.activeSelf != shouldShow)
+            {
                 child.gameObject.SetActive(shouldShow);
+                visibilityChanged = true;
+            }
         }
 
         m_lastFilteredLabelsParent = parent;
         EnsureSelectionRemainsVisible(parent);
+
+        if (visibilityChanged)
+            ForceRefreshScrollerFor(parent);
     }
 
     private bool ShouldShowChildForVisibleMarkerFilter(Transform child)
@@ -671,6 +685,20 @@ public class ProxyLabelManager : MonoBehaviour
         }
 
         return null;
+    }
+
+    private static void ForceRefreshScrollerFor(Transform parent)
+    {
+        if (parent == null)
+            return;
+
+        var scroller = parent.GetComponent<ProxyLabelHorizonScroller>();
+        if (scroller == null)
+            scroller = parent.GetComponentInParent<ProxyLabelHorizonScroller>(true);
+        if (scroller == null)
+            scroller = parent.GetComponentInChildren<ProxyLabelHorizonScroller>(true);
+        if (scroller != null)
+            scroller.ForceRefreshNow();
     }
 
     private int FindFirstActiveLabelsParentIndex()

@@ -18,8 +18,12 @@ public class ProxyLabelHorizonScroller : MonoBehaviour
         public CanvasGroup CanvasGroup;
         public Vector2 AuthoredAnchoredPosition;
         public Vector3 AuthoredScale;
+        public Graphic[] Graphics;
+        public bool[] AuthoredGraphicEnabled;
+        public bool[] AuthoredGraphicRaycastTargets;
         public TMP_Text[] Texts;
         public bool[] AuthoredTextRaycastTargets;
+        public bool WereGraphicsHiddenLastFrame;
     }
 
     [Header("Label source")]
@@ -60,6 +64,7 @@ public class ProxyLabelHorizonScroller : MonoBehaviour
     [SerializeField] private bool m_disableRaycastsForHiddenItems = true;
     [SerializeField] private bool m_hideLabelsCompletelyOutsideWindow = true;
     [SerializeField] private float m_hardCullAlphaThreshold = 0.02f;
+    [SerializeField] private int m_postForceRefreshFrames = 2;
 
     private readonly List<LabelVisualState> m_labelStates = new();
     private readonly List<float> m_rowAnchoredPositions = new();
@@ -93,6 +98,7 @@ public class ProxyLabelHorizonScroller : MonoBehaviour
         m_edgeScale = Mathf.Max(0.01f, m_edgeScale);
         m_hiddenScale = Mathf.Max(0.01f, m_hiddenScale);
         m_hardCullAlphaThreshold = Mathf.Clamp01(m_hardCullAlphaThreshold);
+        m_postForceRefreshFrames = Mathf.Max(0, m_postForceRefreshFrames);
     }
 
     private void OnEnable()
@@ -112,7 +118,9 @@ public class ProxyLabelHorizonScroller : MonoBehaviour
         EnsureReferences();
         RebuildAuthoredLayout(force: true);
         SnapToCurrentSelection();
-        m_startupRefreshFramesRemaining = 0;
+        RefreshTrackedGraphics(forceDirty: true);
+        Canvas.ForceUpdateCanvases();
+        m_startupRefreshFramesRemaining = Mathf.Max(m_startupRefreshFramesRemaining, m_postForceRefreshFrames);
     }
 
     private void OnDisable()
@@ -223,6 +231,16 @@ public class ProxyLabelHorizonScroller : MonoBehaviour
             if (canvasGroup == null)
                 canvasGroup = child.gameObject.AddComponent<CanvasGroup>();
 
+            var graphics = CollectRefreshableGraphics(child);
+            var authoredGraphicEnabled = new bool[graphics.Length];
+            var authoredGraphicRaycastTargets = new bool[graphics.Length];
+            for (int g = 0; g < graphics.Length; g++)
+            {
+                var graphic = graphics[g];
+                authoredGraphicEnabled[g] = graphic != null && graphic.enabled;
+                authoredGraphicRaycastTargets[g] = TryGetGraphicRaycastTarget(graphic, out bool raycastTarget) && raycastTarget;
+            }
+
             var texts = child.GetComponentsInChildren<TMP_Text>(true);
             var authoredTextRaycastTargets = new bool[texts.Length];
             for (int t = 0; t < texts.Length; t++)
@@ -236,8 +254,12 @@ public class ProxyLabelHorizonScroller : MonoBehaviour
                 CanvasGroup = canvasGroup,
                 AuthoredAnchoredPosition = child.anchoredPosition,
                 AuthoredScale = child.localScale,
+                Graphics = graphics,
+                AuthoredGraphicEnabled = authoredGraphicEnabled,
+                AuthoredGraphicRaycastTargets = authoredGraphicRaycastTargets,
                 Texts = texts,
-                AuthoredTextRaycastTargets = authoredTextRaycastTargets
+                AuthoredTextRaycastTargets = authoredTextRaycastTargets,
+                WereGraphicsHiddenLastFrame = false
             });
 
             int row = visibleChildCount / columnCount;
@@ -246,6 +268,9 @@ public class ProxyLabelHorizonScroller : MonoBehaviour
 
             visibleChildCount++;
         }
+
+        RefreshTrackedGraphics(forceDirty: true);
+        Canvas.ForceUpdateCanvases();
 
         m_lastChildCount = m_content.childCount;
         m_lastContentSize = currentSize;
@@ -277,6 +302,7 @@ public class ProxyLabelHorizonScroller : MonoBehaviour
 
     private void RestoreTrackedVisuals()
     {
+        bool needsCacheRefresh = false;
         for (int i = 0; i < m_labelStates.Count; i++)
         {
             var state = m_labelStates[i];
@@ -292,6 +318,9 @@ public class ProxyLabelHorizonScroller : MonoBehaviour
                 state.CanvasGroup.blocksRaycasts = true;
             }
 
+            if (!TryRestoreGraphicsToAuthoredState(state, forceDirty: true))
+                needsCacheRefresh = true;
+
             if (state.Texts == null)
                 continue;
 
@@ -303,7 +332,12 @@ public class ProxyLabelHorizonScroller : MonoBehaviour
                 if (state.AuthoredTextRaycastTargets != null && t < state.AuthoredTextRaycastTargets.Length)
                     TrySetTextRaycastTarget(state, t, state.AuthoredTextRaycastTargets[t]);
             }
+
+            state.WereGraphicsHiddenLastFrame = false;
         }
+
+        if (needsCacheRefresh)
+            InvalidateCachedLayout();
     }
 
     private void SnapToCurrentSelection()
@@ -386,6 +420,16 @@ public class ProxyLabelHorizonScroller : MonoBehaviour
             state.Rect.localScale = Vector3.Lerp(state.Rect.localScale, state.AuthoredScale * targetScaleFactor, lerpFactor);
             float appliedAlpha = Mathf.Lerp(state.CanvasGroup.alpha, targetAlpha, lerpFactor);
             state.CanvasGroup.alpha = appliedAlpha;
+            bool shouldRender = targetAlpha > m_hardCullAlphaThreshold
+                && appliedAlpha > m_hardCullAlphaThreshold;
+
+            if (shouldRender && state.WereGraphicsHiddenLastFrame)
+            {
+                if (!TryRestoreGraphicsToAuthoredState(state, forceDirty: true))
+                    needsCacheRefresh = true;
+            }
+
+            state.WereGraphicsHiddenLastFrame = !shouldRender;
 
             // Some label prefabs/text setups may ignore parent alpha (or keep raycast state).
             // Mirror the wheel culling by disabling TMP rendering once a row is meant to be hidden.
@@ -393,8 +437,6 @@ public class ProxyLabelHorizonScroller : MonoBehaviour
             {
                 // Require both the current smoothed alpha and the intended target alpha so text
                 // does not linger after a row has been culled from the visible window.
-                bool shouldRender = targetAlpha > m_hardCullAlphaThreshold
-                    && appliedAlpha > m_hardCullAlphaThreshold;
                 for (int t = 0; t < state.Texts.Length; t++)
                 {
                     var text = state.Texts[t];
@@ -476,6 +518,9 @@ public class ProxyLabelHorizonScroller : MonoBehaviour
                 state.CanvasGroup.blocksRaycasts = true;
             }
 
+            if (!TryRestoreGraphicsToAuthoredState(state, forceDirty: true))
+                needsCacheRefresh = true;
+
             if (state.Texts != null && state.Texts.Length > 0)
             {
                 for (int t = 0; t < state.Texts.Length; t++)
@@ -500,6 +545,8 @@ public class ProxyLabelHorizonScroller : MonoBehaviour
                     }
                 }
             }
+
+            state.WereGraphicsHiddenLastFrame = false;
         }
 
         if (needsCacheRefresh)
@@ -604,6 +651,15 @@ public class ProxyLabelHorizonScroller : MonoBehaviour
             if (state.Rect == null || state.CanvasGroup == null)
                 return true;
 
+            if (state.Graphics != null)
+            {
+                for (int g = 0; g < state.Graphics.Length; g++)
+                {
+                    if (state.Graphics[g] == null)
+                        return true;
+                }
+            }
+
             if (state.Texts == null)
                 continue;
 
@@ -638,6 +694,113 @@ public class ProxyLabelHorizonScroller : MonoBehaviour
         {
             return false;
         }
+    }
+
+    private void RefreshTrackedGraphics(bool forceDirty)
+    {
+        for (int i = 0; i < m_labelStates.Count; i++)
+            TryRestoreGraphicsToAuthoredState(m_labelStates[i], forceDirty);
+    }
+
+    private static Graphic[] CollectRefreshableGraphics(RectTransform child)
+    {
+        if (child == null)
+            return new Graphic[0];
+
+        var allGraphics = child.GetComponentsInChildren<Graphic>(true);
+        if (allGraphics == null || allGraphics.Length == 0)
+            return new Graphic[0];
+
+        var refreshable = new List<Graphic>(allGraphics.Length);
+        for (int i = 0; i < allGraphics.Length; i++)
+        {
+            var graphic = allGraphics[i];
+            if (graphic == null || graphic is TMP_Text)
+                continue;
+
+            refreshable.Add(graphic);
+        }
+
+        return refreshable.ToArray();
+    }
+
+    private static bool TryRestoreGraphicsToAuthoredState(LabelVisualState state, bool forceDirty)
+    {
+        if (state.Graphics == null)
+            return true;
+
+        bool success = true;
+        for (int i = 0; i < state.Graphics.Length; i++)
+        {
+            if (!TryGetGraphic(state, i, out var graphic))
+            {
+                success = false;
+                continue;
+            }
+
+            bool authoredEnabled = state.AuthoredGraphicEnabled != null && i < state.AuthoredGraphicEnabled.Length
+                ? state.AuthoredGraphicEnabled[i]
+                : true;
+
+            try
+            {
+                if (graphic.enabled != authoredEnabled)
+                    graphic.enabled = authoredEnabled;
+
+                if (state.AuthoredGraphicRaycastTargets != null && i < state.AuthoredGraphicRaycastTargets.Length)
+                    graphic.raycastTarget = state.AuthoredGraphicRaycastTargets[i];
+
+                if (!authoredEnabled || !forceDirty)
+                    continue;
+
+                if (graphic.canvasRenderer != null)
+                    graphic.canvasRenderer.cull = false;
+
+                // RoundedBoxUIProperties (used by the proxy pill prefab) rebuilds through the Image's dirty path.
+                LayoutRebuilder.MarkLayoutForRebuild(graphic.rectTransform);
+                graphic.SetAllDirty();
+            }
+            catch (MissingReferenceException)
+            {
+                state.Graphics[i] = null;
+                success = false;
+            }
+        }
+
+        return success;
+    }
+
+    private static bool TryGetGraphicRaycastTarget(Graphic graphic, out bool raycastTarget)
+    {
+        raycastTarget = false;
+        if (graphic == null)
+            return false;
+
+        try
+        {
+            raycastTarget = graphic.raycastTarget;
+            return true;
+        }
+        catch (MissingReferenceException)
+        {
+            return false;
+        }
+    }
+
+    private static bool TryGetGraphic(LabelVisualState state, int graphicIndex, out Graphic graphic)
+    {
+        graphic = null;
+        if (state.Graphics == null || graphicIndex < 0 || graphicIndex >= state.Graphics.Length)
+            return false;
+
+        graphic = state.Graphics[graphicIndex];
+        if (graphic == null)
+        {
+            state.Graphics[graphicIndex] = null;
+            return false;
+        }
+
+        return true;
     }
 
     private static bool TrySetTextEnabled(LabelVisualState state, int textIndex, bool enabled)
