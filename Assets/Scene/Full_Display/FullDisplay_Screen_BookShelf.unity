@@ -3050,6 +3050,7 @@ MonoBehaviour:
   m_attributeUiRoot: {fileID: 125745444}
   m_attributeLabelsParentForManager: {fileID: 0}
   m_selectFirstSelectableInAttributeUi: 1
+  m_proxyLabelHorizonScroller: {fileID: 1436498630}
   m_attributeUiInactiveByDefault: 1
   m_attributeTwistEventSource: {fileID: 0}
   m_attributeNamesParent: {fileID: 1134429860}
@@ -10067,6 +10068,18 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3538017278138891281, guid: 58eee23691c63485ba7ef961e1ceeb74, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4896222002679879045, guid: 58eee23691c63485ba7ef961e1ceeb74, type: 3}
+      propertyPath: m_Color.b
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4896222002679879045, guid: 58eee23691c63485ba7ef961e1ceeb74, type: 3}
+      propertyPath: m_Color.g
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4896222002679879045, guid: 58eee23691c63485ba7ef961e1ceeb74, type: 3}
+      propertyPath: m_Color.r
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 5181220601960006006, guid: 58eee23691c63485ba7ef961e1ceeb74, type: 3}

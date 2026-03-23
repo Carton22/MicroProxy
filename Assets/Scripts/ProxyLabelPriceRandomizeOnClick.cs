@@ -48,8 +48,6 @@ public class ProxyLabelPriceRandomizeOnClick : MonoBehaviour, IPointerClickHandl
 
     private void OnButtonClicked()
     {
-        Debug.Log("OnButtonClicked");
-        Debug.Log("Try to apply random price " + m_hasAssignedPrice);
         TryApplyRandomPrice();
     }
 
@@ -66,8 +64,6 @@ public class ProxyLabelPriceRandomizeOnClick : MonoBehaviour, IPointerClickHandl
 
         if (m_ignoreSecondClickOfDoubleTap && eventData.clickCount > 1)
             return;
-        Debug.Log("OnPointerClick");
-        Debug.Log("Try to apply random price " + m_hasAssignedPrice);
         TryApplyRandomPrice();
     }
 
@@ -79,8 +75,6 @@ public class ProxyLabelPriceRandomizeOnClick : MonoBehaviour, IPointerClickHandl
     private void TryApplyRandomPrice()
     {
         EnsureLabelText();
-        Debug.Log("EnsureLabelText");
-        Debug.Log("m_text: " + m_text);
         if (m_text == null)
             return;
 

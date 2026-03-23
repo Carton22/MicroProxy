@@ -59,6 +59,19 @@ public class AttributeUiDismissOnLeftSwipe : MonoBehaviour
 
         Canvas.ForceUpdateCanvases();
 
+        var activeParent = m_proxyLabelManager != null ? m_proxyLabelManager.GetActiveLabelsParent() : null;
+        var refreshRoot = activeParent != null ? activeParent : m_leftColumnLabelsParent;
+        if (refreshRoot != null)
+        {
+            var scroller = refreshRoot.GetComponent<ProxyLabelHorizonScroller>();
+            if (scroller == null)
+                scroller = refreshRoot.GetComponentInParent<ProxyLabelHorizonScroller>(true);
+            if (scroller == null)
+                scroller = refreshRoot.GetComponentInChildren<ProxyLabelHorizonScroller>(true);
+            if (scroller != null)
+                scroller.ForceRefreshNow();
+        }
+
         if (m_selectFirstInLeftColumn && m_leftColumnLabelsParent != null)
         {
             var target = FindFirstSelectableUnder(m_leftColumnLabelsParent);

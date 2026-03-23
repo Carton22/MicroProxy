@@ -79,8 +79,13 @@ public class RemoteGestureUINavigatorInput : MonoBehaviour
             case "thumb_tap":
             case "thumbtap":
             case "tap":
-            case "taptap":
                 m_uiNavigator.ClickSelected();
+                break;
+
+            case "taptap":
+            case "double_tap":
+            case "doubletap":
+                m_uiNavigator.DoubleTapSelected();
                 break;
 
             case "pinch_twist":

@@ -29,6 +29,9 @@ public class UINavigator : MonoBehaviour
 
     [SerializeField] private bool m_selectFirstSelectableInAttributeUi = true;
 
+    [Tooltip("Optional explicit scroller to refresh on ProxyUI <-> AttributeUI transitions. If null, auto-find is used.")]
+    [SerializeField] private ProxyLabelHorizonScroller m_proxyLabelHorizonScroller;
+
     [Tooltip("When true, AttributeUI is turned off when the scene loads (play mode), even if left active in the editor.")]
     [SerializeField] private bool m_attributeUiInactiveByDefault = true;
 
@@ -619,6 +622,21 @@ public class UINavigator : MonoBehaviour
     }
 
     /// <summary>
+    /// Double-tap action. If focused AttributeUI button is currently on "none", regroup ProxyUI labels by this attribute's values.
+    /// Otherwise falls back to the same behavior as single tap.
+    /// </summary>
+    public void DoubleTapSelected()
+    {
+        if (IsNavigationLocked())
+            return;
+
+        if (TryGroupActiveProxyLabelsByFocusedAttributeFromNone())
+            return;
+
+        ClickSelected();
+    }
+
+    /// <summary>
     /// Entry point for socket-driven zoom gestures to switch ScreenUI parent layers directly.
     /// zoomOut=true goes to previous layer (e.g. ProxyUI -> SpatialHierarchy when ordered that way in ProxyLabelManager).
     /// zoomOut=false goes to next layer.
@@ -745,6 +763,118 @@ public class UINavigator : MonoBehaviour
             scroller = parent.GetComponentInParent<ProxyLabelHorizonScroller>(true);
         if (scroller != null)
             scroller.ForceRefreshNow();
+    }
+
+    private bool TryGroupActiveProxyLabelsByFocusedAttributeFromNone()
+    {
+        if (!TryResolveAttributeTwistContext(out var attributeButtonRoot, out var optionsRoot, out _, out var optionCount))
+            return false;
+
+        int currentIndex = m_attributeFilterSelections.TryGetValue(attributeButtonRoot, out var storedIndex)
+            ? storedIndex
+            : -1;
+        if (currentIndex >= 0)
+            return false; // only when this attribute is currently "none"
+
+        if (optionCount <= 0)
+            return false;
+
+        if (m_labelManager == null)
+            m_labelManager = FindFirstObjectByType<ProxyLabelManager>();
+        if (m_labelManager == null)
+            return false;
+
+        var activeParent = m_labelManager.GetActiveLabelsParent();
+        if (activeParent == null)
+            return false;
+
+        BuildAttributeOptionRoots(optionsRoot, m_attributeOptionRootsBuffer);
+        if (m_attributeOptionRootsBuffer.Count == 0)
+            return false;
+
+        var grouped = new List<Transform>(activeParent.childCount);
+        var used = new HashSet<Transform>();
+
+        // Group labels by attribute option order.
+        for (int optionIndex = 0; optionIndex < m_attributeOptionRootsBuffer.Count; optionIndex++)
+        {
+            var optionRoot = m_attributeOptionRootsBuffer[optionIndex];
+            if (optionRoot == null)
+                continue;
+
+            var optionBinding = optionRoot.GetComponent<LabelMarkerBinding>();
+            var optionMarkers = optionBinding != null ? optionBinding.MarkerIndices : null;
+            if (optionMarkers == null || optionMarkers.Count == 0)
+                continue;
+
+            for (int i = 0; i < activeParent.childCount; i++)
+            {
+                var child = activeParent.GetChild(i);
+                if (child == null || used.Contains(child))
+                    continue;
+
+                var childBinding = child.GetComponent<LabelMarkerBinding>();
+                var childMarkers = childBinding != null ? childBinding.MarkerIndices : null;
+                if (!HasAnyCommonMarker(optionMarkers, childMarkers))
+                    continue;
+
+                grouped.Add(child);
+                used.Add(child);
+            }
+        }
+
+        // Keep unmatched labels at the end in authored order.
+        for (int i = 0; i < activeParent.childCount; i++)
+        {
+            var child = activeParent.GetChild(i);
+            if (child == null || used.Contains(child))
+                continue;
+            grouped.Add(child);
+        }
+
+        if (grouped.Count == 0)
+            return false;
+
+        for (int i = 0; i < grouped.Count; i++)
+            grouped[i].SetSiblingIndex(i);
+
+        // Preserve current selection if still valid; otherwise pick first visible selectable.
+        var selected = EventSystem.current != null ? EventSystem.current.currentSelectedGameObject : null;
+        if (selected == null || selected.transform.parent != activeParent)
+        {
+            var first = FindFirstSelectableIn(activeParent);
+            if (first != null)
+                Select(first);
+        }
+
+        var scroller = activeParent.GetComponent<ProxyLabelHorizonScroller>();
+        if (scroller == null)
+            scroller = activeParent.GetComponentInParent<ProxyLabelHorizonScroller>(true);
+        if (scroller != null)
+            scroller.ForceRefreshNow();
+
+        if (m_attributeUiRoot != null && m_attributeUiRoot.activeSelf)
+            m_attributeUiRoot.SetActive(false);
+
+        return true;
+    }
+
+    private static bool HasAnyCommonMarker(IReadOnlyList<int> a, IReadOnlyList<int> b)
+    {
+        if (a == null || b == null || a.Count == 0 || b.Count == 0)
+            return false;
+
+        for (int i = 0; i < a.Count; i++)
+        {
+            int marker = a[i];
+            for (int j = 0; j < b.Count; j++)
+            {
+                if (b[j] == marker)
+                    return true;
+            }
+        }
+
+        return false;
     }
 
     private bool TrySwitchScreenLayerDirect(int stepDirection)
@@ -983,6 +1113,19 @@ public class UINavigator : MonoBehaviour
             m_labelManager.SetActiveLabelsParent(m_attributeLabelsParentForManager);
 
         Canvas.ForceUpdateCanvases();
+        var attributeScroller = m_proxyLabelHorizonScroller;
+        if (attributeScroller == null)
+        {
+            var attributeRefreshRoot = m_attributeLabelsParentForManager != null ? m_attributeLabelsParentForManager : m_attributeUiRoot.transform;
+            attributeScroller = attributeRefreshRoot.GetComponent<ProxyLabelHorizonScroller>();
+            if (attributeScroller == null)
+                attributeScroller = attributeRefreshRoot.GetComponentInParent<ProxyLabelHorizonScroller>(true);
+            if (attributeScroller == null)
+                attributeScroller = attributeRefreshRoot.GetComponentInChildren<ProxyLabelHorizonScroller>(true);
+        }
+        if (attributeScroller != null)
+            Debug.Log("Force refresh attribute scroller when showing AttributeUI");
+            attributeScroller.ForceRefreshNow();
 
         if (m_selectFirstSelectableInAttributeUi)
         {
