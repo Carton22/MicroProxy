@@ -23,8 +23,7 @@ namespace PassthroughCameraSamples.MultiObjectDetection
         [SerializeField] private SentisInferenceUiManager m_uiInference;
         [SerializeField] private TextAsset m_labelsAsset;
         [SerializeField] private DetectionUiMenuManager m_uiMenuManager;
-        [SerializeField] private ProxyInject m_proxyInject;
-        [SerializeField] private ProxyCreator m_proxyCreator;
+        [SerializeField] private ProxyLabelManager m_proxyLabelManager;
         [Tooltip("Optional: draw 2D bounding boxes in screen space (no 3D raycast).")]
         [SerializeField] private ScreenSpaceBoundingBoxDrawer m_screenSpaceBoxDrawer;
 
@@ -156,10 +155,10 @@ namespace PassthroughCameraSamples.MultiObjectDetection
             }
 
             // Keep bounding box highlight in sync with proxy label selection (single or multi-select from twist)
-            if (m_uiInference != null && m_proxyCreator != null)
+            if (m_uiInference != null && m_proxyLabelManager != null)
             {
-                m_proxyCreator.GetSelectionRange(out int minIndex, out int maxIndex);
-                Color selectedColor = m_proxyCreator.GetSelectedColor();
+                m_proxyLabelManager.GetSelectionRange(out int minIndex, out int maxIndex);
+                Color selectedColor = ResolveSelectedColorFromActiveLabelParent();
                 m_uiInference.UpdateSelectionRangeHighlight(minIndex, maxIndex, selectedColor);
             }
         }
@@ -270,10 +269,6 @@ namespace PassthroughCameraSamples.MultiObjectDetection
 
                     string json = request.downloadHandler.text;
                     AppendLog("[Client] Detections received: " + json, false);
-                    // Let ProxyInject inspect any optional "analysis" payload (analysis data for labels).
-                    if (m_proxyInject != null)
-                        m_proxyInject.ProcessServerResponse(json);
-
                     // When frozen, do not run detection again: keep current boxes and avoid re-invoking OnObjectsDetected.
                     if (!m_detectionFrozen)
                         ProcessDetections(json);
@@ -404,11 +399,12 @@ namespace PassthroughCameraSamples.MultiObjectDetection
             int selectedLabelIndex = -1;
             Color? selectedColor = null;
             Color? normalColor = null;
-            if (m_proxyCreator != null)
+            if (m_proxyLabelManager != null)
             {
-                selectedLabelIndex = m_proxyCreator.GetSelectedLabelIndex();
-                selectedColor = m_proxyCreator.GetSelectedColor();
-                normalColor = m_proxyCreator.GetNormalColor();
+                selectedLabelIndex = m_proxyLabelManager.GetSelectedLabelIndex();
+                var c = ResolveSelectedColorFromActiveLabelParent();
+                selectedColor = c;
+                normalColor = c;
             }
 
             if (m_draw3DBoundingBoxes && m_uiInference != null)
@@ -419,12 +415,6 @@ namespace PassthroughCameraSamples.MultiObjectDetection
             if (m_screenSpaceBoxDrawer != null)
             {
                 m_screenSpaceBoxDrawer.DrawBoxes(uiDetections, inputSize);
-            }
-
-            // Sync proxy labels to detection count (driven by 2D boxes on passthrough canvas, not 3D world boxes)
-            if (m_proxyCreator != null)
-            {
-                m_proxyCreator.SyncLabelsWithDetections(uiDetections.Count);
             }
 
             // Update detection UI menu with current object count (so "Detecting objects: N" is correct when only 2D boxes are drawn)
@@ -440,6 +430,24 @@ namespace PassthroughCameraSamples.MultiObjectDetection
             //     m_miniCameraOverlay.DrawBoxes(uiDetections, inputSize);
             //     showLog = false;
             // }
+        }
+
+        private Color ResolveSelectedColorFromActiveLabelParent()
+        {
+            if (m_proxyLabelManager == null)
+                m_proxyLabelManager = FindFirstObjectByType<ProxyLabelManager>();
+            if (m_proxyLabelManager == null)
+                return Color.white;
+
+            var parent = m_proxyLabelManager.GetActiveLabelsParent();
+            if (parent == null)
+                return Color.white;
+
+            var firstButton = parent.GetComponentInChildren<UnityEngine.UI.Button>(true);
+            if (firstButton != null)
+                return firstButton.colors.selectedColor;
+
+            return Color.white;
         }
     }
 

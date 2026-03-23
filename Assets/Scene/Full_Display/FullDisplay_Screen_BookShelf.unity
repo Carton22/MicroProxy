@@ -3077,6 +3077,7 @@ MonoBehaviour:
   m_attributeTwistEventSource: {fileID: 0}
   m_attributeNamesParent: {fileID: 1134429860}
   m_attributeTwistPerStep: 0.12
+  m_debugRemotePinchTwist: 1
   m_attributeButtonValueSeparator: ': '
 --- !u!114 &456180482
 MonoBehaviour:
@@ -3092,7 +3093,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_socketManager: {fileID: 622173651}
   m_uiNavigator: {fileID: 456180478}
-  m_debugLog: 0
+  m_debugLog: 1
 --- !u!1 &497359176
 GameObject:
   m_ObjectHideFlags: 0
@@ -15206,7 +15207,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
-  m_AnchoredPosition: {x: 0.376, y: -0.107}
+  m_AnchoredPosition: {x: 0.376, y: -0.087}
   m_SizeDelta: {x: 600, y: 600}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1999623424

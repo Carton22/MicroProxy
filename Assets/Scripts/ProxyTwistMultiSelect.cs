@@ -7,7 +7,7 @@ using UnityEngine;
 /// </summary>
 public class ProxyTwistMultiSelect : MonoBehaviour
 {
-    [SerializeField] private ProxyCreator m_proxyCreator;
+    [SerializeField] private ProxyLabelManager m_labelManager;
     [SerializeField] private PinchAndTwistEventSource m_twistEventSource;
 
     [Tooltip("Twist amount (0–1) per one label added. 0.1 = 10% adds one label.")]
@@ -45,8 +45,8 @@ public class ProxyTwistMultiSelect : MonoBehaviour
             m_twistEventSource.OnPinchAndTwist.RemoveListener(OnPinchAndTwist);
             m_twistEventSource.OnEndPinchAndTwist.RemoveListener(OnEndPinchAndTwist);
         }
-        if (m_inGesture && m_proxyCreator != null)
-            m_proxyCreator.ClearSelectionRangeOverride();
+        if (m_inGesture && m_labelManager != null)
+            m_labelManager.ClearSelectionRangeOverride();
     }
 
     private void OnStartPinchAndTwist()
@@ -58,11 +58,13 @@ public class ProxyTwistMultiSelect : MonoBehaviour
             return;
         }
 
-        if (m_proxyCreator == null) return;
-        m_anchorIndex = m_proxyCreator.GetSelectedLabelIndex();
+        if (m_labelManager == null)
+            m_labelManager = FindFirstObjectByType<ProxyLabelManager>();
+        if (m_labelManager == null) return;
+        m_anchorIndex = m_labelManager.GetSelectedLabelIndex();
         if (m_anchorIndex < 0)
             m_anchorIndex = 0;
-        int count = m_proxyCreator.GetLabelCount();
+        int count = m_labelManager.GetLabelCount();
         if (count == 0) return;
         m_anchorIndex = Mathf.Clamp(m_anchorIndex, 0, count - 1);
         m_inGesture = true;
@@ -71,9 +73,9 @@ public class ProxyTwistMultiSelect : MonoBehaviour
 
     private void OnPinchAndTwist(float signedNormalized)
     {
-        if (m_proxyCreator == null || !m_inGesture) return;
+        if (m_labelManager == null || !m_inGesture) return;
 
-        int count = m_proxyCreator.GetLabelCount();
+        int count = m_labelManager.GetLabelCount();
         if (count == 0) return;
 
         int rightSteps = 0;
@@ -89,7 +91,7 @@ public class ProxyTwistMultiSelect : MonoBehaviour
 
         int minIndex = Mathf.Clamp(m_anchorIndex - leftSteps, 0, count - 1);
         int maxIndex = Mathf.Clamp(m_anchorIndex + rightSteps, 0, count - 1);
-        m_proxyCreator.SetSelectionRange(minIndex, maxIndex);
+        m_labelManager.SetSelectionRange(minIndex, maxIndex);
         if (m_debugLog) Debug.Log($"[ProxyTwistMultiSelect] Twist={signedNormalized:F2} range=[{minIndex},{maxIndex}]");
     }
 

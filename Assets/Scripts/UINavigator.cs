@@ -44,6 +44,7 @@ public class UINavigator : MonoBehaviour
 
     [Range(0.05f, 0.5f)]
     [SerializeField] private float m_attributeTwistPerStep = 0.12f;
+    [SerializeField] private bool m_debugRemotePinchTwist;
 
     [SerializeField] private string m_attributeButtonValueSeparator = ": ";
 
@@ -56,6 +57,9 @@ public class UINavigator : MonoBehaviour
     private Transform m_attributeGestureOptionsRoot;
     private int m_attributeGestureStartOptionIndex = -1;
     private int m_attributeGestureLastAppliedOptionIndex = int.MinValue;
+    private bool m_inRemoteProxyMultiSelect;
+    private int m_remoteProxyAnchorIndex = -1;
+    private GameObject m_remoteProxyAnchorObject;
 
     void Reset()
     {
@@ -519,6 +523,12 @@ public class UINavigator : MonoBehaviour
         if (Mathf.Abs(signedNormalized) < 0.0001f)
             return 0;
 
+        // Gesture name signals (pinch_twist_in/out) arrive as exactly +/-1 with no true magnitude.
+        // Treat them as a single incremental step to avoid jumping straight to boundary ranges.
+        float abs = Mathf.Abs(signedNormalized);
+        if (Mathf.Approximately(abs, 1f))
+            return signedNormalized > 0f ? 1 : -1;
+
         int steps = Mathf.FloorToInt(Mathf.Abs(signedNormalized) / Mathf.Max(0.0001f, m_attributeTwistPerStep));
         if (steps <= 0)
             return 0;
@@ -651,41 +661,148 @@ public class UINavigator : MonoBehaviour
 
     /// <summary>
     /// Entry point for socket-driven pinch_twist gestures.
-    /// Discrete mode: each signal advances one option (or one back).
+    /// Continuous mode: signed magnitude controls how far the selection extends.
     /// </summary>
     public void RemotePinchAndTwist(float signedNormalized)
     {
+        if (m_debugRemotePinchTwist)
+            Debug.Log($"[UINavigator] RemotePinchAndTwist input={signedNormalized:0.###}");
+
         if (IsNavigationLocked())
+        {
+            if (m_debugRemotePinchTwist)
+                Debug.Log("[UINavigator] RemotePinchAndTwist blocked: navigation locked.");
             return;
+        }
 
-        int stepDirection = signedNormalized > 0f ? 1 : -1;
         if (Mathf.Approximately(signedNormalized, 0f))
+        {
+            if (m_debugRemotePinchTwist)
+                Debug.Log("[UINavigator] RemotePinchAndTwist ignored: zero input.");
             return;
+        }
 
-        ApplyRemoteAttributeTwistStep(stepDirection);
+        ApplyRemoteAttributeTwistContinuous(signedNormalized);
     }
 
-    private void ApplyRemoteAttributeTwistStep(int stepDirection)
+    /// <summary>
+    /// Uses pinch_twist in/out as ProxyUI multi-selection only when current focus is on ProxyUI labels.
+    /// Returns true when the gesture is consumed by ProxyUI multi-select.
+    /// </summary>
+    public bool TryHandleRemoteProxyMultiSelect(float signedNormalized)
     {
-        if (stepDirection == 0)
+        if (Mathf.Approximately(signedNormalized, 0f) || IsNavigationLocked())
+        {
+            if (m_debugRemotePinchTwist)
+                Debug.Log($"[UINavigator] MultiSelect ignored: zeroInput={Mathf.Approximately(signedNormalized, 0f)} navLocked={IsNavigationLocked()}");
+            return false;
+        }
+
+        if (!CanUseRemoteProxyMultiSelectNow())
+        {
+            if (m_debugRemotePinchTwist)
+            {
+                string selectedName = EventSystem.current != null && EventSystem.current.currentSelectedGameObject != null
+                    ? EventSystem.current.currentSelectedGameObject.name
+                    : "<null>";
+                Debug.Log($"[UINavigator] MultiSelect blocked by context. selected={selectedName}");
+            }
+            ResetRemoteProxyMultiSelectionState(clearRangeOverride: true);
+            return false;
+        }
+
+        if (m_labelManager == null)
+            m_labelManager = FindFirstObjectByType<ProxyLabelManager>();
+        if (m_labelManager == null)
+        {
+            if (m_debugRemotePinchTwist)
+                Debug.LogWarning("[UINavigator] MultiSelect blocked: ProxyLabelManager not found.");
+            return false;
+        }
+
+        int count = m_labelManager.GetLabelCount();
+        if (count <= 0)
+        {
+            if (m_debugRemotePinchTwist)
+                Debug.Log("[UINavigator] MultiSelect blocked: no labels in active manager.");
+            return false;
+        }
+
+        var selected = EventSystem.current != null ? EventSystem.current.currentSelectedGameObject : null;
+        if (!m_inRemoteProxyMultiSelect || selected != m_remoteProxyAnchorObject)
+        {
+            m_remoteProxyAnchorIndex = m_labelManager.GetSelectedLabelIndex();
+            if (m_remoteProxyAnchorIndex < 0)
+                m_remoteProxyAnchorIndex = 0;
+            m_remoteProxyAnchorIndex = Mathf.Clamp(m_remoteProxyAnchorIndex, 0, count - 1);
+            m_remoteProxyAnchorObject = selected;
+            m_inRemoteProxyMultiSelect = true;
+        }
+
+        int stepCount = ComputeTwistStepOffset(signedNormalized);
+        if (stepCount == 0)
+        {
+            if (m_debugRemotePinchTwist)
+                Debug.Log($"[UINavigator] MultiSelect ignored: stepCount=0 input={signedNormalized:0.###} perStep={m_attributeTwistPerStep:0.###}");
+            return false;
+        }
+
+        int leftSteps = stepCount < 0 ? -stepCount : 0;
+        int rightSteps = stepCount > 0 ? stepCount : 0;
+        int minIndex = Mathf.Clamp(m_remoteProxyAnchorIndex - leftSteps, 0, count - 1);
+        int maxIndex = Mathf.Clamp(m_remoteProxyAnchorIndex + rightSteps, 0, count - 1);
+        m_labelManager.SetSelectionRange(minIndex, maxIndex);
+
+        if (m_debugRemotePinchTwist)
+        {
+            string selectedName = selected != null ? selected.name : "<null>";
+            Debug.Log($"[UINavigator] MultiSelect applied input={signedNormalized:0.###} stepOffset={stepCount} anchor={m_remoteProxyAnchorIndex} range=[{minIndex},{maxIndex}] count={count} selected={selectedName}");
+        }
+
+        return true;
+    }
+
+    private void ApplyRemoteAttributeTwistContinuous(float signedNormalized)
+    {
+        int stepOffset = ComputeTwistStepOffset(signedNormalized);
+        if (stepOffset == 0)
+        {
+            if (m_debugRemotePinchTwist)
+                Debug.Log($"[UINavigator] AttributeTwist ignored: stepOffset=0 input={signedNormalized:0.###} perStep={m_attributeTwistPerStep:0.###}");
             return;
+        }
 
         if (!TryResolveAttributeTwistContext(out var attributeButtonRoot, out var optionsRoot, out _, out var optionCount))
+        {
+            if (m_debugRemotePinchTwist)
+                Debug.Log("[UINavigator] AttributeTwist blocked: no valid attribute context.");
             return;
+        }
 
         if (optionCount <= 0)
+        {
+            if (m_debugRemotePinchTwist)
+                Debug.Log("[UINavigator] AttributeTwist blocked: optionCount <= 0.");
             return;
+        }
 
         int currentIndex = m_attributeFilterSelections.TryGetValue(attributeButtonRoot, out var storedIndex)
             ? storedIndex
             : -1;
 
-        int targetIndex = Mathf.Clamp(currentIndex + stepDirection, -1, optionCount - 1);
+        int targetIndex = Mathf.Clamp(currentIndex + stepOffset, -1, optionCount - 1);
         if (targetIndex == currentIndex)
+        {
+            if (m_debugRemotePinchTwist)
+                Debug.Log($"[UINavigator] AttributeTwist clamped: current={currentIndex} stepOffset={stepOffset} options={optionCount}");
             return;
+        }
 
         BuildAttributeOptionRoots(optionsRoot, m_attributeOptionRootsBuffer);
         ApplyAttributeFilterSelection(attributeButtonRoot, targetIndex);
+
+        if (m_debugRemotePinchTwist)
+            Debug.Log($"[UINavigator] AttributeTwist applied input={signedNormalized:0.###} stepOffset={stepOffset} current={currentIndex} target={targetIndex} options={optionCount}");
     }
 
     /// <summary>
@@ -853,9 +970,6 @@ public class UINavigator : MonoBehaviour
         if (scroller != null)
             scroller.ForceRefreshNow();
 
-        if (m_attributeUiRoot != null && m_attributeUiRoot.activeSelf)
-            m_attributeUiRoot.SetActive(false);
-
         return true;
     }
 
@@ -906,6 +1020,57 @@ public class UINavigator : MonoBehaviour
         if (first != null)
             Select(first);
         return true;
+    }
+
+    private bool CanUseRemoteProxyMultiSelectNow()
+    {
+        if (m_labelManager == null)
+            m_labelManager = FindFirstObjectByType<ProxyLabelManager>();
+        if (m_labelManager == null)
+            return false;
+
+        Transform pageRoot = m_proxyUiPageRoot != null ? m_proxyUiPageRoot : m_leftColumnLabelsParent;
+        if (pageRoot == null)
+            return false;
+
+        if (!IsActiveLabelsParentUnderProxyUiPage(pageRoot))
+            return false;
+
+        var activeParent = m_labelManager.GetActiveLabelsParent();
+        if (activeParent == null || activeParent.childCount <= 0)
+            return false;
+
+        if (EventSystem.current == null)
+            return false;
+
+        var selected = EventSystem.current.currentSelectedGameObject;
+        if (selected == null)
+        {
+            // Focus can be lost transiently on device; keep allowing ProxyUI pinch/twist
+            // when we are clearly on the ProxyUI page (not AttributeUI).
+            bool attributeUiVisible = m_attributeUiRoot != null && m_attributeUiRoot.activeInHierarchy;
+            return !attributeUiVisible;
+        }
+
+        if (selected != pageRoot.gameObject && !selected.transform.IsChildOf(pageRoot))
+            return false;
+
+        return true;
+    }
+
+    private void ResetRemoteProxyMultiSelectionState(bool clearRangeOverride)
+    {
+        m_inRemoteProxyMultiSelect = false;
+        m_remoteProxyAnchorIndex = -1;
+        m_remoteProxyAnchorObject = null;
+
+        if (!clearRangeOverride)
+            return;
+
+        if (m_labelManager == null)
+            m_labelManager = FindFirstObjectByType<ProxyLabelManager>();
+        if (m_labelManager != null)
+            m_labelManager.ClearSelectionRangeOverride();
     }
 
     // Optionally expose a vector based move if you prefer

@@ -96,12 +96,20 @@ public class RemoteGestureUINavigatorInput : MonoBehaviour
 
             case "pinch_twist_in":
             case "pinchtwistin":
-                m_uiNavigator.RemotePinchAndTwist(-1f);
+                bool consumedIn = m_uiNavigator.TryHandleRemoteProxyMultiSelect(-1f);
+                if (m_debugLog)
+                    Debug.Log($"[RemoteGestureUINavigatorInput] pinch_twist_in multiSelectConsumed={consumedIn}");
+                if (!consumedIn)
+                    m_uiNavigator.RemotePinchAndTwist(-1f);
                 break;
 
             case "pinch_twist_out":
             case "pinchtwistout":
-                m_uiNavigator.RemotePinchAndTwist(1f);
+                bool consumedOut = m_uiNavigator.TryHandleRemoteProxyMultiSelect(1f);
+                if (m_debugLog)
+                    Debug.Log($"[RemoteGestureUINavigatorInput] pinch_twist_out multiSelectConsumed={consumedOut}");
+                if (!consumedOut)
+                    m_uiNavigator.RemotePinchAndTwist(1f);
                 break;
 
             case "zoom_in":
