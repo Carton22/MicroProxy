@@ -41,7 +41,6 @@ public class UINavigator : MonoBehaviour
 
     [Range(0.05f, 0.5f)]
     [SerializeField] private float m_attributeTwistPerStep = 0.12f;
-    [SerializeField] private float m_remotePinchTwistEndDelay = 0.18f;
 
     [SerializeField] private string m_attributeButtonValueSeparator = ": ";
 
@@ -54,8 +53,6 @@ public class UINavigator : MonoBehaviour
     private Transform m_attributeGestureOptionsRoot;
     private int m_attributeGestureStartOptionIndex = -1;
     private int m_attributeGestureLastAppliedOptionIndex = int.MinValue;
-    private bool m_remotePinchTwistActive;
-    private float m_lastRemotePinchTwistAt;
 
     void Reset()
     {
@@ -80,19 +77,6 @@ public class UINavigator : MonoBehaviour
     {
         UnsubscribeFromAttributeTwistEvents();
         m_inAttributeTwistGesture = false;
-        m_remotePinchTwistActive = false;
-    }
-
-    void LateUpdate()
-    {
-        if (!m_remotePinchTwistActive)
-            return;
-
-        if (Time.unscaledTime - m_lastRemotePinchTwistAt < m_remotePinchTwistEndDelay)
-            return;
-
-        OnAttributeTwistEnd();
-        m_remotePinchTwistActive = false;
     }
 
     void Start()
@@ -633,24 +617,41 @@ public class UINavigator : MonoBehaviour
 
     /// <summary>
     /// Entry point for socket-driven pinch_twist gestures.
-    /// Reuses the existing attribute twist filtering pipeline.
+    /// Discrete mode: each signal advances one option (or one back).
     /// </summary>
     public void RemotePinchAndTwist(float signedNormalized)
     {
         if (IsNavigationLocked())
             return;
 
-        if (!m_remotePinchTwistActive)
-        {
-            OnAttributeTwistStart();
-            m_remotePinchTwistActive = m_inAttributeTwistGesture;
-        }
-
-        if (!m_remotePinchTwistActive)
+        int stepDirection = signedNormalized > 0f ? 1 : -1;
+        if (Mathf.Approximately(signedNormalized, 0f))
             return;
 
-        OnAttributeTwistProgress(Mathf.Clamp(signedNormalized, -1f, 1f));
-        m_lastRemotePinchTwistAt = Time.unscaledTime;
+        ApplyRemoteAttributeTwistStep(stepDirection);
+    }
+
+    private void ApplyRemoteAttributeTwistStep(int stepDirection)
+    {
+        if (stepDirection == 0)
+            return;
+
+        if (!TryResolveAttributeTwistContext(out var attributeButtonRoot, out var optionsRoot, out _, out var optionCount))
+            return;
+
+        if (optionCount <= 0)
+            return;
+
+        int currentIndex = m_attributeFilterSelections.TryGetValue(attributeButtonRoot, out var storedIndex)
+            ? storedIndex
+            : -1;
+
+        int targetIndex = Mathf.Clamp(currentIndex + stepDirection, -1, optionCount - 1);
+        if (targetIndex == currentIndex)
+            return;
+
+        BuildAttributeOptionRoots(optionsRoot, m_attributeOptionRootsBuffer);
+        ApplyAttributeFilterSelection(attributeButtonRoot, targetIndex);
     }
 
     // Optionally expose a vector based move if you prefer
