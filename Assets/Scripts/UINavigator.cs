@@ -616,6 +616,19 @@ public class UINavigator : MonoBehaviour
     }
 
     /// <summary>
+    /// Entry point for socket-driven zoom gestures to switch ScreenUI parent layers directly.
+    /// zoomOut=true goes to previous layer (e.g. ProxyUI -> SpatialHierarchy when ordered that way in ProxyLabelManager).
+    /// zoomOut=false goes to next layer.
+    /// </summary>
+    public void RemoteZoomSwitchLayer(bool zoomOut)
+    {
+        if (IsNavigationLocked())
+            return;
+
+        TrySwitchScreenLayerDirect(zoomOut ? -1 : 1);
+    }
+
+    /// <summary>
     /// Entry point for socket-driven pinch_twist gestures.
     /// Discrete mode: each signal advances one option (or one back).
     /// </summary>
@@ -652,6 +665,37 @@ public class UINavigator : MonoBehaviour
 
         BuildAttributeOptionRoots(optionsRoot, m_attributeOptionRootsBuffer);
         ApplyAttributeFilterSelection(attributeButtonRoot, targetIndex);
+    }
+
+    private bool TrySwitchScreenLayerDirect(int stepDirection)
+    {
+        if (stepDirection == 0)
+            return false;
+
+        if (m_labelManager == null)
+            m_labelManager = FindFirstObjectByType<ProxyLabelManager>();
+
+        if (m_labelManager == null)
+            return false;
+
+        if (!IsSelectionInsideActiveManagedProxySet())
+            return false;
+
+        if (ProxySetDrillDownController.IsAnyDrillDownChildViewActive)
+            return false;
+
+        bool switched = stepDirection < 0
+            ? m_labelManager.TrySwitchToPreviousLabelsParent(ProxySetHorizontalTransitionDirection.ToLeft)
+            : m_labelManager.TrySwitchToNextLabelsParent(ProxySetHorizontalTransitionDirection.ToRight);
+
+        if (!switched)
+            return false;
+
+        var newRoot = m_labelManager.GetActiveLabelsParent();
+        var first = FindFirstSelectableIn(newRoot);
+        if (first != null)
+            Select(first);
+        return true;
     }
 
     // Optionally expose a vector based move if you prefer

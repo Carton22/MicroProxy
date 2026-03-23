@@ -1,18 +1,8 @@
-using System;
-using System.Globalization;
-using System.Text.RegularExpressions;
 using UnityEngine;
 
 /// <summary>
-/// Bridges remote phone gestures (from the Socket relay) into the same UI navigation logic used by Quest microgestures.
-/// Expected JSON example (shape from logs/screenshots):
-/// {
-///   "type":"gesture",
-///   "startNormalized":{"u":0.85,"v":0.27},
-///   "endNormalized":{"u":0.87,"v":0.50},
-///   "gesture":{"type":"swipe_up"},
-///   ...
-/// }
+/// Bridges normalized remote gesture signals into the same UI navigation logic used by Quest microgestures.
+/// This script consumes only gesture names from SocketManager (e.g. swipe_left, zoom_out), not raw JSON.
 /// </summary>
 [DisallowMultipleComponent]
 public class RemoteGestureUINavigatorInput : MonoBehaviour
@@ -36,21 +26,18 @@ public class RemoteGestureUINavigatorInput : MonoBehaviour
             m_uiNavigator = GetComponent<UINavigator>();
 
         if (m_socketManager != null)
-            m_socketManager.OnMessageReceived += OnSocketMessage;
+            m_socketManager.OnGestureSignalReceived += OnGestureSignal;
     }
 
     private void OnDisable()
     {
         if (m_socketManager != null)
-            m_socketManager.OnMessageReceived -= OnSocketMessage;
+            m_socketManager.OnGestureSignalReceived -= OnGestureSignal;
     }
 
-    private void OnSocketMessage(string json)
+    private void OnGestureSignal(string gestureType)
     {
-        if (string.IsNullOrWhiteSpace(json))
-            return;
-
-        if (!TryGetGestureType(json, out var gestureType))
+        if (string.IsNullOrWhiteSpace(gestureType))
             return;
 
         if (m_debugLog)
@@ -97,10 +84,7 @@ public class RemoteGestureUINavigatorInput : MonoBehaviour
             case "pinch_twist":
             case "pinchandtwist":
             case "pinchandtwistgesture":
-                if (TryGetSignedNormalized(json, out var signedNormalized))
-                    m_uiNavigator.RemotePinchAndTwist(signedNormalized);
-                else if (m_debugLog)
-                    Debug.LogWarning($"[RemoteGestureUINavigatorInput] pinch_twist missing signedNormalized. json={json}");
+                // Generic pinch_twist has no direction in signal-only mode.
                 break;
 
             case "pinch_twist_in":
@@ -115,12 +99,12 @@ public class RemoteGestureUINavigatorInput : MonoBehaviour
 
             case "zoom_in":
             case "zoomin":
-                m_uiNavigator.RemotePinchAndTwist(-1f);
+                m_uiNavigator.RemoteZoomSwitchLayer(zoomOut: false);
                 break;
 
             case "zoom_out":
             case "zoomout":
-                m_uiNavigator.RemotePinchAndTwist(1f);
+                m_uiNavigator.RemoteZoomSwitchLayer(zoomOut: true);
                 break;
 
             default:
@@ -128,70 +112,6 @@ public class RemoteGestureUINavigatorInput : MonoBehaviour
                     Debug.LogWarning($"[RemoteGestureUINavigatorInput] Unhandled gestureType: {gestureType}");
                 break;
         }
-    }
-
-    private static bool TryGetGestureType(string json, out string gestureType)
-    {
-        gestureType = null;
-        if (string.IsNullOrEmpty(json))
-            return false;
-
-        // Quick reject.
-        if (!Regex.IsMatch(json, "\"type\"\\s*:\\s*\"gesture\"", RegexOptions.IgnoreCase))
-            return false;
-
-        // Preferred: gesture is an object: "gesture":{"type":"swipe_up", ...}
-        var m = Regex.Match(
-            json,
-            "\"gesture\"\\s*:\\s*\\{[\\s\\S]*?\"type\"\\s*:\\s*\"(?<t>[^\"]+)\"",
-            RegexOptions.IgnoreCase);
-        if (m.Success)
-        {
-            gestureType = m.Groups["t"].Value;
-            return true;
-        }
-
-        // Fallback: gesture is a string: "gesture":"swipe_up"
-        m = Regex.Match(
-            json,
-            "\"gesture\"\\s*:\\s*\"(?<t>[^\"]+)\"",
-            RegexOptions.IgnoreCase);
-        if (m.Success)
-        {
-            gestureType = m.Groups["t"].Value;
-            return true;
-        }
-
-        // Fallback: gestureType field somewhere.
-        m = Regex.Match(
-            json,
-            "\"gestureType\"\\s*:\\s*\"(?<t>[^\"]+)\"",
-            RegexOptions.IgnoreCase);
-        if (m.Success)
-        {
-            gestureType = m.Groups["t"].Value;
-            return true;
-        }
-
-        return false;
-    }
-
-    private static bool TryGetSignedNormalized(string json, out float signedNormalized)
-    {
-        signedNormalized = 0f;
-        if (string.IsNullOrWhiteSpace(json))
-            return false;
-
-        var m = Regex.Match(
-            json,
-            "\"signedNormalized\"\\s*:\\s*(?<n>-?\\d+(?:\\.\\d+)?)",
-            RegexOptions.IgnoreCase);
-
-        if (!m.Success)
-            return false;
-
-        string raw = m.Groups["n"].Value;
-        return float.TryParse(raw, NumberStyles.Float, CultureInfo.InvariantCulture, out signedNormalized);
     }
 }
 
