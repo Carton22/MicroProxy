@@ -612,6 +612,9 @@ public class UINavigator : MonoBehaviour
         if (IsNavigationLocked())
             return;
 
+        if (TryAdvanceAttributeValueFromTap())
+            return;
+
         SendSubmit();
     }
 
@@ -665,6 +668,83 @@ public class UINavigator : MonoBehaviour
 
         BuildAttributeOptionRoots(optionsRoot, m_attributeOptionRootsBuffer);
         ApplyAttributeFilterSelection(attributeButtonRoot, targetIndex);
+    }
+
+    /// <summary>
+    /// When an AttributeUI top-level button is focused, tap cycles through:
+    /// none (-1) -> option 0 -> ... -> option N-1 -> none (-1) ...
+    /// </summary>
+    private bool TryAdvanceAttributeValueFromTap()
+    {
+        if (!TryResolveAttributeTwistContext(out var attributeButtonRoot, out var optionsRoot, out _, out var optionCount))
+            return false;
+
+        if (optionCount <= 0)
+            return false;
+
+        int currentIndex = m_attributeFilterSelections.TryGetValue(attributeButtonRoot, out var storedIndex)
+            ? storedIndex
+            : -1;
+
+        int nextIndex = currentIndex + 1;
+        if (nextIndex >= optionCount)
+            nextIndex = -1;
+
+        if (nextIndex < 0)
+        {
+            ClearAllAttributeSelectionsToNone();
+            return true;
+        }
+
+        BuildAttributeOptionRoots(optionsRoot, m_attributeOptionRootsBuffer);
+        ApplyAttributeFilterSelection(attributeButtonRoot, nextIndex);
+        return true;
+    }
+
+    private void ClearAllAttributeSelectionsToNone()
+    {
+        if (m_labelManager == null)
+            m_labelManager = FindFirstObjectByType<ProxyLabelManager>();
+
+        var keys = new List<Transform>(m_attributeFilterSelections.Keys);
+        for (int i = 0; i < keys.Count; i++)
+        {
+            var buttonRoot = keys[i];
+            if (buttonRoot == null)
+                continue;
+            SetAttributeButtonText(buttonRoot, GetOrCacheAttributeBaseLabel(buttonRoot));
+        }
+
+        m_attributeFilterSelections.Clear();
+        if (m_labelManager != null)
+        {
+            m_labelManager.ClearVisibleLabelsFilter();
+            RestoreAllProxyLabelVisualsAndChildren();
+        }
+    }
+
+    private void RestoreAllProxyLabelVisualsAndChildren()
+    {
+        if (m_labelManager == null)
+            return;
+
+        var parent = m_labelManager.GetActiveLabelsParent();
+        if (parent == null)
+            return;
+
+        for (int i = 0; i < parent.childCount; i++)
+        {
+            var child = parent.GetChild(i);
+            if (child != null && !child.gameObject.activeSelf)
+                child.gameObject.SetActive(true);
+        }
+
+        // Refresh wheel visuals immediately after restore so top-page labels don't stay stale-collapsed.
+        var scroller = parent.GetComponent<ProxyLabelHorizonScroller>();
+        if (scroller == null)
+            scroller = parent.GetComponentInParent<ProxyLabelHorizonScroller>(true);
+        if (scroller != null)
+            scroller.ForceRefreshNow();
     }
 
     private bool TrySwitchScreenLayerDirect(int stepDirection)

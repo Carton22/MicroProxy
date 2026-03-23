@@ -103,6 +103,18 @@ public class ProxyLabelHorizonScroller : MonoBehaviour
         SnapToCurrentSelection();
     }
 
+    /// <summary>
+    /// Forces an immediate wheel rebuild + snap in the current frame.
+    /// Useful after runtime visibility/filter changes so top rows don't stay stale-collapsed.
+    /// </summary>
+    public void ForceRefreshNow()
+    {
+        EnsureReferences();
+        RebuildAuthoredLayout(force: true);
+        SnapToCurrentSelection();
+        m_startupRefreshFramesRemaining = 0;
+    }
+
     private void OnDisable()
     {
         RestoreAuthoredVisuals();

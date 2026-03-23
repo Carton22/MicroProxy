@@ -3070,7 +3070,6 @@ MonoBehaviour:
   m_socketManager: {fileID: 622173651}
   m_uiNavigator: {fileID: 456180478}
   m_debugLog: 0
-  m_tapDebounceSeconds: 0.2
 --- !u!1 &497359176
 GameObject:
   m_ObjectHideFlags: 0
@@ -7499,6 +7498,10 @@ PrefabInstance:
     - target: {fileID: 4235160468344426946, guid: a9088ffdc24df41fba5fd6cb1eaf3ead, type: 3}
       propertyPath: m_Name
       value: ProxyLabel
+      objectReference: {fileID: 0}
+    - target: {fileID: 4235160468344426946, guid: a9088ffdc24df41fba5fd6cb1eaf3ead, type: 3}
+      propertyPath: m_IsActive
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 7191250308198253915, guid: a9088ffdc24df41fba5fd6cb1eaf3ead, type: 3}
       propertyPath: m_Pivot.x
