@@ -18,6 +18,9 @@ public class UINavigator : MonoBehaviour
     [Tooltip("Left column labels root (e.g. ProxyUI grid under ScreenUI). When focus is here and the user moves right, AttributeUI is shown.")]
     [SerializeField] private Transform m_leftColumnLabelsParent;
 
+    [Tooltip("ProxyUI page scope: ancestor of the main proxy list and any in-ProxyUI drill-down label parents. Swipe-right opens AttributeUI only when selection and active label parent lie under this transform. Leave empty to use Left Column Labels Parent.")]
+    [SerializeField] private Transform m_proxyUiPageRoot;
+
     [Tooltip("Right column root to enable (e.g. AttributeUI).")]
     [SerializeField] private GameObject m_attributeUiRoot;
 
@@ -50,6 +53,12 @@ public class UINavigator : MonoBehaviour
     private Transform m_attributeGestureOptionsRoot;
     private int m_attributeGestureStartOptionIndex = -1;
     private int m_attributeGestureLastAppliedOptionIndex = int.MinValue;
+
+    void Reset()
+    {
+        if (m_proxyUiPageRoot == null)
+            m_proxyUiPageRoot = m_leftColumnLabelsParent;
+    }
 
     void Awake()
     {
@@ -739,21 +748,49 @@ public class UINavigator : MonoBehaviour
     // ---------- ScreenUI left column → show AttributeUI ----------
 
     /// <summary>
+    /// Active proxy label parent must be the ProxyUI page root or under it so SpatialHierarchy / MaterialArea / other columns cannot open AttributeUI.
+    /// Drill-down views that reparent to a child of ProxyUI still qualify.
+    /// </summary>
+    bool IsActiveLabelsParentUnderProxyUiPage(Transform pageRoot)
+    {
+        if (pageRoot == null)
+            return false;
+
+        if (m_labelManager == null)
+            m_labelManager = FindFirstObjectByType<ProxyLabelManager>();
+
+        if (m_labelManager == null)
+            return false;
+
+        var active = m_labelManager.GetActiveLabelsParent();
+        if (active == null)
+            return false;
+
+        return active == pageRoot || active.IsChildOf(pageRoot);
+    }
+
+    /// <summary>
     /// When selection is under the left column (e.g. ProxyUI) and AttributeUI is off, moving right enables AttributeUI
     /// and optionally moves focus there. Runs before proxy-set switching so single-column grids still work.
+    /// Only when the user is on the ProxyUI page: top-level proxy list or an in-scope drill-down view (not e.g. SpatialHierarchy).
     /// </summary>
     bool TryShowAttributeUiFromLeftColumn()
     {
         if (m_leftColumnLabelsParent == null || m_attributeUiRoot == null)
             return false;
-        if (ProxySetDrillDownController.IsAnyDrillDownChildViewActive)
+
+        Transform pageRoot = m_proxyUiPageRoot != null ? m_proxyUiPageRoot : m_leftColumnLabelsParent;
+        if (pageRoot == null)
             return false;
 
         var selected = EventSystem.current?.currentSelectedGameObject;
         if (selected == null)
             return false;
 
-        if (selected != m_leftColumnLabelsParent.gameObject && !selected.transform.IsChildOf(m_leftColumnLabelsParent))
+        if (selected != pageRoot.gameObject && !selected.transform.IsChildOf(pageRoot))
+            return false;
+
+        if (!IsActiveLabelsParentUnderProxyUiPage(pageRoot))
             return false;
 
         if (m_attributeUiRoot.activeSelf)
