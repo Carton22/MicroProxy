@@ -113,6 +113,16 @@ public class RemoteGestureUINavigatorInput : MonoBehaviour
                 m_uiNavigator.RemotePinchAndTwist(1f);
                 break;
 
+            case "zoom_in":
+            case "zoomin":
+                m_uiNavigator.RemotePinchAndTwist(-1f);
+                break;
+
+            case "zoom_out":
+            case "zoomout":
+                m_uiNavigator.RemotePinchAndTwist(1f);
+                break;
+
             default:
                 if (m_debugLog)
                     Debug.LogWarning($"[RemoteGestureUINavigatorInput] Unhandled gestureType: {gestureType}");
