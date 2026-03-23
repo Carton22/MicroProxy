@@ -90,6 +90,42 @@ public class ProxySetDrillDownController : MonoBehaviour, IPointerClickHandler, 
         return false;
     }
 
+    /// <summary>
+    /// Entry point for remote gesture signals (e.g. iOS pinch_twist_in/out, zoom_in/out).
+    /// Returns true when a drill-down transition consumed the signal.
+    /// </summary>
+    public static bool TryHandleRemoteSignedTwist(float signedNormalized)
+    {
+        // Parent -> child: if a drill-down controller is selected and the direction matches its configured child direction.
+        if (TryGetSelectedDrillDownController(out var selectedController) &&
+            selectedController != null &&
+            selectedController.IsTwistTowardChild(signedNormalized))
+        {
+            selectedController.HandlePress();
+            return true;
+        }
+
+        // Child -> parent: if any controller is currently in child view and direction matches return direction.
+        if (!IsAnyDrillDownChildViewActive)
+            return false;
+
+        var controllers = FindObjectsByType<ProxySetDrillDownController>(FindObjectsInactive.Include, FindObjectsSortMode.None);
+        for (int i = 0; i < controllers.Length; i++)
+        {
+            var controller = controllers[i];
+            if (controller == null || !controller.IsInChildView())
+                continue;
+
+            if (!controller.IsTwistTowardParent(signedNormalized))
+                continue;
+
+            controller.ReturnToParentView();
+            return true;
+        }
+
+        return false;
+    }
+
     public void OnPointerClick(PointerEventData eventData) => HandlePress();
 
     public void OnSubmit(BaseEventData eventData) => HandlePress();

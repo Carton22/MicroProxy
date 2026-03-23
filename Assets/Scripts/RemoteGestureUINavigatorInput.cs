@@ -89,22 +89,26 @@ public class RemoteGestureUINavigatorInput : MonoBehaviour
 
             case "pinch_twist_in":
             case "pinchtwistin":
-                m_uiNavigator.RemotePinchAndTwist(-1f);
+                if (!ProxySetDrillDownController.TryHandleRemoteSignedTwist(-1f))
+                    m_uiNavigator.RemotePinchAndTwist(-1f);
                 break;
 
             case "pinch_twist_out":
             case "pinchtwistout":
-                m_uiNavigator.RemotePinchAndTwist(1f);
+                if (!ProxySetDrillDownController.TryHandleRemoteSignedTwist(1f))
+                    m_uiNavigator.RemotePinchAndTwist(1f);
                 break;
 
             case "zoom_in":
             case "zoomin":
-                m_uiNavigator.RemoteZoomSwitchLayer(zoomOut: false);
+                if (!ProxySetDrillDownController.TryHandleRemoteSignedTwist(-1f))
+                    m_uiNavigator.RemoteZoomSwitchLayer(zoomOut: false);
                 break;
 
             case "zoom_out":
             case "zoomout":
-                m_uiNavigator.RemoteZoomSwitchLayer(zoomOut: true);
+                if (!ProxySetDrillDownController.TryHandleRemoteSignedTwist(1f))
+                    m_uiNavigator.RemoteZoomSwitchLayer(zoomOut: true);
                 break;
 
             default:
