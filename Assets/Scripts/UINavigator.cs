@@ -827,59 +827,13 @@ public class UINavigator : MonoBehaviour
 
         if (nextIndex < 0)
         {
-            ClearAllAttributeSelectionsToNone();
+            ApplyAttributeFilterSelection(attributeButtonRoot, -1);
             return true;
         }
 
         BuildAttributeOptionRoots(optionsRoot, m_attributeOptionRootsBuffer);
         ApplyAttributeFilterSelection(attributeButtonRoot, nextIndex);
         return true;
-    }
-
-    private void ClearAllAttributeSelectionsToNone()
-    {
-        if (m_labelManager == null)
-            m_labelManager = FindFirstObjectByType<ProxyLabelManager>();
-
-        var keys = new List<Transform>(m_attributeFilterSelections.Keys);
-        for (int i = 0; i < keys.Count; i++)
-        {
-            var buttonRoot = keys[i];
-            if (buttonRoot == null)
-                continue;
-            SetAttributeButtonText(buttonRoot, GetOrCacheAttributeBaseLabel(buttonRoot));
-        }
-
-        m_attributeFilterSelections.Clear();
-        if (m_labelManager != null)
-        {
-            m_labelManager.ClearVisibleLabelsFilter();
-            RestoreAllProxyLabelVisualsAndChildren();
-        }
-    }
-
-    private void RestoreAllProxyLabelVisualsAndChildren()
-    {
-        if (m_labelManager == null)
-            return;
-
-        var parent = m_labelManager.GetActiveLabelsParent();
-        if (parent == null)
-            return;
-
-        for (int i = 0; i < parent.childCount; i++)
-        {
-            var child = parent.GetChild(i);
-            if (child != null && !child.gameObject.activeSelf)
-                child.gameObject.SetActive(true);
-        }
-
-        // Refresh wheel visuals immediately after restore so top-page labels don't stay stale-collapsed.
-        var scroller = parent.GetComponent<ProxyLabelHorizonScroller>();
-        if (scroller == null)
-            scroller = parent.GetComponentInParent<ProxyLabelHorizonScroller>(true);
-        if (scroller != null)
-            scroller.ForceRefreshNow();
     }
 
     private bool TryGroupActiveProxyLabelsByFocusedAttributeFromNone()
@@ -957,7 +911,9 @@ public class UINavigator : MonoBehaviour
 
         // Preserve current selection if still valid; otherwise pick first visible selectable.
         var selected = EventSystem.current != null ? EventSystem.current.currentSelectedGameObject : null;
-        if (selected == null || selected.transform.parent != activeParent)
+        bool selectionInsideGroupedRoot = selected != null &&
+            (selected == activeParent.gameObject || selected.transform.IsChildOf(activeParent));
+        if (!selectionInsideGroupedRoot)
         {
             var first = FindFirstSelectableIn(activeParent);
             if (first != null)
@@ -1029,11 +985,10 @@ public class UINavigator : MonoBehaviour
         if (m_labelManager == null)
             return false;
 
-        Transform pageRoot = m_proxyUiPageRoot != null ? m_proxyUiPageRoot : m_leftColumnLabelsParent;
-        if (pageRoot == null)
+        if (m_leftColumnLabelsParent == null)
             return false;
 
-        if (!IsActiveLabelsParentUnderProxyUiPage(pageRoot))
+        if (!IsActiveLabelsParentWithinProxyUi())
             return false;
 
         var activeParent = m_labelManager.GetActiveLabelsParent();
@@ -1052,7 +1007,7 @@ public class UINavigator : MonoBehaviour
             return !attributeUiVisible;
         }
 
-        if (selected != pageRoot.gameObject && !selected.transform.IsChildOf(pageRoot))
+        if (selected != m_leftColumnLabelsParent.gameObject && !selected.transform.IsChildOf(m_leftColumnLabelsParent))
             return false;
 
         return true;
@@ -1224,12 +1179,12 @@ public class UINavigator : MonoBehaviour
     // ---------- ScreenUI left column → show AttributeUI ----------
 
     /// <summary>
-    /// Active proxy label parent must be the ProxyUI page root or under it so SpatialHierarchy / MaterialArea / other columns cannot open AttributeUI.
-    /// Drill-down views that reparent to a child of ProxyUI still qualify.
+    /// Active proxy label parent must be the configured ProxyUI left-column root or one of its runtime child views.
+    /// This keeps sibling ScreenUI sections like SpatialHierarchy / MaterialArea from opening AttributeUI.
     /// </summary>
-    bool IsActiveLabelsParentUnderProxyUiPage(Transform pageRoot)
+    bool IsActiveLabelsParentWithinProxyUi()
     {
-        if (pageRoot == null)
+        if (m_leftColumnLabelsParent == null)
             return false;
 
         if (m_labelManager == null)
@@ -1242,7 +1197,23 @@ public class UINavigator : MonoBehaviour
         if (active == null)
             return false;
 
-        return active == pageRoot || active.IsChildOf(pageRoot);
+        return active == m_leftColumnLabelsParent ||
+               active.IsChildOf(m_leftColumnLabelsParent) ||
+               m_leftColumnLabelsParent.IsChildOf(active);
+    }
+
+    bool IsActiveLabelsParentUnderProxyUiPage(Transform pageRoot)
+    {
+        if (pageRoot == null || !IsActiveLabelsParentWithinProxyUi())
+            return false;
+
+        var active = m_labelManager != null ? m_labelManager.GetActiveLabelsParent() : null;
+        if (active == null)
+            return false;
+
+        return active == pageRoot ||
+               active.IsChildOf(pageRoot) ||
+               pageRoot.IsChildOf(active);
     }
 
     /// <summary>
@@ -1255,18 +1226,14 @@ public class UINavigator : MonoBehaviour
         if (m_leftColumnLabelsParent == null || m_attributeUiRoot == null)
             return false;
 
-        Transform pageRoot = m_proxyUiPageRoot != null ? m_proxyUiPageRoot : m_leftColumnLabelsParent;
-        if (pageRoot == null)
-            return false;
-
         var selected = EventSystem.current?.currentSelectedGameObject;
         if (selected == null)
             return false;
 
-        if (selected != pageRoot.gameObject && !selected.transform.IsChildOf(pageRoot))
+        if (selected != m_leftColumnLabelsParent.gameObject && !selected.transform.IsChildOf(m_leftColumnLabelsParent))
             return false;
 
-        if (!IsActiveLabelsParentUnderProxyUiPage(pageRoot))
+        if (!IsActiveLabelsParentWithinProxyUi())
             return false;
 
         if (m_attributeUiRoot.activeSelf)
@@ -1289,8 +1256,10 @@ public class UINavigator : MonoBehaviour
                 attributeScroller = attributeRefreshRoot.GetComponentInChildren<ProxyLabelHorizonScroller>(true);
         }
         if (attributeScroller != null)
+        {
             Debug.Log("Force refresh attribute scroller when showing AttributeUI");
             attributeScroller.ForceRefreshNow();
+        }
 
         if (m_selectFirstSelectableInAttributeUi)
         {

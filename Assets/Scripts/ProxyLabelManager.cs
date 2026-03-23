@@ -34,6 +34,7 @@ public class ProxyLabelManager : MonoBehaviour
     private int m_selectionMax;
     private bool m_selectionRangeOverride;
     private int m_runtimeActiveLabelsParentIndex = -1;
+    private Transform m_runtimeActiveLabelsParentOverride;
     private readonly Dictionary<Transform, List<ActiveStateRecord>> m_authoredChildStates = new();
     private readonly HashSet<int> m_visibleMarkerFilter = new();
     private bool m_visibleMarkerFilterEnabled;
@@ -59,27 +60,31 @@ public class ProxyLabelManager : MonoBehaviour
 
         for (int i = 0; i < m_labelParents.Count; i++)
         {
-            var parent = m_labelParents[i];
-            if (parent == null)
+            CacheAuthoredChildStatesForParent(m_labelParents[i]);
+        }
+    }
+
+    private void CacheAuthoredChildStatesForParent(Transform parent)
+    {
+        if (parent == null || m_authoredChildStates.ContainsKey(parent))
+            return;
+
+        var records = new List<ActiveStateRecord>();
+        var descendants = parent.GetComponentsInChildren<Transform>(true);
+        for (int i = 0; i < descendants.Length; i++)
+        {
+            var descendant = descendants[i];
+            if (descendant == null || descendant == parent)
                 continue;
 
-            var records = new List<ActiveStateRecord>();
-            var descendants = parent.GetComponentsInChildren<Transform>(true);
-            for (int j = 0; j < descendants.Length; j++)
+            records.Add(new ActiveStateRecord
             {
-                var descendant = descendants[j];
-                if (descendant == null || descendant == parent)
-                    continue;
-
-                records.Add(new ActiveStateRecord
-                {
-                    Target = descendant.gameObject,
-                    ActiveSelf = descendant.gameObject.activeSelf
-                });
-            }
-
-            m_authoredChildStates[parent] = records;
+                Target = descendant.gameObject,
+                ActiveSelf = descendant.gameObject.activeSelf
+            });
         }
+
+        m_authoredChildStates[parent] = records;
     }
 
     private void RestoreAuthoredChildStates(Transform parent)
@@ -102,6 +107,14 @@ public class ProxyLabelManager : MonoBehaviour
 
     public Transform GetActiveLabelsParent()
     {
+        if (m_runtimeActiveLabelsParentOverride != null)
+        {
+            if (m_runtimeActiveLabelsParentOverride.gameObject.activeInHierarchy)
+                return m_runtimeActiveLabelsParentOverride;
+
+            m_runtimeActiveLabelsParentOverride = null;
+        }
+
         int activeIndex = GetActiveLabelsParentIndex();
         return GetLabelsParentAtIndex(activeIndex);
     }
@@ -185,21 +198,38 @@ public class ProxyLabelManager : MonoBehaviour
 
     public bool ContainsLabelsParent(Transform parent)
     {
-        return FindBestLabelsParentIndex(parent, m_runtimeActiveLabelsParentIndex) >= 0;
+        if (parent == null)
+            return false;
+
+        return parent == m_runtimeActiveLabelsParentOverride ||
+               FindBestLabelsParentIndex(parent, m_runtimeActiveLabelsParentIndex) >= 0;
     }
 
     public void SetActiveLabelsParent(Transform parent)
     {
+        if (parent == null)
+        {
+            m_runtimeActiveLabelsParentOverride = null;
+            return;
+        }
+
         int index = FindBestLabelsParentIndex(parent, m_runtimeActiveLabelsParentIndex);
         if (index >= 0)
+        {
             m_runtimeActiveLabelsParentIndex = index;
+            m_runtimeActiveLabelsParentOverride = null;
+            return;
+        }
+
+        CacheAuthoredChildStatesForParent(parent);
+        m_runtimeActiveLabelsParentOverride = parent;
     }
 
     public bool IsTransitioning
     {
         get
         {
-            var activeParent = GetLabelsParentAtIndex(GetActiveLabelsParentIndex());
+            var activeParent = GetActiveLabelsParent();
             if (activeParent == null || activeParent.parent == null)
                 return false;
 

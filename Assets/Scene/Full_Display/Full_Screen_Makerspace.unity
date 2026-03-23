@@ -6111,8 +6111,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c4e8a1f92d0b4e5a9c3d7b6e1f0a8d2c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_leftColumnLabelsParent: {fileID: 13033278}
-  m_leftLabelsParentForProxyManager: {fileID: 13033278}
+  m_leftColumnLabelsParent: {fileID: 1728585362}
+  m_leftLabelsParentForProxyManager: {fileID: 1728585362}
   m_proxyLabelManager: {fileID: 1272610422}
   m_selectFirstInLeftColumn: 1
 --- !u!114 &905570768
