@@ -6,8 +6,8 @@ EditorBuildSettings:
   serializedVersion: 2
   m_Scenes:
   - enabled: 1
-    path: Assets/Scene/Icon_Partial_Display/Icon_Partial_Makerspace.unity
-    guid: bbfb9893bda7543b9b1e3839b14b1602
+    path: Assets/Scene/Full_Display/FullDisplay_Screen_BookShelf.unity
+    guid: 711048d07f346415c8a4388777f68530
   m_configObjects:
     Unity.XR.Oculus.Settings: {fileID: 11400000, guid: f2bf97b3acdb64248a707c407c9fc54e, type: 2}
     com.unity.xr.management.loader_settings: {fileID: 11400000, guid: a971eac5e950046e586c5e153e32d05c, type: 2}

@@ -1681,7 +1681,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &251487947
 Transform:
   m_ObjectHideFlags: 0
@@ -2831,7 +2831,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!4 &380269043
 Transform:
   m_ObjectHideFlags: 0
@@ -3326,6 +3326,7 @@ GameObject:
   - component: {fileID: 456180478}
   - component: {fileID: 456180479}
   - component: {fileID: 456180481}
+  - component: {fileID: 456180482}
   m_Layer: 0
   m_Name: RightMicroGesture
   m_TagString: Untagged
@@ -3355,7 +3356,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 456180473}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: ffa28092ce5014d5a9314b8ea276ef7d, type: 3}
   m_Name: 
@@ -3421,7 +3422,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 456180473}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: eaaebb07478394e709f17042f34c7a59, type: 3}
   m_Name: 
@@ -3540,7 +3541,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 456180473}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 97ad1841d31cfd844995732927b7c958, type: 3}
   m_Name: 
@@ -3565,7 +3566,7 @@ MonoBehaviour:
   selectionRoot: {fileID: 0}
   m_labelManager: {fileID: 1272610422}
   m_leftColumnLabelsParent: {fileID: 1538595900}
-  m_proxyUiPageRoot: {fileID: 0}
+  m_proxyUiPageRoot: {fileID: 1436498629}
   m_attributeUiRoot: {fileID: 125745444}
   m_attributeLabelsParentForManager: {fileID: 0}
   m_selectFirstSelectableInAttributeUi: 1
@@ -3581,7 +3582,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 456180473}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: d34f6b789c69e4b9596cd3d1ef091a08, type: 3}
   m_Name: 
@@ -3595,7 +3596,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 456180473}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: ae00ed8fcdcb24372825e70a9987e4cf, type: 3}
   m_Name: 
@@ -3603,6 +3604,21 @@ MonoBehaviour:
   m_proxySetsRoot: {fileID: 1538595900}
   m_twistEventSource: {fileID: 456180475}
   twistPerStep: 0.08
+  m_debugLog: 0
+--- !u!114 &456180482
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 456180473}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f4182c44084d04d60a0ab2816ffac131, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_socketManager: {fileID: 622173651}
+  m_uiNavigator: {fileID: 456180478}
   m_debugLog: 0
 --- !u!1 &497359176
 GameObject:
@@ -5027,7 +5043,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0a6d786e0476f43e198a156a1fc16135, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  ipAddress: 10.136.123.61
+  ipAddress: 10.0.225.96
 --- !u!4 &622173652
 Transform:
   m_ObjectHideFlags: 0
