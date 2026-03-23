@@ -103,6 +103,16 @@ public class RemoteGestureUINavigatorInput : MonoBehaviour
                     Debug.LogWarning($"[RemoteGestureUINavigatorInput] pinch_twist missing signedNormalized. json={json}");
                 break;
 
+            case "pinch_twist_in":
+            case "pinchtwistin":
+                m_uiNavigator.RemotePinchAndTwist(-1f);
+                break;
+
+            case "pinch_twist_out":
+            case "pinchtwistout":
+                m_uiNavigator.RemotePinchAndTwist(1f);
+                break;
+
             default:
                 if (m_debugLog)
                     Debug.LogWarning($"[RemoteGestureUINavigatorInput] Unhandled gestureType: {gestureType}");
