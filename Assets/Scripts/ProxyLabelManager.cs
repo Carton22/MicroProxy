@@ -33,10 +33,14 @@ public class ProxyLabelManager : MonoBehaviour
     private int m_selectionMin;
     private int m_selectionMax;
     private bool m_selectionRangeOverride;
+    private Transform m_selectionRangeParent;
     private int m_runtimeActiveLabelsParentIndex = -1;
     private Transform m_runtimeActiveLabelsParentOverride;
     private readonly Dictionary<Transform, List<ActiveStateRecord>> m_authoredChildStates = new();
     private readonly HashSet<int> m_visibleMarkerFilter = new();
+    private readonly HashSet<ProxyLabelMaterialColorOnSelect> m_rangeVisuals = new();
+    private readonly HashSet<ProxyLabelMaterialColorOnSelect> m_rangeVisualsWork = new();
+    private readonly List<ProxyLabelMaterialColorOnSelect> m_rangeVisualsToClear = new();
     private bool m_visibleMarkerFilterEnabled;
     private Transform m_lastFilteredLabelsParent;
 
@@ -49,9 +53,13 @@ public class ProxyLabelManager : MonoBehaviour
     private void LateUpdate()
     {
         if (!m_visibleMarkerFilterEnabled)
+        {
+            UpdateSelectionRangeVisuals();
             return;
+        }
 
         ApplyVisibleMarkerFilterToActiveParent();
+        UpdateSelectionRangeVisuals();
     }
 
     private void CacheAuthoredChildStates()
@@ -471,11 +479,25 @@ public class ProxyLabelManager : MonoBehaviour
     /// </summary>
     public void SetSelectionRange(int minIndex, int maxIndex)
     {
-        m_selectionRangeOverride = true;
+        var parent = GetActiveLabelsParent();
+        if (parent == null)
+        {
+            ClearSelectionRangeOverride();
+            return;
+        }
+
         int count = GetLabelCount();
-        if (count <= 0) return;
+        if (count <= 0)
+        {
+            ClearSelectionRangeOverride();
+            return;
+        }
+
+        m_selectionRangeOverride = true;
+        m_selectionRangeParent = parent;
         m_selectionMin = Mathf.Clamp(Mathf.Min(minIndex, maxIndex), 0, count - 1);
         m_selectionMax = Mathf.Clamp(Mathf.Max(minIndex, maxIndex), 0, count - 1);
+        UpdateSelectionRangeVisuals();
     }
 
     /// <summary>
@@ -484,6 +506,23 @@ public class ProxyLabelManager : MonoBehaviour
     public void ClearSelectionRangeOverride()
     {
         m_selectionRangeOverride = false;
+        m_selectionRangeParent = null;
+        ClearSelectionRangeVisuals();
+    }
+
+    public bool TryGetSelectionRangeOverride(out int minIndex, out int maxIndex)
+    {
+        minIndex = maxIndex = -1;
+        if (!ValidateSelectionRangeOverrideForActiveParent())
+            return false;
+
+        int count = GetLabelCount();
+        if (count <= 0)
+            return false;
+
+        minIndex = Mathf.Clamp(m_selectionMin, 0, count - 1);
+        maxIndex = Mathf.Clamp(m_selectionMax, 0, count - 1);
+        return true;
     }
 
     /// <summary>
@@ -492,7 +531,7 @@ public class ProxyLabelManager : MonoBehaviour
     /// </summary>
     public void GetSelectionRange(out int minIndex, out int maxIndex)
     {
-        if (!m_selectionRangeOverride)
+        if (!ValidateSelectionRangeOverrideForActiveParent())
         {
             int focus = GetSelectedLabelIndex();
             if (focus < 0)
@@ -506,6 +545,21 @@ public class ProxyLabelManager : MonoBehaviour
 
         minIndex = m_selectionMin;
         maxIndex = m_selectionMax;
+    }
+
+    private bool ValidateSelectionRangeOverrideForActiveParent()
+    {
+        if (!m_selectionRangeOverride)
+            return false;
+
+        var activeParent = GetActiveLabelsParent();
+        if (activeParent == null || activeParent != m_selectionRangeParent)
+        {
+            ClearSelectionRangeOverride();
+            return false;
+        }
+
+        return true;
     }
 
     private bool TrySwitchToLabelsParentIndex(int targetIndex, ProxySetHorizontalTransitionDirection direction)
@@ -685,6 +739,90 @@ public class ProxyLabelManager : MonoBehaviour
         }
 
         return null;
+    }
+
+    private void UpdateSelectionRangeVisuals()
+    {
+        if (!ValidateSelectionRangeOverrideForActiveParent())
+        {
+            ClearSelectionRangeVisuals();
+            return;
+        }
+
+        var parent = m_selectionRangeParent;
+        if (parent == null)
+        {
+            ClearSelectionRangeVisuals();
+            return;
+        }
+
+        int count = CountVisibleChildren(parent);
+        if (count <= 0)
+        {
+            ClearSelectionRangeOverride();
+            return;
+        }
+
+        int min = Mathf.Clamp(m_selectionMin, 0, count - 1);
+        int max = Mathf.Clamp(m_selectionMax, 0, count - 1);
+
+        m_rangeVisualsWork.Clear();
+
+        int visibleIndex = 0;
+        for (int i = 0; i < parent.childCount; i++)
+        {
+            var child = parent.GetChild(i);
+            if (child == null || !child.gameObject.activeInHierarchy)
+                continue;
+
+            bool inRange = visibleIndex >= min && visibleIndex <= max;
+            var rangeVisual = child.GetComponent<ProxyLabelMaterialColorOnSelect>();
+            if (rangeVisual != null)
+            {
+                rangeVisual.SetForcedSelectedVisual(inRange);
+                if (inRange)
+                    m_rangeVisualsWork.Add(rangeVisual);
+            }
+
+            visibleIndex++;
+        }
+
+        m_rangeVisualsToClear.Clear();
+        foreach (var rangeVisual in m_rangeVisuals)
+        {
+            if (rangeVisual == null || m_rangeVisualsWork.Contains(rangeVisual))
+                continue;
+
+            m_rangeVisualsToClear.Add(rangeVisual);
+        }
+
+        for (int i = 0; i < m_rangeVisualsToClear.Count; i++)
+            m_rangeVisualsToClear[i].SetForcedSelectedVisual(false);
+
+        m_rangeVisuals.Clear();
+        foreach (var rangeVisual in m_rangeVisualsWork)
+            m_rangeVisuals.Add(rangeVisual);
+    }
+
+    private void ClearSelectionRangeVisuals()
+    {
+        if (m_rangeVisuals.Count == 0)
+            return;
+
+        m_rangeVisualsToClear.Clear();
+        foreach (var rangeVisual in m_rangeVisuals)
+        {
+            if (rangeVisual != null)
+                m_rangeVisualsToClear.Add(rangeVisual);
+        }
+
+        m_rangeVisuals.Clear();
+
+        for (int i = 0; i < m_rangeVisualsToClear.Count; i++)
+            m_rangeVisualsToClear[i].SetForcedSelectedVisual(false);
+
+        m_rangeVisualsToClear.Clear();
+        m_rangeVisualsWork.Clear();
     }
 
     private static void ForceRefreshScrollerFor(Transform parent)
