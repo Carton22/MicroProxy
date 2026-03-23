@@ -22,84 +22,37 @@ public class ProxyLabelMaterialColorOnSelect : MonoBehaviour, ISelectHandler, ID
     [SerializeField] private Color m_fallbackSelectedColor = new Color(1f, 0.8f, 0.2f, 1f);
 
     private Material m_instanceMaterial;
-    private Selectable m_selectable;
-    private Graphic m_targetGraphic;
-    private bool m_forceSelectedVisual;
 
     private void Awake()
     {
-        m_selectable = GetComponent<Selectable>();
         if (m_image == null)
             m_image = GetComponent<Image>();
-        m_targetGraphic = m_selectable != null && m_selectable.targetGraphic != null
-            ? m_selectable.targetGraphic
-            : m_image;
 
         if (m_image == null || m_image.material == null)
-        {
-            RefreshVisualState();
             return;
-        }
 
         // Clone material so changing color only affects this label instance.
         m_instanceMaterial = Instantiate(m_image.material);
         m_image.material = m_instanceMaterial;
 
-        RefreshVisualState();
+        ApplyColor(GetNormalColor());
     }
 
     private void OnEnable()
     {
-        RefreshVisualState();
+        // In case selection already exists when enabling.
+        bool selected = EventSystem.current != null && EventSystem.current.currentSelectedGameObject == gameObject;
+        ApplyColor(selected ? GetSelectedColor() : GetNormalColor());
     }
 
     public void OnSelect(BaseEventData eventData)
     {
-        RefreshVisualState();
+        ApplyColor(GetSelectedColor());
     }
 
     public void OnDeselect(BaseEventData eventData)
     {
-        RefreshVisualState();
-    }
-
-    public void SetForcedSelectedVisual(bool isForcedSelected)
-    {
-        m_forceSelectedVisual = isForcedSelected;
-        RefreshVisualState();
-    }
-
-    private void RefreshVisualState()
-    {
-        bool shouldShowSelected = m_forceSelectedVisual || IsActuallySelected();
-        ApplyTint(shouldShowSelected);
-        ApplyColor(shouldShowSelected ? GetSelectedColor() : GetNormalColor());
-    }
-
-    private bool IsActuallySelected()
-    {
-        var current = EventSystem.current != null ? EventSystem.current.currentSelectedGameObject : null;
-        return current == gameObject || (current != null && current.transform.IsChildOf(transform));
-    }
-
-    private void ApplyTint(bool isSelected)
-    {
-        if (m_selectable == null)
-            m_selectable = GetComponent<Selectable>();
-
-        if (m_targetGraphic == null)
-        {
-            if (m_selectable != null && m_selectable.targetGraphic != null)
-                m_targetGraphic = m_selectable.targetGraphic;
-            else if (m_image != null)
-                m_targetGraphic = m_image;
-        }
-
-        if (m_targetGraphic == null || m_selectable == null)
-            return;
-
-        var colors = m_selectable.colors;
-        m_targetGraphic.color = isSelected ? colors.selectedColor : colors.normalColor;
+        ApplyColor(GetNormalColor());
     }
 
     private void ApplyColor(Color c)

@@ -580,7 +580,6 @@ public class UINavigator : MonoBehaviour
     // Call these from your custom events or input
     public void MoveUp()
     {
-        ResetRemoteProxyMultiSelectionState(clearRangeOverride: true);
         if (IsNavigationLocked())
             return;
 
@@ -589,7 +588,6 @@ public class UINavigator : MonoBehaviour
 
     public void MoveDown()
     {
-        ResetRemoteProxyMultiSelectionState(clearRangeOverride: true);
         if (IsNavigationLocked())
             return;
 
@@ -598,7 +596,6 @@ public class UINavigator : MonoBehaviour
 
     public void MoveLeft()
     {
-        ResetRemoteProxyMultiSelectionState(clearRangeOverride: true);
         if (IsNavigationLocked())
             return;
 
@@ -612,7 +609,6 @@ public class UINavigator : MonoBehaviour
 
     public void MoveRight()
     {
-        ResetRemoteProxyMultiSelectionState(clearRangeOverride: true);
         if (IsNavigationLocked())
             return;
 
@@ -626,7 +622,6 @@ public class UINavigator : MonoBehaviour
 
     public void ClickSelected()
     {
-        ResetRemoteProxyMultiSelectionState(clearRangeOverride: true);
         if (IsNavigationLocked())
             return;
 
@@ -642,7 +637,6 @@ public class UINavigator : MonoBehaviour
     /// </summary>
     public void DoubleTapSelected()
     {
-        ResetRemoteProxyMultiSelectionState(clearRangeOverride: true);
         if (IsNavigationLocked())
             return;
 
@@ -659,7 +653,6 @@ public class UINavigator : MonoBehaviour
     /// </summary>
     public void RemoteZoomSwitchLayer(bool zoomOut)
     {
-        ResetRemoteProxyMultiSelectionState(clearRangeOverride: true);
         if (IsNavigationLocked())
             return;
 
@@ -736,14 +729,7 @@ public class UINavigator : MonoBehaviour
         }
 
         var selected = EventSystem.current != null ? EventSystem.current.currentSelectedGameObject : null;
-        bool hasExistingRange = m_labelManager.TryGetSelectionRangeOverride(out int currentMinIndex, out int currentMaxIndex);
-        bool shouldResetAnchor = !m_inRemoteProxyMultiSelect || !hasExistingRange;
-        if (selected != null)
-            shouldResetAnchor |= selected != m_remoteProxyAnchorObject;
-        else
-            shouldResetAnchor |= m_remoteProxyAnchorIndex < 0 || m_remoteProxyAnchorIndex >= count;
-
-        if (shouldResetAnchor)
+        if (!m_inRemoteProxyMultiSelect || selected != m_remoteProxyAnchorObject)
         {
             m_remoteProxyAnchorIndex = m_labelManager.GetSelectedLabelIndex();
             if (m_remoteProxyAnchorIndex < 0)
@@ -751,8 +737,6 @@ public class UINavigator : MonoBehaviour
             m_remoteProxyAnchorIndex = Mathf.Clamp(m_remoteProxyAnchorIndex, 0, count - 1);
             m_remoteProxyAnchorObject = selected;
             m_inRemoteProxyMultiSelect = true;
-            currentMinIndex = m_remoteProxyAnchorIndex;
-            currentMaxIndex = m_remoteProxyAnchorIndex;
         }
 
         int stepCount = ComputeTwistStepOffset(signedNormalized);
@@ -763,13 +747,10 @@ public class UINavigator : MonoBehaviour
             return false;
         }
 
-        int minIndex = currentMinIndex;
-        int maxIndex = currentMaxIndex;
-        if (stepCount > 0)
-            maxIndex = Mathf.Clamp(maxIndex + stepCount, m_remoteProxyAnchorIndex, count - 1);
-        else
-            minIndex = Mathf.Clamp(minIndex + stepCount, 0, m_remoteProxyAnchorIndex);
-
+        int leftSteps = stepCount < 0 ? -stepCount : 0;
+        int rightSteps = stepCount > 0 ? stepCount : 0;
+        int minIndex = Mathf.Clamp(m_remoteProxyAnchorIndex - leftSteps, 0, count - 1);
+        int maxIndex = Mathf.Clamp(m_remoteProxyAnchorIndex + rightSteps, 0, count - 1);
         m_labelManager.SetSelectionRange(minIndex, maxIndex);
 
         if (m_debugRemotePinchTwist)
