@@ -9811,15 +9811,15 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4896222002679879045, guid: 58eee23691c63485ba7ef961e1ceeb74, type: 3}
       propertyPath: m_Color.b
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 4896222002679879045, guid: 58eee23691c63485ba7ef961e1ceeb74, type: 3}
       propertyPath: m_Color.g
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 4896222002679879045, guid: 58eee23691c63485ba7ef961e1ceeb74, type: 3}
       propertyPath: m_Color.r
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 5181220601960006006, guid: 58eee23691c63485ba7ef961e1ceeb74, type: 3}
       propertyPath: m_PresetInfoIsWorld
