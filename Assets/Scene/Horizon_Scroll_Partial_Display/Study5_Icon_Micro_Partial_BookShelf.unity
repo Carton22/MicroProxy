@@ -124,24 +124,6 @@ GameObject:
   m_CorrespondingSourceObject: {fileID: 4235160468344426946, guid: cd15fd330deeb48b6bcab0b285c5e949, type: 3}
   m_PrefabInstance: {fileID: 29312787}
   m_PrefabAsset: {fileID: 0}
---- !u!114 &29312789
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 23524099}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: f1e2d3c4b5a6978890a1b2c3d4e5f607, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  m_minDollars: 10
-  m_maxDollars: 50
-  m_useManualFixedValue: 1
-  m_manualFixedDollars: 14
-  m_currencyPrefix: $
-  m_ignoreSecondClickOfDoubleTap: 1
 --- !u!1001 &24191913
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -374,6 +356,24 @@ RectTransform:
   m_CorrespondingSourceObject: {fileID: 7191250308198253915, guid: cd15fd330deeb48b6bcab0b285c5e949, type: 3}
   m_PrefabInstance: {fileID: 29312787}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &29312789
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 23524099}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f1e2d3c4b5a6978890a1b2c3d4e5f607, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_minDollars: 10
+  m_maxDollars: 50
+  m_useManualFixedValue: 1
+  m_manualFixedDollars: 14
+  m_currencyPrefix: $
+  m_ignoreSecondClickOfDoubleTap: 1
 --- !u!1 &46876037
 GameObject:
   m_ObjectHideFlags: 0
@@ -572,24 +572,6 @@ GameObject:
   m_CorrespondingSourceObject: {fileID: 4235160468344426946, guid: cd15fd330deeb48b6bcab0b285c5e949, type: 3}
   m_PrefabInstance: {fileID: 1057377229}
   m_PrefabAsset: {fileID: 0}
---- !u!114 &1057377231
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 67604647}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: f1e2d3c4b5a6978890a1b2c3d4e5f607, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  m_minDollars: 10
-  m_maxDollars: 50
-  m_useManualFixedValue: 1
-  m_manualFixedDollars: 40
-  m_currencyPrefix: $
-  m_ignoreSecondClickOfDoubleTap: 1
 --- !u!1001 &91842641
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -854,24 +836,6 @@ GameObject:
   m_CorrespondingSourceObject: {fileID: 4235160468344426946, guid: cd15fd330deeb48b6bcab0b285c5e949, type: 3}
   m_PrefabInstance: {fileID: 1183172703}
   m_PrefabAsset: {fileID: 0}
---- !u!114 &1183172705
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 153306082}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: f1e2d3c4b5a6978890a1b2c3d4e5f607, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  m_minDollars: 10
-  m_maxDollars: 50
-  m_useManualFixedValue: 1
-  m_manualFixedDollars: 25
-  m_currencyPrefix: $
-  m_ignoreSecondClickOfDoubleTap: 1
 --- !u!1001 &162656606
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -2344,24 +2308,6 @@ GameObject:
   m_CorrespondingSourceObject: {fileID: 4235160468344426946, guid: cd15fd330deeb48b6bcab0b285c5e949, type: 3}
   m_PrefabInstance: {fileID: 1783306832}
   m_PrefabAsset: {fileID: 0}
---- !u!114 &1783306834
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 373793061}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: f1e2d3c4b5a6978890a1b2c3d4e5f607, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  m_minDollars: 10
-  m_maxDollars: 50
-  m_useManualFixedValue: 1
-  m_manualFixedDollars: 24
-  m_currencyPrefix: $
-  m_ignoreSecondClickOfDoubleTap: 1
 --- !u!1 &380269042
 GameObject:
   m_ObjectHideFlags: 0
@@ -2596,70 +2542,16 @@ GameObject:
   m_CorrespondingSourceObject: {fileID: 4235160468344426946, guid: cd15fd330deeb48b6bcab0b285c5e949, type: 3}
   m_PrefabInstance: {fileID: 825962964}
   m_PrefabAsset: {fileID: 0}
---- !u!114 &825962966
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 400488250}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: f1e2d3c4b5a6978890a1b2c3d4e5f607, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  m_minDollars: 10
-  m_maxDollars: 50
-  m_useManualFixedValue: 1
-  m_manualFixedDollars: 13
-  m_currencyPrefix: $
-  m_ignoreSecondClickOfDoubleTap: 1
 --- !u!1 &414167385 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 4235160468344426946, guid: cd15fd330deeb48b6bcab0b285c5e949, type: 3}
   m_PrefabInstance: {fileID: 2008696688}
   m_PrefabAsset: {fileID: 0}
---- !u!114 &2008696690
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 414167385}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: f1e2d3c4b5a6978890a1b2c3d4e5f607, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  m_minDollars: 10
-  m_maxDollars: 50
-  m_useManualFixedValue: 1
-  m_manualFixedDollars: 30
-  m_currencyPrefix: $
-  m_ignoreSecondClickOfDoubleTap: 1
 --- !u!1 &421155423 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 4235160468344426946, guid: cd15fd330deeb48b6bcab0b285c5e949, type: 3}
   m_PrefabInstance: {fileID: 937523583}
   m_PrefabAsset: {fileID: 0}
---- !u!114 &937523585
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 421155423}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: f1e2d3c4b5a6978890a1b2c3d4e5f607, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  m_minDollars: 10
-  m_maxDollars: 50
-  m_useManualFixedValue: 1
-  m_manualFixedDollars: 13
-  m_currencyPrefix: $
-  m_ignoreSecondClickOfDoubleTap: 1
 --- !u!1 &456180473
 GameObject:
   m_ObjectHideFlags: 0
@@ -2952,7 +2844,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 54af6cf4b82d14e60b3f52ac9e0ae680, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_labelManager: {fileID: 0}
+  m_labelManager: {fileID: 1272610422}
   m_twistEventSource: {fileID: 456180475}
   twistPerLabel: 0.1
   m_debugLog: 0
@@ -3764,24 +3656,6 @@ GameObject:
   m_CorrespondingSourceObject: {fileID: 4235160468344426946, guid: cd15fd330deeb48b6bcab0b285c5e949, type: 3}
   m_PrefabInstance: {fileID: 934372671}
   m_PrefabAsset: {fileID: 0}
---- !u!114 &934372673
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 710865942}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: f1e2d3c4b5a6978890a1b2c3d4e5f607, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  m_minDollars: 10
-  m_maxDollars: 50
-  m_useManualFixedValue: 1
-  m_manualFixedDollars: 35
-  m_currencyPrefix: $
-  m_ignoreSecondClickOfDoubleTap: 1
 --- !u!1 &733445207
 GameObject:
   m_ObjectHideFlags: 0
@@ -4720,18 +4594,13 @@ RectTransform:
   m_CorrespondingSourceObject: {fileID: 7191250308198253915, guid: cd15fd330deeb48b6bcab0b285c5e949, type: 3}
   m_PrefabInstance: {fileID: 825962964}
   m_PrefabAsset: {fileID: 0}
---- !u!1 &838558378 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 4235160468344426946, guid: cd15fd330deeb48b6bcab0b285c5e949, type: 3}
-  m_PrefabInstance: {fileID: 1653948097}
-  m_PrefabAsset: {fileID: 0}
---- !u!114 &1653948099
+--- !u!114 &825962966
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 838558378}
+  m_GameObject: {fileID: 400488250}
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: f1e2d3c4b5a6978890a1b2c3d4e5f607, type: 3}
@@ -4740,9 +4609,14 @@ MonoBehaviour:
   m_minDollars: 10
   m_maxDollars: 50
   m_useManualFixedValue: 1
-  m_manualFixedDollars: 15
+  m_manualFixedDollars: 13
   m_currencyPrefix: $
   m_ignoreSecondClickOfDoubleTap: 1
+--- !u!1 &838558378 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 4235160468344426946, guid: cd15fd330deeb48b6bcab0b285c5e949, type: 3}
+  m_PrefabInstance: {fileID: 1653948097}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &847150196
 GameObject:
   m_ObjectHideFlags: 0
@@ -4780,24 +4654,6 @@ GameObject:
   m_CorrespondingSourceObject: {fileID: 4235160468344426946, guid: cd15fd330deeb48b6bcab0b285c5e949, type: 3}
   m_PrefabInstance: {fileID: 1604337912}
   m_PrefabAsset: {fileID: 0}
---- !u!114 &1604337914
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 870136038}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: f1e2d3c4b5a6978890a1b2c3d4e5f607, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  m_minDollars: 10
-  m_maxDollars: 50
-  m_useManualFixedValue: 1
-  m_manualFixedDollars: 15
-  m_currencyPrefix: $
-  m_ignoreSecondClickOfDoubleTap: 1
 --- !u!1 &875434744
 GameObject:
   m_ObjectHideFlags: 0
@@ -5191,6 +5047,24 @@ RectTransform:
   m_CorrespondingSourceObject: {fileID: 7191250308198253915, guid: cd15fd330deeb48b6bcab0b285c5e949, type: 3}
   m_PrefabInstance: {fileID: 934372671}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &934372673
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 710865942}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f1e2d3c4b5a6978890a1b2c3d4e5f607, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_minDollars: 10
+  m_maxDollars: 50
+  m_useManualFixedValue: 1
+  m_manualFixedDollars: 35
+  m_currencyPrefix: $
+  m_ignoreSecondClickOfDoubleTap: 1
 --- !u!1001 &937523583
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -5307,6 +5181,24 @@ RectTransform:
   m_CorrespondingSourceObject: {fileID: 7191250308198253915, guid: cd15fd330deeb48b6bcab0b285c5e949, type: 3}
   m_PrefabInstance: {fileID: 937523583}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &937523585
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 421155423}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f1e2d3c4b5a6978890a1b2c3d4e5f607, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_minDollars: 10
+  m_maxDollars: 50
+  m_useManualFixedValue: 1
+  m_manualFixedDollars: 13
+  m_currencyPrefix: $
+  m_ignoreSecondClickOfDoubleTap: 1
 --- !u!1 &939080230 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 4235160468344426946, guid: cd15fd330deeb48b6bcab0b285c5e949, type: 3}
@@ -6138,6 +6030,24 @@ RectTransform:
   m_CorrespondingSourceObject: {fileID: 7191250308198253915, guid: cd15fd330deeb48b6bcab0b285c5e949, type: 3}
   m_PrefabInstance: {fileID: 1057377229}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &1057377231
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 67604647}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f1e2d3c4b5a6978890a1b2c3d4e5f607, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_minDollars: 10
+  m_maxDollars: 50
+  m_useManualFixedValue: 1
+  m_manualFixedDollars: 40
+  m_currencyPrefix: $
+  m_ignoreSecondClickOfDoubleTap: 1
 --- !u!1001 &1107309194
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -6385,24 +6295,6 @@ GameObject:
   m_CorrespondingSourceObject: {fileID: 4235160468344426946, guid: cd15fd330deeb48b6bcab0b285c5e949, type: 3}
   m_PrefabInstance: {fileID: 1462132914}
   m_PrefabAsset: {fileID: 0}
---- !u!114 &1462132916
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1109226585}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: f1e2d3c4b5a6978890a1b2c3d4e5f607, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  m_minDollars: 10
-  m_maxDollars: 50
-  m_useManualFixedValue: 1
-  m_manualFixedDollars: 7
-  m_currencyPrefix: $
-  m_ignoreSecondClickOfDoubleTap: 1
 --- !u!1001 &1131747125
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -7080,6 +6972,24 @@ RectTransform:
   m_CorrespondingSourceObject: {fileID: 7191250308198253915, guid: cd15fd330deeb48b6bcab0b285c5e949, type: 3}
   m_PrefabInstance: {fileID: 1183172703}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &1183172705
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 153306082}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f1e2d3c4b5a6978890a1b2c3d4e5f607, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_minDollars: 10
+  m_maxDollars: 50
+  m_useManualFixedValue: 1
+  m_manualFixedDollars: 25
+  m_currencyPrefix: $
+  m_ignoreSecondClickOfDoubleTap: 1
 --- !u!1 &1209851484
 GameObject:
   m_ObjectHideFlags: 0
@@ -7496,47 +7406,11 @@ GameObject:
   m_CorrespondingSourceObject: {fileID: 4235160468344426946, guid: cd15fd330deeb48b6bcab0b285c5e949, type: 3}
   m_PrefabInstance: {fileID: 1853039483}
   m_PrefabAsset: {fileID: 0}
---- !u!114 &1853039485
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1410576277}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: f1e2d3c4b5a6978890a1b2c3d4e5f607, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  m_minDollars: 10
-  m_maxDollars: 50
-  m_useManualFixedValue: 1
-  m_manualFixedDollars: 25
-  m_currencyPrefix: $
-  m_ignoreSecondClickOfDoubleTap: 1
 --- !u!1 &1435631947 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 4235160468344426946, guid: cd15fd330deeb48b6bcab0b285c5e949, type: 3}
   m_PrefabInstance: {fileID: 2145605769}
   m_PrefabAsset: {fileID: 0}
---- !u!114 &2145605771
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1435631947}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: f1e2d3c4b5a6978890a1b2c3d4e5f607, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  m_minDollars: 10
-  m_maxDollars: 50
-  m_useManualFixedValue: 1
-  m_manualFixedDollars: 17
-  m_currencyPrefix: $
-  m_ignoreSecondClickOfDoubleTap: 1
 --- !u!1 &1449017788
 GameObject:
   m_ObjectHideFlags: 0
@@ -7825,6 +7699,24 @@ RectTransform:
   m_CorrespondingSourceObject: {fileID: 7191250308198253915, guid: cd15fd330deeb48b6bcab0b285c5e949, type: 3}
   m_PrefabInstance: {fileID: 1462132914}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &1462132916
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1109226585}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f1e2d3c4b5a6978890a1b2c3d4e5f607, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_minDollars: 10
+  m_maxDollars: 50
+  m_useManualFixedValue: 1
+  m_manualFixedDollars: 7
+  m_currencyPrefix: $
+  m_ignoreSecondClickOfDoubleTap: 1
 --- !u!1 &1463857854
 GameObject:
   m_ObjectHideFlags: 0
@@ -8338,6 +8230,24 @@ RectTransform:
   m_CorrespondingSourceObject: {fileID: 7191250308198253915, guid: cd15fd330deeb48b6bcab0b285c5e949, type: 3}
   m_PrefabInstance: {fileID: 1604337912}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &1604337914
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 870136038}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f1e2d3c4b5a6978890a1b2c3d4e5f607, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_minDollars: 10
+  m_maxDollars: 50
+  m_useManualFixedValue: 1
+  m_manualFixedDollars: 15
+  m_currencyPrefix: $
+  m_ignoreSecondClickOfDoubleTap: 1
 --- !u!1 &1629220518
 GameObject:
   m_ObjectHideFlags: 0
@@ -8657,6 +8567,24 @@ RectTransform:
   m_CorrespondingSourceObject: {fileID: 7191250308198253915, guid: cd15fd330deeb48b6bcab0b285c5e949, type: 3}
   m_PrefabInstance: {fileID: 1653948097}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &1653948099
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 838558378}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f1e2d3c4b5a6978890a1b2c3d4e5f607, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_minDollars: 10
+  m_maxDollars: 50
+  m_useManualFixedValue: 1
+  m_manualFixedDollars: 15
+  m_currencyPrefix: $
+  m_ignoreSecondClickOfDoubleTap: 1
 --- !u!1001 &1700106029
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -10041,6 +9969,24 @@ RectTransform:
   m_CorrespondingSourceObject: {fileID: 7191250308198253915, guid: cd15fd330deeb48b6bcab0b285c5e949, type: 3}
   m_PrefabInstance: {fileID: 1783306832}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &1783306834
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 373793061}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f1e2d3c4b5a6978890a1b2c3d4e5f607, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_minDollars: 10
+  m_maxDollars: 50
+  m_useManualFixedValue: 1
+  m_manualFixedDollars: 24
+  m_currencyPrefix: $
+  m_ignoreSecondClickOfDoubleTap: 1
 --- !u!1001 &1792454649
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -10442,24 +10388,6 @@ GameObject:
   m_CorrespondingSourceObject: {fileID: 4235160468344426946, guid: cd15fd330deeb48b6bcab0b285c5e949, type: 3}
   m_PrefabInstance: {fileID: 2139366418}
   m_PrefabAsset: {fileID: 0}
---- !u!114 &2139366420
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1831507684}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: f1e2d3c4b5a6978890a1b2c3d4e5f607, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  m_minDollars: 10
-  m_maxDollars: 50
-  m_useManualFixedValue: 1
-  m_manualFixedDollars: 25
-  m_currencyPrefix: $
-  m_ignoreSecondClickOfDoubleTap: 1
 --- !u!1 &1846479924 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 4235160468344426946, guid: cd15fd330deeb48b6bcab0b285c5e949, type: 3}
@@ -10599,6 +10527,24 @@ RectTransform:
   m_CorrespondingSourceObject: {fileID: 7191250308198253915, guid: cd15fd330deeb48b6bcab0b285c5e949, type: 3}
   m_PrefabInstance: {fileID: 1853039483}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &1853039485
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1410576277}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f1e2d3c4b5a6978890a1b2c3d4e5f607, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_minDollars: 10
+  m_maxDollars: 50
+  m_useManualFixedValue: 1
+  m_manualFixedDollars: 25
+  m_currencyPrefix: $
+  m_ignoreSecondClickOfDoubleTap: 1
 --- !u!1 &1884619604
 GameObject:
   m_ObjectHideFlags: 0
@@ -12066,6 +12012,24 @@ RectTransform:
   m_CorrespondingSourceObject: {fileID: 7191250308198253915, guid: cd15fd330deeb48b6bcab0b285c5e949, type: 3}
   m_PrefabInstance: {fileID: 2008696688}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &2008696690
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 414167385}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f1e2d3c4b5a6978890a1b2c3d4e5f607, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_minDollars: 10
+  m_maxDollars: 50
+  m_useManualFixedValue: 1
+  m_manualFixedDollars: 30
+  m_currencyPrefix: $
+  m_ignoreSecondClickOfDoubleTap: 1
 --- !u!1001 &2039290625
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -12430,6 +12394,24 @@ RectTransform:
   m_CorrespondingSourceObject: {fileID: 7191250308198253915, guid: cd15fd330deeb48b6bcab0b285c5e949, type: 3}
   m_PrefabInstance: {fileID: 2139366418}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &2139366420
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1831507684}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f1e2d3c4b5a6978890a1b2c3d4e5f607, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_minDollars: 10
+  m_maxDollars: 50
+  m_useManualFixedValue: 1
+  m_manualFixedDollars: 25
+  m_currencyPrefix: $
+  m_ignoreSecondClickOfDoubleTap: 1
 --- !u!1 &2145431613
 GameObject:
   m_ObjectHideFlags: 0
@@ -12722,6 +12704,24 @@ RectTransform:
   m_CorrespondingSourceObject: {fileID: 7191250308198253915, guid: cd15fd330deeb48b6bcab0b285c5e949, type: 3}
   m_PrefabInstance: {fileID: 2145605769}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &2145605771
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1435631947}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f1e2d3c4b5a6978890a1b2c3d4e5f607, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_minDollars: 10
+  m_maxDollars: 50
+  m_useManualFixedValue: 1
+  m_manualFixedDollars: 17
+  m_currencyPrefix: $
+  m_ignoreSecondClickOfDoubleTap: 1
 --- !u!1001 &1019656467722773290
 PrefabInstance:
   m_ObjectHideFlags: 0

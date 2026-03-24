@@ -869,7 +869,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   target: {fileID: 1744462753}
   rotationSource: {fileID: 0}
-  distance: 0.8
+  distance: 1
   inheritRotation: 1
   yawOnly: 0
   positionFollowSpeed: 100
@@ -1657,6 +1657,7 @@ MonoBehaviour:
   m_viewport: {fileID: 0}
   m_content: {fileID: 243943085}
   m_gridLayout: {fileID: 243943086}
+  m_scrollAxis: 0
   m_visibleRowCount: 5
   m_centerSelectedLabel: 1
   m_clampToContentBounds: 1
@@ -1668,6 +1669,7 @@ MonoBehaviour:
   m_hiddenScale: 0.62
   m_sideBend: 24
   m_rowBend: 14
+  m_focusAnchorX: 0
   m_focusAnchorY: 0
   m_edgeAlpha: 0.4
   m_hiddenAlpha: 0
@@ -2962,7 +2964,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 54af6cf4b82d14e60b3f52ac9e0ae680, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_labelManager: {fileID: 0}
+  m_labelManager: {fileID: 1272610422}
   m_twistEventSource: {fileID: 456180475}
   twistPerLabel: 0.1
   m_debugLog: 0
@@ -2978,7 +2980,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ae00ed8fcdcb24372825e70a9987e4cf, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_proxySetsRoot: {fileID: 269540402}
+  m_proxySetsRoot: {fileID: 243943085}
   m_twistEventSource: {fileID: 456180475}
   twistPerStep: 0.08
   m_debugLog: 0
@@ -11313,7 +11315,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
-  m_AnchoredPosition: {x: 0.38, y: -0.18}
+  m_AnchoredPosition: {x: 0.38, y: -0.1}
   m_SizeDelta: {x: 600, y: 600}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1909648939
