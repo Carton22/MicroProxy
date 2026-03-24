@@ -2,7 +2,7 @@ using TMPro;
 using UnityEngine;
 
 /// <summary>
-/// Displays the running total of all proxy labels whose price is currently shown.
+/// Displays the running total of all proxy labels whose price is toggled on, including labels on temporarily hidden pages.
 /// </summary>
 [DisallowMultipleComponent]
 public class ProxyTotalPriceDisplay : MonoBehaviour
@@ -76,4 +76,3 @@ public class ProxyTotalPriceDisplay : MonoBehaviour
             m_totalText.enabled = visible;
     }
 }
-

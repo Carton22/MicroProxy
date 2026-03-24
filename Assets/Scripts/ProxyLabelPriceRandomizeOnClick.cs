@@ -6,11 +6,13 @@ using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
 /// <summary>
-/// Replaces label text with a random dollar amount on click. Uses the first <see cref="TMP_Text"/> under this instance.
+/// Replaces label text with a random dollar amount on click and tracks it in the running total until toggled off.
+/// Temporary page/filter hides do not clear the tracked price.
 /// Prefer wiring through the <see cref="Button"/> (same GameObject); <see cref="IPointerClickHandler"/> is a fallback when there is no Button.
 /// </summary>
 public class ProxyLabelPriceRandomizeOnClick : MonoBehaviour, IPointerClickHandler, ISubmitHandler
 {
+    // Tracks labels whose price is currently toggled on, even if their page is temporarily hidden.
     private static readonly HashSet<ProxyLabelPriceRandomizeOnClick> s_visiblePriceLabels = new();
     public static event Action<int> OnVisiblePricesTotalChanged;
 
@@ -75,8 +77,17 @@ public class ProxyLabelPriceRandomizeOnClick : MonoBehaviour, IPointerClickHandl
         if (m_button != null)
             m_button.onClick.RemoveListener(OnButtonClicked);
 
-        if (m_priceVisible)
-            SetPriceVisible(false);
+        // Keep tracked prices alive across temporary page/filter hides.
+    }
+
+    private void OnDestroy()
+    {
+        if (!m_priceVisible)
+            return;
+
+        m_priceVisible = false;
+        s_visiblePriceLabels.Remove(this);
+        OnVisiblePricesTotalChanged?.Invoke(GetVisiblePricesTotal());
     }
 
     private void OnButtonClicked()
