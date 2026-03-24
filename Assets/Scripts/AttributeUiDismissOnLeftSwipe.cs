@@ -33,9 +33,6 @@ public class AttributeUiDismissOnLeftSwipe : MonoBehaviour
         if (!gameObject.activeSelf)
             return false;
 
-        if (ProxySetDrillDownController.IsAnyDrillDownChildViewActive)
-            return false;
-
         if (m_proxyLabelManager == null)
             m_proxyLabelManager = FindFirstObjectByType<ProxyLabelManager>();
 
@@ -52,17 +49,20 @@ public class AttributeUiDismissOnLeftSwipe : MonoBehaviour
         if (selected != gameObject && !selected.transform.IsChildOf(transform))
             return false;
 
-        var leftColumnFocusRoot = m_leftColumnLabelsParent != null
-            ? m_leftColumnLabelsParent
-            : m_leftLabelsParentForProxyManager;
+        var leftLabelsParentToRestore = ResolveLeftLabelsParentToRestore();
+        var leftColumnFocusRoot = leftLabelsParentToRestore != null
+            ? leftLabelsParentToRestore
+            : (m_leftColumnLabelsParent != null ? m_leftColumnLabelsParent : m_leftLabelsParentForProxyManager);
         var leftColumnTarget = FindFirstSelectableUnder(leftColumnFocusRoot);
+        if (leftColumnTarget == null && m_leftColumnLabelsParent != null && leftColumnFocusRoot != m_leftColumnLabelsParent)
+            leftColumnTarget = FindFirstSelectableUnder(m_leftColumnLabelsParent);
         if (leftColumnFocusRoot != null && leftColumnTarget == null)
             return true;
 
         gameObject.SetActive(false);
 
-        if (m_proxyLabelManager != null && m_leftLabelsParentForProxyManager != null)
-            m_proxyLabelManager.SetActiveLabelsParent(m_leftLabelsParentForProxyManager);
+        if (m_proxyLabelManager != null && leftLabelsParentToRestore != null)
+            m_proxyLabelManager.SetActiveLabelsParent(leftLabelsParentToRestore);
 
         Canvas.ForceUpdateCanvases();
 
@@ -85,6 +85,18 @@ public class AttributeUiDismissOnLeftSwipe : MonoBehaviour
         }
 
         return true;
+    }
+
+    private Transform ResolveLeftLabelsParentToRestore()
+    {
+        var activeParent = m_proxyLabelManager != null ? m_proxyLabelManager.GetActiveLabelsParent() : null;
+        if (activeParent != null && activeParent != transform && !activeParent.IsChildOf(transform))
+            return activeParent;
+
+        if (m_leftLabelsParentForProxyManager != null)
+            return m_leftLabelsParentForProxyManager;
+
+        return m_leftColumnLabelsParent;
     }
 
     private static GameObject FindFirstSelectableUnder(Transform root)

@@ -431,7 +431,7 @@ MonoBehaviour:
   m_minDollars: 10
   m_maxDollars: 50
   m_useManualFixedValue: 1
-  m_manualFixedDollars: 20
+  m_manualFixedDollars: 14
   m_currencyPrefix: $
   m_ignoreSecondClickOfDoubleTap: 1
 --- !u!1 &46876037
@@ -4807,7 +4807,7 @@ MonoBehaviour:
   m_minDollars: 10
   m_maxDollars: 50
   m_useManualFixedValue: 1
-  m_manualFixedDollars: 20
+  m_manualFixedDollars: 13
   m_currencyPrefix: $
   m_ignoreSecondClickOfDoubleTap: 1
 --- !u!1 &838558378 stripped
@@ -5280,7 +5280,7 @@ MonoBehaviour:
   m_minDollars: 10
   m_maxDollars: 50
   m_useManualFixedValue: 1
-  m_manualFixedDollars: 20
+  m_manualFixedDollars: 35
   m_currencyPrefix: $
   m_ignoreSecondClickOfDoubleTap: 1
 --- !u!1001 &937523583
@@ -5434,7 +5434,7 @@ MonoBehaviour:
   m_minDollars: 10
   m_maxDollars: 50
   m_useManualFixedValue: 1
-  m_manualFixedDollars: 20
+  m_manualFixedDollars: 13
   m_currencyPrefix: $
   m_ignoreSecondClickOfDoubleTap: 1
 --- !u!1 &939080230 stripped
@@ -5457,7 +5457,7 @@ MonoBehaviour:
   m_minDollars: 10
   m_maxDollars: 50
   m_useManualFixedValue: 1
-  m_manualFixedDollars: 20
+  m_manualFixedDollars: 15
   m_currencyPrefix: $
   m_ignoreSecondClickOfDoubleTap: 1
 --- !u!1001 &945324729
@@ -5638,7 +5638,7 @@ MonoBehaviour:
   m_minDollars: 10
   m_maxDollars: 50
   m_useManualFixedValue: 1
-  m_manualFixedDollars: 20
+  m_manualFixedDollars: 5
   m_currencyPrefix: $
   m_ignoreSecondClickOfDoubleTap: 1
 --- !u!1001 &983944788
@@ -6169,7 +6169,7 @@ MonoBehaviour:
   m_minDollars: 10
   m_maxDollars: 50
   m_useManualFixedValue: 1
-  m_manualFixedDollars: 20
+  m_manualFixedDollars: 12
   m_currencyPrefix: $
   m_ignoreSecondClickOfDoubleTap: 1
 --- !u!1001 &1057377229
@@ -6335,7 +6335,7 @@ MonoBehaviour:
   m_minDollars: 10
   m_maxDollars: 50
   m_useManualFixedValue: 1
-  m_manualFixedDollars: 20
+  m_manualFixedDollars: 40
   m_currencyPrefix: $
   m_ignoreSecondClickOfDoubleTap: 1
 --- !u!1001 &1107309194
@@ -6884,7 +6884,7 @@ MonoBehaviour:
   m_minDollars: 10
   m_maxDollars: 50
   m_useManualFixedValue: 1
-  m_manualFixedDollars: 20
+  m_manualFixedDollars: 26
   m_currencyPrefix: $
   m_ignoreSecondClickOfDoubleTap: 1
 --- !u!1 &1176146344
@@ -7297,7 +7297,7 @@ MonoBehaviour:
   m_minDollars: 10
   m_maxDollars: 50
   m_useManualFixedValue: 1
-  m_manualFixedDollars: 20
+  m_manualFixedDollars: 25
   m_currencyPrefix: $
   m_ignoreSecondClickOfDoubleTap: 1
 --- !u!1 &1209851484
@@ -7366,7 +7366,7 @@ MonoBehaviour:
   m_minDollars: 10
   m_maxDollars: 50
   m_useManualFixedValue: 1
-  m_manualFixedDollars: 20
+  m_manualFixedDollars: 12
   m_currencyPrefix: $
   m_ignoreSecondClickOfDoubleTap: 1
 --- !u!1001 &1246191696
@@ -7728,7 +7728,7 @@ MonoBehaviour:
   m_minDollars: 10
   m_maxDollars: 50
   m_useManualFixedValue: 1
-  m_manualFixedDollars: 20
+  m_manualFixedDollars: 26
   m_currencyPrefix: $
   m_ignoreSecondClickOfDoubleTap: 1
 --- !u!1 &1410576277 stripped
@@ -7930,7 +7930,7 @@ MonoBehaviour:
   m_minDollars: 10
   m_maxDollars: 50
   m_useManualFixedValue: 1
-  m_manualFixedDollars: 20
+  m_manualFixedDollars: 19
   m_currencyPrefix: $
   m_ignoreSecondClickOfDoubleTap: 1
 --- !u!1001 &1462132914
@@ -8100,7 +8100,7 @@ MonoBehaviour:
   m_minDollars: 10
   m_maxDollars: 50
   m_useManualFixedValue: 1
-  m_manualFixedDollars: 20
+  m_manualFixedDollars: 7
   m_currencyPrefix: $
   m_ignoreSecondClickOfDoubleTap: 1
 --- !u!1 &1463857854
@@ -8671,7 +8671,7 @@ MonoBehaviour:
   m_minDollars: 10
   m_maxDollars: 50
   m_useManualFixedValue: 1
-  m_manualFixedDollars: 20
+  m_manualFixedDollars: 15
   m_currencyPrefix: $
   m_ignoreSecondClickOfDoubleTap: 1
 --- !u!1 &1629220518
@@ -8874,7 +8874,7 @@ MonoBehaviour:
   m_minDollars: 10
   m_maxDollars: 50
   m_useManualFixedValue: 1
-  m_manualFixedDollars: 20
+  m_manualFixedDollars: 15
   m_currencyPrefix: $
   m_ignoreSecondClickOfDoubleTap: 1
 --- !u!1001 &1653948097
@@ -9032,7 +9032,7 @@ MonoBehaviour:
   m_minDollars: 10
   m_maxDollars: 50
   m_useManualFixedValue: 1
-  m_manualFixedDollars: 20
+  m_manualFixedDollars: 15
   m_currencyPrefix: $
   m_ignoreSecondClickOfDoubleTap: 1
 --- !u!1001 &1700106029
@@ -10478,7 +10478,7 @@ MonoBehaviour:
   m_minDollars: 10
   m_maxDollars: 50
   m_useManualFixedValue: 1
-  m_manualFixedDollars: 20
+  m_manualFixedDollars: 24
   m_currencyPrefix: $
   m_ignoreSecondClickOfDoubleTap: 1
 --- !u!1001 &1792454649
@@ -10902,7 +10902,7 @@ MonoBehaviour:
   m_minDollars: 10
   m_maxDollars: 50
   m_useManualFixedValue: 1
-  m_manualFixedDollars: 20
+  m_manualFixedDollars: 29
   m_currencyPrefix: $
   m_ignoreSecondClickOfDoubleTap: 1
 --- !u!1001 &1853039483
@@ -11076,7 +11076,7 @@ MonoBehaviour:
   m_minDollars: 10
   m_maxDollars: 50
   m_useManualFixedValue: 1
-  m_manualFixedDollars: 20
+  m_manualFixedDollars: 25
   m_currencyPrefix: $
   m_ignoreSecondClickOfDoubleTap: 1
 --- !u!1 &1884619604
@@ -11143,7 +11143,7 @@ MonoBehaviour:
   m_minDollars: 10
   m_maxDollars: 50
   m_useManualFixedValue: 1
-  m_manualFixedDollars: 20
+  m_manualFixedDollars: 15
   m_currencyPrefix: $
   m_ignoreSecondClickOfDoubleTap: 1
 --- !u!1 &1909228615
@@ -12581,7 +12581,7 @@ MonoBehaviour:
   m_minDollars: 10
   m_maxDollars: 50
   m_useManualFixedValue: 1
-  m_manualFixedDollars: 20
+  m_manualFixedDollars: 30
   m_currencyPrefix: $
   m_ignoreSecondClickOfDoubleTap: 1
 --- !u!1001 &2039290625
@@ -12983,7 +12983,7 @@ MonoBehaviour:
   m_minDollars: 10
   m_maxDollars: 50
   m_useManualFixedValue: 1
-  m_manualFixedDollars: 20
+  m_manualFixedDollars: 25
   m_currencyPrefix: $
   m_ignoreSecondClickOfDoubleTap: 1
 --- !u!1 &2145431613
@@ -13317,7 +13317,7 @@ MonoBehaviour:
   m_minDollars: 10
   m_maxDollars: 50
   m_useManualFixedValue: 1
-  m_manualFixedDollars: 20
+  m_manualFixedDollars: 17
   m_currencyPrefix: $
   m_ignoreSecondClickOfDoubleTap: 1
 --- !u!1001 &1019656467722773290
