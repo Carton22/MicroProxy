@@ -4,8 +4,9 @@ using UnityEngine.UI;
 
 /// <summary>
 /// Attach to the AttributeUI root. When the EventSystem selection is on a label (or any selectable)
-/// under this object and the user moves left (e.g. UINavigator swipe left), AttributeUI is hidden and
-/// selection moves back to the left column (e.g. ProxyUI).
+/// under this object and the user triggers the configured dismiss move (left in older vertical scenes,
+/// up in horizontal Study5-style scenes), AttributeUI is hidden and selection moves back to the left column
+/// (e.g. ProxyUI).
 /// </summary>
 [DisallowMultipleComponent]
 public class AttributeUiDismissOnLeftSwipe : MonoBehaviour
@@ -29,6 +30,20 @@ public class AttributeUiDismissOnLeftSwipe : MonoBehaviour
     /// Invoked from <see cref="UINavigator.MoveLeft"/> (and vector-based left moves). Returns true if the gesture was consumed.
     /// </summary>
     public bool TryHandleMoveLeft()
+    {
+        return TryDismissAttributeUi();
+    }
+
+    /// <summary>
+    /// Invoked from <see cref="UINavigator.MoveUp"/> for horizontal proxy rows that open AttributeUI on MoveDown.
+    /// Returns true if the gesture was consumed.
+    /// </summary>
+    public bool TryHandleMoveUp()
+    {
+        return TryDismissAttributeUi();
+    }
+
+    private bool TryDismissAttributeUi()
     {
         if (!gameObject.activeSelf)
             return false;

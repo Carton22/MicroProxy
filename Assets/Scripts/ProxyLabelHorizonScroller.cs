@@ -12,12 +12,19 @@ using TMPro;
 /// </summary>
 public class ProxyLabelHorizonScroller : MonoBehaviour
 {
+    private enum ScrollAxis
+    {
+        Vertical = 0,
+        Horizontal = 1
+    }
+
     private sealed class LabelVisualState
     {
         public RectTransform Rect;
         public CanvasGroup CanvasGroup;
         public Vector2 AuthoredAnchoredPosition;
         public Vector3 AuthoredScale;
+        public int PrimaryIndex;
         public Graphic[] Graphics;
         public bool[] AuthoredGraphicEnabled;
         public bool[] AuthoredGraphicRaycastTargets;
@@ -39,6 +46,9 @@ public class ProxyLabelHorizonScroller : MonoBehaviour
     [Tooltip("Optional. If null, tries to find GridLayoutGroup on the content.")]
     [SerializeField] private GridLayoutGroup m_gridLayout;
 
+    [Tooltip("Keeps older scenes vertical by default. Set to Horizontal for single-row horizontal proxy lists like Study5.")]
+    [SerializeField] private ScrollAxis m_scrollAxis = ScrollAxis.Vertical;
+
     [Header("Window")]
     [Tooltip("How many rows stay in the wheel window at once. Five works well for the bookshelf proxy set.")]
     [SerializeField] private int m_visibleRowCount = 5;
@@ -58,6 +68,7 @@ public class ProxyLabelHorizonScroller : MonoBehaviour
     [SerializeField] private float m_hiddenScale = 0.62f;
     [SerializeField] private float m_sideBend = 24f;
     [SerializeField] private float m_rowBend = 14f;
+    [SerializeField] private float m_focusAnchorX = 0f;
     [SerializeField] private float m_focusAnchorY = 0f;
     [Range(0f, 1f)] [SerializeField] private float m_edgeAlpha = 0.4f;
     [Range(0f, 1f)] [SerializeField] private float m_hiddenAlpha = 0f;
@@ -67,7 +78,7 @@ public class ProxyLabelHorizonScroller : MonoBehaviour
     [SerializeField] private int m_postForceRefreshFrames = 2;
 
     private readonly List<LabelVisualState> m_labelStates = new();
-    private readonly List<float> m_rowAnchoredPositions = new();
+    private readonly List<float> m_primaryAnchoredPositions = new();
 
     private int m_lastChildCount = -1;
     private Vector2 m_lastContentSize;
@@ -123,6 +134,8 @@ public class ProxyLabelHorizonScroller : MonoBehaviour
         m_startupRefreshFramesRemaining = Mathf.Max(m_startupRefreshFramesRemaining, m_postForceRefreshFrames);
     }
 
+    public bool UsesHorizontalScrollAxis => IsHorizontalMode();
+
     private void OnDisable()
     {
         RestoreAuthoredVisuals();
@@ -152,15 +165,14 @@ public class ProxyLabelHorizonScroller : MonoBehaviour
         if (selectedIndex < 0)
             selectedIndex = Mathf.Clamp(GetFallbackSelectedIndex(), 0, m_labelStates.Count - 1);
 
-        int columnCount = GetColumnCount();
-        int totalRows = Mathf.CeilToInt((float)m_labelStates.Count / columnCount);
-        if (totalRows <= 0)
+        int totalPrimaryCount = m_primaryAnchoredPositions.Count;
+        if (totalPrimaryCount <= 0)
             return;
 
-        int selectedRow = selectedIndex / columnCount;
+        int selectedPrimaryIndex = m_labelStates[selectedIndex].PrimaryIndex;
         float targetWindowCenterRow = m_centerSelectedLabel
-            ? GetTargetWindowCenterRow(selectedRow, totalRows)
-            : selectedRow;
+            ? GetTargetWindowCenterIndex(selectedPrimaryIndex, totalPrimaryCount)
+            : selectedPrimaryIndex;
 
         if (!m_hasInitializedWindowCenter)
         {
@@ -177,7 +189,10 @@ public class ProxyLabelHorizonScroller : MonoBehaviour
             );
         }
 
-        ApplyWheelVisuals(selectedIndex, columnCount, totalRows, Time.unscaledDeltaTime);
+        if (IsHorizontalMode())
+            ApplyHorizontalWheelVisuals(selectedIndex, totalPrimaryCount, Time.unscaledDeltaTime);
+        else
+            ApplyVerticalWheelVisuals(selectedIndex, GetColumnCount(), totalPrimaryCount, Time.unscaledDeltaTime);
     }
 
     private void EnsureReferences()
@@ -217,10 +232,7 @@ public class ProxyLabelHorizonScroller : MonoBehaviour
             LayoutRebuilder.ForceRebuildLayoutImmediate(m_content);
 
         m_labelStates.Clear();
-        m_rowAnchoredPositions.Clear();
-
-        int columnCount = GetColumnCount();
-        int visibleChildCount = 0;
+        m_primaryAnchoredPositions.Clear();
         for (int i = 0; i < m_content.childCount; i++)
         {
             var child = m_content.GetChild(i) as RectTransform;
@@ -261,19 +273,54 @@ public class ProxyLabelHorizonScroller : MonoBehaviour
                 AuthoredTextRaycastTargets = authoredTextRaycastTargets,
                 WereGraphicsHiddenLastFrame = false
             });
-
-            int row = visibleChildCount / columnCount;
-            if (row >= m_rowAnchoredPositions.Count)
-                m_rowAnchoredPositions.Add(child.anchoredPosition.y);
-
-            visibleChildCount++;
         }
 
+        BuildPrimaryLayoutCache();
         RefreshTrackedGraphics(forceDirty: true);
         Canvas.ForceUpdateCanvases();
 
         m_lastChildCount = m_content.childCount;
         m_lastContentSize = currentSize;
+    }
+
+    private void BuildPrimaryLayoutCache()
+    {
+        m_primaryAnchoredPositions.Clear();
+        if (m_labelStates.Count == 0)
+            return;
+
+        if (IsHorizontalMode())
+        {
+            BuildHorizontalPrimaryLayoutCache();
+            return;
+        }
+
+        int columnCount = GetColumnCount();
+        for (int i = 0; i < m_labelStates.Count; i++)
+        {
+            var state = m_labelStates[i];
+            state.PrimaryIndex = i / columnCount;
+
+            if (state.PrimaryIndex >= m_primaryAnchoredPositions.Count)
+                m_primaryAnchoredPositions.Add(state.AuthoredAnchoredPosition.y);
+        }
+    }
+
+    private void BuildHorizontalPrimaryLayoutCache()
+    {
+        var orderedPrimaryCoordinates = new List<float>();
+        for (int i = 0; i < m_labelStates.Count; i++)
+            AddUniqueCoordinate(orderedPrimaryCoordinates, m_labelStates[i].AuthoredAnchoredPosition.x);
+
+        orderedPrimaryCoordinates.Sort();
+        for (int i = 0; i < orderedPrimaryCoordinates.Count; i++)
+            m_primaryAnchoredPositions.Add(orderedPrimaryCoordinates[i]);
+
+        for (int i = 0; i < m_labelStates.Count; i++)
+        {
+            var state = m_labelStates[i];
+            state.PrimaryIndex = FindCoordinateIndex(m_primaryAnchoredPositions, state.AuthoredAnchoredPosition.x);
+        }
     }
 
     private bool HasVisibleChildListChanged()
@@ -349,20 +396,25 @@ public class ProxyLabelHorizonScroller : MonoBehaviour
         if (selectedIndex < 0)
             selectedIndex = Mathf.Clamp(GetFallbackSelectedIndex(), 0, m_labelStates.Count - 1);
 
-        int columnCount = GetColumnCount();
-        int totalRows = Mathf.CeilToInt((float)m_labelStates.Count / columnCount);
-        int selectedRow = selectedIndex / columnCount;
+        int totalPrimaryCount = m_primaryAnchoredPositions.Count;
+        if (totalPrimaryCount <= 0)
+            return;
+
+        int selectedPrimaryIndex = m_labelStates[selectedIndex].PrimaryIndex;
 
         m_smoothedWindowCenterRow = m_centerSelectedLabel
-            ? GetTargetWindowCenterRow(selectedRow, totalRows)
-            : selectedRow;
+            ? GetTargetWindowCenterIndex(selectedPrimaryIndex, totalPrimaryCount)
+            : selectedPrimaryIndex;
         m_windowCenterVelocity = 0f;
         m_hasInitializedWindowCenter = true;
 
-        ApplyWheelVisuals(selectedIndex, columnCount, totalRows, float.MaxValue);
+        if (IsHorizontalMode())
+            ApplyHorizontalWheelVisuals(selectedIndex, totalPrimaryCount, float.MaxValue);
+        else
+            ApplyVerticalWheelVisuals(selectedIndex, GetColumnCount(), totalPrimaryCount, float.MaxValue);
     }
 
-    private void ApplyWheelVisuals(int selectedIndex, int columnCount, int totalRows, float deltaTime)
+    private void ApplyVerticalWheelVisuals(int selectedIndex, int columnCount, int totalRows, float deltaTime)
     {
         if (m_labelStates.Count == 0 || totalRows <= 0)
             return;
@@ -371,7 +423,7 @@ public class ProxyLabelHorizonScroller : MonoBehaviour
             ? 1f
             : 1f - Mathf.Exp(-m_visualLerpSpeed * Mathf.Max(0f, deltaTime));
 
-        float focusRowY = GetInterpolatedRowY(m_smoothedWindowCenterRow);
+        float focusRowY = GetInterpolatedPrimaryCoordinate(m_smoothedWindowCenterRow);
         float scrollOffsetY = m_centerSelectedLabel ? m_focusAnchorY - focusRowY : 0f;
         float halfWindow = (m_visibleRowCount - 1) * 0.5f;
         float softWindow = halfWindow + 0.85f;
@@ -437,6 +489,131 @@ public class ProxyLabelHorizonScroller : MonoBehaviour
             {
                 // Require both the current smoothed alpha and the intended target alpha so text
                 // does not linger after a row has been culled from the visible window.
+                for (int t = 0; t < state.Texts.Length; t++)
+                {
+                    var text = state.Texts[t];
+                    if (text == null)
+                    {
+                        needsCacheRefresh = true;
+                        continue;
+                    }
+
+                    if (!shouldRender)
+                    {
+                        if (!TrySetTextEnabled(state, t, false))
+                        {
+                            needsCacheRefresh = true;
+                            continue;
+                        }
+
+                        if (m_disableRaycastsForHiddenItems)
+                        {
+                            if (!TrySetTextRaycastTarget(state, t, false))
+                                needsCacheRefresh = true;
+                        }
+                    }
+                    else
+                    {
+                        if (!TrySetTextEnabled(state, t, true))
+                        {
+                            needsCacheRefresh = true;
+                            continue;
+                        }
+
+                        if (m_disableRaycastsForHiddenItems)
+                        {
+                            bool allowRaycast = targetAlpha > 0.1f;
+                            bool authoredRaycast = state.AuthoredTextRaycastTargets != null && t < state.AuthoredTextRaycastTargets.Length
+                                ? state.AuthoredTextRaycastTargets[t]
+                                : true;
+                            if (!TrySetTextRaycastTarget(state, t, allowRaycast && authoredRaycast))
+                                needsCacheRefresh = true;
+                        }
+                        else
+                        {
+                            if (state.AuthoredTextRaycastTargets != null && t < state.AuthoredTextRaycastTargets.Length)
+                            {
+                                if (!TrySetTextRaycastTarget(state, t, state.AuthoredTextRaycastTargets[t]))
+                                    needsCacheRefresh = true;
+                            }
+                        }
+                    }
+                }
+            }
+
+            if (m_disableRaycastsForHiddenItems)
+            {
+                bool isVisibleEnough = targetAlpha > 0.1f;
+                state.CanvasGroup.blocksRaycasts = isVisibleEnough;
+            }
+        }
+
+        if (needsCacheRefresh)
+            InvalidateCachedLayout();
+    }
+
+    private void ApplyHorizontalWheelVisuals(int selectedIndex, int totalColumns, float deltaTime)
+    {
+        if (m_labelStates.Count == 0 || totalColumns <= 0)
+            return;
+
+        float lerpFactor = deltaTime == float.MaxValue
+            ? 1f
+            : 1f - Mathf.Exp(-m_visualLerpSpeed * Mathf.Max(0f, deltaTime));
+
+        float focusColumnX = GetInterpolatedPrimaryCoordinate(m_smoothedWindowCenterRow);
+        float scrollOffsetX = m_centerSelectedLabel ? m_focusAnchorX - focusColumnX : 0f;
+        float halfWindow = (m_visibleRowCount - 1) * 0.5f;
+        float softWindow = halfWindow + 0.85f;
+        bool needsCacheRefresh = false;
+        for (int i = 0; i < m_labelStates.Count; i++)
+        {
+            var state = m_labelStates[i];
+            if (state.Rect == null)
+                continue;
+
+            int column = state.PrimaryIndex;
+            float columnDistance = column - m_smoothedWindowCenterRow;
+            float absColumnDistance = Mathf.Abs(columnDistance);
+            float bandT = EaseOutCubic(Mathf.InverseLerp(softWindow, 0f, absColumnDistance));
+            float focusT = EaseOutCubic(Mathf.InverseLerp(1.15f, 0f, absColumnDistance));
+            bool isSelected = i == selectedIndex;
+
+            Vector2 targetAnchoredPosition = state.AuthoredAnchoredPosition + new Vector2(scrollOffsetX, 0f);
+            float targetScaleFactor = Mathf.Lerp(m_hiddenScale, m_edgeScale, bandT);
+            targetScaleFactor = Mathf.Lerp(targetScaleFactor, m_focusScale, focusT);
+            if (isSelected)
+                targetScaleFactor = Mathf.Max(targetScaleFactor, m_focusScale) * m_selectedScaleMultiplier;
+
+            float targetAlpha = Mathf.Lerp(m_hiddenAlpha, m_edgeAlpha, bandT);
+            targetAlpha = Mathf.Lerp(targetAlpha, 1f, focusT);
+            if (isSelected)
+                targetAlpha = 1f;
+
+            if (m_hideLabelsCompletelyOutsideWindow)
+            {
+                float absColumnDeltaFromWindowCenter = Mathf.Abs(column - m_smoothedWindowCenterRow);
+                if (absColumnDeltaFromWindowCenter > halfWindow + 0.001f)
+                    targetAlpha = 0f;
+            }
+
+            state.Rect.anchoredPosition = Vector2.Lerp(state.Rect.anchoredPosition, targetAnchoredPosition, lerpFactor);
+            state.Rect.localScale = Vector3.Lerp(state.Rect.localScale, state.AuthoredScale * targetScaleFactor, lerpFactor);
+            float appliedAlpha = Mathf.Lerp(state.CanvasGroup.alpha, targetAlpha, lerpFactor);
+            state.CanvasGroup.alpha = appliedAlpha;
+            bool shouldRender = targetAlpha > m_hardCullAlphaThreshold
+                && appliedAlpha > m_hardCullAlphaThreshold;
+
+            if (shouldRender && state.WereGraphicsHiddenLastFrame)
+            {
+                if (!TryRestoreGraphicsToAuthoredState(state, forceDirty: true))
+                    needsCacheRefresh = true;
+            }
+
+            state.WereGraphicsHiddenLastFrame = !shouldRender;
+
+            if (state.Texts != null && state.Texts.Length > 0)
+            {
                 for (int t = 0; t < state.Texts.Length; t++)
                 {
                     var text = state.Texts[t];
@@ -596,36 +773,61 @@ public class ProxyLabelHorizonScroller : MonoBehaviour
         return 1;
     }
 
-    private float GetTargetWindowCenterRow(int selectedRow, int totalRows)
+    private float GetTargetWindowCenterIndex(int selectedIndex, int totalCount)
     {
-        if (totalRows <= 0)
+        if (totalCount <= 0)
             return 0f;
 
         if (!m_clampToContentBounds)
-            return selectedRow;
+            return selectedIndex;
 
-        if (totalRows <= m_visibleRowCount)
-            return (totalRows - 1) * 0.5f;
+        if (totalCount <= m_visibleRowCount)
+            return (totalCount - 1) * 0.5f;
 
         float halfWindow = (m_visibleRowCount - 1) * 0.5f;
         float min = halfWindow;
-        float max = totalRows - 1 - halfWindow;
-        return Mathf.Clamp(selectedRow, min, max);
+        float max = totalCount - 1 - halfWindow;
+        return Mathf.Clamp(selectedIndex, min, max);
     }
 
-    private float GetInterpolatedRowY(float rowIndex)
+    private float GetInterpolatedPrimaryCoordinate(float rowIndex)
     {
-        if (m_rowAnchoredPositions.Count == 0)
+        if (m_primaryAnchoredPositions.Count == 0)
             return 0f;
 
-        if (m_rowAnchoredPositions.Count == 1)
-            return m_rowAnchoredPositions[0];
+        if (m_primaryAnchoredPositions.Count == 1)
+            return m_primaryAnchoredPositions[0];
 
-        float clamped = Mathf.Clamp(rowIndex, 0f, m_rowAnchoredPositions.Count - 1);
+        float clamped = Mathf.Clamp(rowIndex, 0f, m_primaryAnchoredPositions.Count - 1);
         int lower = Mathf.FloorToInt(clamped);
-        int upper = Mathf.Min(lower + 1, m_rowAnchoredPositions.Count - 1);
+        int upper = Mathf.Min(lower + 1, m_primaryAnchoredPositions.Count - 1);
         float t = clamped - lower;
-        return Mathf.Lerp(m_rowAnchoredPositions[lower], m_rowAnchoredPositions[upper], t);
+        return Mathf.Lerp(m_primaryAnchoredPositions[lower], m_primaryAnchoredPositions[upper], t);
+    }
+
+    private bool IsHorizontalMode()
+    {
+        return m_scrollAxis == ScrollAxis.Horizontal;
+    }
+
+    private static void AddUniqueCoordinate(List<float> coordinates, float value)
+    {
+        if (FindCoordinateIndex(coordinates, value) >= 0)
+            return;
+
+        coordinates.Add(value);
+    }
+
+    private static int FindCoordinateIndex(List<float> coordinates, float value)
+    {
+        const float coordinateTolerance = 0.01f;
+        for (int i = 0; i < coordinates.Count; i++)
+        {
+            if (Mathf.Abs(coordinates[i] - value) <= coordinateTolerance)
+                return i;
+        }
+
+        return -1;
     }
 
     private static float GetCenteredColumnOffset(int columnIndex, int columnCount)

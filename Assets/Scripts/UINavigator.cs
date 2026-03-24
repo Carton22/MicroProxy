@@ -15,10 +15,10 @@ public class UINavigator : MonoBehaviour
     [SerializeField] private ProxyLabelManager m_labelManager;
 
     [Header("ScreenUI ↔ AttributeUI")]
-    [Tooltip("Left column labels root (e.g. ProxyUI grid under ScreenUI). When focus is here and the user moves right, AttributeUI is shown.")]
+    [Tooltip("Left column labels root (e.g. ProxyUI grid under ScreenUI). When focus is here and the user moves right or down, AttributeUI can be shown based on the active proxy scroller mode.")]
     [SerializeField] private Transform m_leftColumnLabelsParent;
 
-    [Tooltip("ProxyUI page scope: ancestor of the main proxy list and any in-ProxyUI drill-down label parents. Swipe-right opens AttributeUI only when selection and active label parent lie under this transform. Leave empty to use Left Column Labels Parent.")]
+    [Tooltip("ProxyUI page scope: ancestor of the main proxy list and any in-ProxyUI drill-down label parents. AttributeUI opens only when selection and active label parent lie under this transform. Leave empty to use Left Column Labels Parent.")]
     [SerializeField] private Transform m_proxyUiPageRoot;
 
     [Tooltip("Right column root to enable (e.g. AttributeUI).")]
@@ -583,12 +583,18 @@ public class UINavigator : MonoBehaviour
         if (IsNavigationLocked())
             return;
 
+        if (UsesVerticalAttributeUiGestures() && TryDismissAttributeUiFromUpSwipe())
+            return;
+
         SendMove(MoveDirection.Up, Vector2.up);
     }
 
     public void MoveDown()
     {
         if (IsNavigationLocked())
+            return;
+
+        if (UsesVerticalAttributeUiGestures() && TryShowAttributeUiFromLeftColumn())
             return;
 
         SendMove(MoveDirection.Down, Vector2.down);
@@ -599,7 +605,7 @@ public class UINavigator : MonoBehaviour
         if (IsNavigationLocked())
             return;
 
-        if (TryDismissAttributeUiFromLeftSwipe())
+        if (!UsesVerticalAttributeUiGestures() && TryDismissAttributeUiFromLeftSwipe())
             return;
 
         if (TrySwitchToPreviousProxySet())
@@ -612,7 +618,7 @@ public class UINavigator : MonoBehaviour
         if (IsNavigationLocked())
             return;
 
-        if (TryShowAttributeUiFromLeftColumn())
+        if (!UsesVerticalAttributeUiGestures() && TryShowAttributeUiFromLeftColumn())
             return;
 
         if (TrySwitchToNextProxySet())
@@ -1043,9 +1049,8 @@ public class UINavigator : MonoBehaviour
         }
         else
         {
-            var md = dir.y > 0 ? MoveDirection.Up : MoveDirection.Down;
-            var moveVector = dir.y > 0 ? Vector2.up : Vector2.down;
-            SendMove(md, moveVector);
+            if (dir.y > 0) MoveUp();
+            else MoveDown();
         }
     }
 
@@ -1217,8 +1222,8 @@ public class UINavigator : MonoBehaviour
     }
 
     /// <summary>
-    /// When selection is under the left column (e.g. ProxyUI) and AttributeUI is off, moving right enables AttributeUI
-    /// and optionally moves focus there. Runs before proxy-set switching so single-column grids still work.
+    /// When selection is under the left column (e.g. ProxyUI) and AttributeUI is off, the configured open gesture
+    /// enables AttributeUI and optionally moves focus there. Runs before proxy-set switching so single-column grids still work.
     /// Only when the user is on the ProxyUI page: top-level proxy list or an in-scope drill-down view (not e.g. SpatialHierarchy).
     /// </summary>
     bool TryShowAttributeUiFromLeftColumn()
@@ -1281,6 +1286,41 @@ public class UINavigator : MonoBehaviour
 
         var dismiss = m_attributeUiRoot.GetComponent<AttributeUiDismissOnLeftSwipe>();
         return dismiss != null && dismiss.TryHandleMoveLeft();
+    }
+
+    /// <summary>
+    /// Delegates to <see cref="AttributeUiDismissOnLeftSwipe"/> on <see cref="m_attributeUiRoot"/> for horizontal proxy rows
+    /// that open AttributeUI on downward moves.
+    /// </summary>
+    bool TryDismissAttributeUiFromUpSwipe()
+    {
+        if (m_attributeUiRoot == null)
+            return false;
+
+        var dismiss = m_attributeUiRoot.GetComponent<AttributeUiDismissOnLeftSwipe>();
+        return dismiss != null && dismiss.TryHandleMoveUp();
+    }
+
+    bool UsesVerticalAttributeUiGestures()
+    {
+        var proxyScroller = ResolveProxyUiScroller();
+        return proxyScroller != null && proxyScroller.UsesHorizontalScrollAxis;
+    }
+
+    ProxyLabelHorizonScroller ResolveProxyUiScroller()
+    {
+        if (m_leftColumnLabelsParent != null)
+        {
+            var scroller = m_leftColumnLabelsParent.GetComponent<ProxyLabelHorizonScroller>();
+            if (scroller == null)
+                scroller = m_leftColumnLabelsParent.GetComponentInParent<ProxyLabelHorizonScroller>(true);
+            if (scroller == null)
+                scroller = m_leftColumnLabelsParent.GetComponentInChildren<ProxyLabelHorizonScroller>(true);
+            if (scroller != null)
+                return scroller;
+        }
+
+        return m_proxyLabelHorizonScroller;
     }
 
     // ---------- Proxy set switching (grid with any fixed column count) ----------
