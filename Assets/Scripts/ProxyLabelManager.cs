@@ -538,6 +538,12 @@ public class ProxyLabelManager : MonoBehaviour
         if (target == null)
             return false;
 
+        // Layer/page switches should always reopen the authored full views.
+        // Otherwise a marker filter applied on ProxyUI can carry over to sibling pages
+        // like SpatialHierarchy and progressively hide everything.
+        if (m_visibleMarkerFilterEnabled || m_lastFilteredLabelsParent != null)
+            ClearVisibleLabelsFilter();
+
         RestoreAuthoredChildStates(target);
         target.gameObject.SetActive(true);
         m_runtimeActiveLabelsParentIndex = targetIndex;
