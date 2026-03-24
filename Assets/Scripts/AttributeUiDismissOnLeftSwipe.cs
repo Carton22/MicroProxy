@@ -52,6 +52,13 @@ public class AttributeUiDismissOnLeftSwipe : MonoBehaviour
         if (selected != gameObject && !selected.transform.IsChildOf(transform))
             return false;
 
+        var leftColumnFocusRoot = m_leftColumnLabelsParent != null
+            ? m_leftColumnLabelsParent
+            : m_leftLabelsParentForProxyManager;
+        var leftColumnTarget = FindFirstSelectableUnder(leftColumnFocusRoot);
+        if (leftColumnFocusRoot != null && leftColumnTarget == null)
+            return true;
+
         gameObject.SetActive(false);
 
         if (m_proxyLabelManager != null && m_leftLabelsParentForProxyManager != null)
@@ -72,11 +79,9 @@ public class AttributeUiDismissOnLeftSwipe : MonoBehaviour
                 scroller.ForceRefreshNow();
         }
 
-        if (m_selectFirstInLeftColumn && m_leftColumnLabelsParent != null)
+        if (m_selectFirstInLeftColumn && leftColumnTarget != null)
         {
-            var target = FindFirstSelectableUnder(m_leftColumnLabelsParent);
-            if (target != null)
-                Select(target);
+            Select(leftColumnTarget);
         }
 
         return true;
