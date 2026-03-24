@@ -310,6 +310,22 @@ public class ProxyLabelManager : MonoBehaviour
             ForceRefreshScrollerFor(activeParent);
     }
 
+    /// <summary>
+    /// Restores the authored active state for all descendants under the given labels parent.
+    /// Useful when returning from a drilled child view to a higher-level proxy root so the
+    /// full authored label set reappears instead of a previously narrowed subset.
+    /// </summary>
+    public void RestoreAuthoredLabelsParentState(Transform parent)
+    {
+        if (parent == null)
+            return;
+
+        CacheAuthoredChildStatesForParent(parent);
+        RestoreDirectChildrenVisibility(parent);
+        EnsureSelectionRemainsVisible(parent);
+        ForceRefreshScrollerFor(parent);
+    }
+
     public int GetLabelCount()
     {
         var parent = GetActiveLabelsParent();

@@ -281,7 +281,10 @@ public class ProxySetDrillDownController : MonoBehaviour, IPointerClickHandler, 
 
         var labelManager = ResolveOwningLabelManager();
         if (labelManager != null && m_levelRootToHideOnDrillDown != null)
+        {
             labelManager.SetActiveLabelsParent(m_levelRootToHideOnDrillDown.transform);
+            labelManager.RestoreAuthoredLabelsParentState(m_levelRootToHideOnDrillDown.transform);
+        }
 
         // Restore focus to the label node this controller is attached to.
         if (EventSystem.current != null && gameObject.activeInHierarchy)
