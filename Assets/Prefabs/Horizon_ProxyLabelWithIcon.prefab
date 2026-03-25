@@ -34,8 +34,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 0.00018692017, y: -27.8644}
-  m_SizeDelta: {x: 60.001, y: 39.6203}
+  m_AnchoredPosition: {x: -0.0000076294, y: -60.194}
+  m_SizeDelta: {x: 90, y: 29.61}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!23 &4089648699067922822
 MeshRenderer:
@@ -129,7 +129,7 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 150
+  m_fontSize: 149.65
   m_fontSizeBase: 135
   m_fontWeight: 400
   m_enableAutoSizing: 1
@@ -218,8 +218,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
-  m_AnchoredPosition: {x: 34.58069, y: -11.234985}
-  m_SizeDelta: {x: 60, y: 100}
+  m_AnchoredPosition: {x: 67.531555, y: -11.234985}
+  m_SizeDelta: {x: 90, y: 150}
   m_Pivot: {x: 1, y: 0}
 --- !u!222 &7484216084306982808
 CanvasRenderer:
@@ -350,7 +350,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 389cc743cfab6415a9ede12df018f518, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_markerIndices: 
+  m_markerIndices: 00000000
 --- !u!114 &9098699202892683956
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -376,7 +376,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 56549cdaaf4d81e4387b02698fd3daa0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  borderRadius: {x: 10, y: 10, z: 10, w: 10}
+  borderRadius: {x: 15, y: 15, z: 15, w: 15}
 --- !u!1 &7654639388842140000
 GameObject:
   m_ObjectHideFlags: 0
@@ -486,8 +486,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 0, y: 20}
-  m_SizeDelta: {x: 40, y: 50}
+  m_AnchoredPosition: {x: -0.7127, y: 12.286}
+  m_SizeDelta: {x: 71.8211, y: 115.3507}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &8123456789012345603
 CanvasRenderer:
@@ -539,7 +539,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 56549cdaaf4d81e4387b02698fd3daa0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  borderRadius: {x: 5, y: 5, z: 5, w: 5}
+  borderRadius: {x: 15, y: 15, z: 15, w: 15}
 --- !u!114 &8123456789012345606
 MonoBehaviour:
   m_ObjectHideFlags: 0

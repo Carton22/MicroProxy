@@ -50,7 +50,7 @@ public class ProxyLabelHorizonScroller : MonoBehaviour
     [SerializeField] private ScrollAxis m_scrollAxis = ScrollAxis.Vertical;
 
     [Header("Window")]
-    [Tooltip("How many rows stay in the wheel window at once. Five works well for the bookshelf proxy set.")]
+    [Tooltip("How many labels stay in the wheel window at once. Use an odd count so one item stays centered.")]
     [SerializeField] private int m_visibleRowCount = 5;
 
     [Tooltip("If true, the wheel follows the current selection.")]
@@ -115,14 +115,16 @@ public class ProxyLabelHorizonScroller : MonoBehaviour
     }
 
     /// <summary>
-    /// Configures a single-row ProxyUI grid as a horizontal wheel: five visible slots, selection
-    /// eased to the same center index, labels outside the window culled. Call after layout refs exist
-    /// (e.g. from <see cref="ProxyUIHorizontalScrollWheel"/> Reset) or assign viewport/content first.
+    /// Configures a single-row ProxyUI grid as a horizontal wheel while preserving the authored
+    /// visible window size. Call after layout refs exist (e.g. from
+    /// <see cref="ProxyUIHorizontalScrollWheel"/> Reset) or assign viewport/content first.
     /// </summary>
     public void ApplyProxyUIHorizontalPreset()
     {
         m_scrollAxis = ScrollAxis.Horizontal;
-        m_visibleRowCount = 5;
+        m_visibleRowCount = Mathf.Max(1, m_visibleRowCount);
+        if ((m_visibleRowCount & 1) == 0)
+            m_visibleRowCount += 1;
 
         m_centerSelectedLabel = true;
         m_clampToContentBounds = true;
@@ -643,6 +645,10 @@ public class ProxyLabelHorizonScroller : MonoBehaviour
         float scrollOffsetX = m_centerSelectedLabel ? m_focusAnchorX - focusColumnX : 0f;
         float halfWindow = (m_visibleRowCount - 1) * 0.5f;
         float softWindow = halfWindow + 0.85f;
+        int selectedPrimaryIndex = m_labelStates[selectedIndex].PrimaryIndex;
+        float visibilityWindowCenter = m_centerSelectedLabel
+            ? GetTargetWindowCenterIndex(selectedPrimaryIndex, totalColumns)
+            : selectedPrimaryIndex;
         bool needsCacheRefresh = false;
         for (int i = 0; i < m_labelStates.Count; i++)
         {
@@ -651,10 +657,9 @@ public class ProxyLabelHorizonScroller : MonoBehaviour
                 continue;
 
             int column = state.PrimaryIndex;
-            float columnDistance = column - m_smoothedWindowCenterRow;
-            float absColumnDistance = Mathf.Abs(columnDistance);
-            float bandT = EaseOutCubic(Mathf.InverseLerp(softWindow, 0f, absColumnDistance));
-            float focusT = EaseOutCubic(Mathf.InverseLerp(1.15f, 0f, absColumnDistance));
+            float absVisibilityDistance = Mathf.Abs(column - visibilityWindowCenter);
+            float bandT = EaseOutCubic(Mathf.InverseLerp(softWindow, 0f, absVisibilityDistance));
+            float focusT = EaseOutCubic(Mathf.InverseLerp(1.15f, 0f, absVisibilityDistance));
             bool isSelected = i == selectedIndex;
 
             float bendAmount = 1f - bandT;
@@ -676,10 +681,7 @@ public class ProxyLabelHorizonScroller : MonoBehaviour
 
             if (m_hideLabelsCompletelyOutsideWindow)
             {
-                float absColumnDeltaFromWindowCenter = Mathf.Abs(column - m_smoothedWindowCenterRow);
-                // Let the next label start fading in as soon as it enters the soft band instead of
-                // waiting for the smoothed center to finish most of the move.
-                if (absColumnDeltaFromWindowCenter > softWindow + 0.001f)
+                if (absVisibilityDistance > halfWindow + 0.001f)
                     targetAlpha = 0f;
             }
 
@@ -687,8 +689,9 @@ public class ProxyLabelHorizonScroller : MonoBehaviour
             state.Rect.localScale = Vector3.Lerp(state.Rect.localScale, state.AuthoredScale * targetScaleFactor, lerpFactor);
             float appliedAlpha = Mathf.Lerp(state.CanvasGroup.alpha, targetAlpha, lerpFactor);
             state.CanvasGroup.alpha = appliedAlpha;
-            bool shouldRender = targetAlpha > m_hardCullAlphaThreshold
-                && appliedAlpha > m_hardCullAlphaThreshold;
+            bool shouldRender = m_hideLabelsCompletelyOutsideWindow
+                ? absVisibilityDistance <= halfWindow + 0.001f
+                : targetAlpha > m_hardCullAlphaThreshold && appliedAlpha > m_hardCullAlphaThreshold;
 
             if (shouldRender && state.WereGraphicsHiddenLastFrame)
             {

@@ -53,6 +53,7 @@ public class UINavigator : MonoBehaviour
     private readonly Dictionary<Transform, int> m_attributeFilterSelections = new();
     private readonly List<Transform> m_attributeOptionRootsBuffer = new();
     private readonly List<int> m_conjunctiveMarkerWork = new();
+    private readonly HashSet<int> m_attributeOptionMarkerWork = new();
     private bool m_inAttributeTwistGesture;
     private Transform m_attributeGestureButtonRoot;
     private Transform m_attributeGestureOptionsRoot;
@@ -308,42 +309,20 @@ public class UINavigator : MonoBehaviour
             if (kvp.Value >= optionCount)
                 continue;
 
-            anyConstraint = true;
             var optionTransform = m_attributeOptionRootsBuffer[kvp.Value];
-            var binding = optionTransform != null ? optionTransform.GetComponent<LabelMarkerBinding>() : null;
-            var indices = binding != null ? binding.MarkerIndices : null;
+            m_attributeOptionMarkerWork.Clear();
+            if (!TryCollectMarkerIndices(optionTransform, m_attributeOptionMarkerWork))
+                continue;
 
-            if (indices == null || indices.Count == 0)
-            {
-                m_labelManager.SetVisibleLabelsForMarkerIndices(System.Array.Empty<int>(), emptyMeansHideAll: true);
-                return;
-            }
+            anyConstraint = true;
 
             if (intersection == null)
             {
-                intersection = new HashSet<int>();
-                for (int i = 0; i < indices.Count; i++)
-                {
-                    int m = indices[i];
-                    if (m >= 0)
-                        intersection.Add(m);
-                }
+                intersection = new HashSet<int>(m_attributeOptionMarkerWork);
             }
             else
             {
-                var narrowed = new HashSet<int>();
-                foreach (var marker in intersection)
-                {
-                    for (int i = 0; i < indices.Count; i++)
-                    {
-                        if (indices[i] != marker)
-                            continue;
-                        narrowed.Add(marker);
-                        break;
-                    }
-                }
-
-                intersection = narrowed;
+                intersection.IntersectWith(m_attributeOptionMarkerWork);
             }
         }
 
@@ -364,6 +343,34 @@ public class UINavigator : MonoBehaviour
         m_labelManager.SetVisibleLabelsForMarkerIndices(
             m_conjunctiveMarkerWork,
             emptyMeansHideAll: emptyIntersection);
+    }
+
+    private static bool TryCollectMarkerIndices(Transform root, HashSet<int> destination)
+    {
+        if (root == null || destination == null)
+            return false;
+
+        bool foundAny = false;
+        var bindings = root.GetComponentsInChildren<LabelMarkerBinding>(true);
+        for (int i = 0; i < bindings.Length; i++)
+        {
+            var binding = bindings[i];
+            var indices = binding != null ? binding.MarkerIndices : null;
+            if (indices == null)
+                continue;
+
+            for (int j = 0; j < indices.Count; j++)
+            {
+                int markerIndex = indices[j];
+                if (markerIndex < 0)
+                    continue;
+
+                destination.Add(markerIndex);
+                foundAny = true;
+            }
+        }
+
+        return foundAny;
     }
 
     private Transform ResolveAttributeNamesParent()
