@@ -34,8 +34,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 0.00018692017, y: -18.4}
-  m_SizeDelta: {x: 60.001, y: 40.8}
+  m_AnchoredPosition: {x: 0.00018692017, y: -27.8644}
+  m_SizeDelta: {x: 60.001, y: 39.6203}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!23 &4089648699067922822
 MeshRenderer:
@@ -486,8 +486,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 0, y: 25}
-  m_SizeDelta: {x: 35, y: 35}
+  m_AnchoredPosition: {x: 0, y: 20}
+  m_SizeDelta: {x: 40, y: 50}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &8123456789012345603
 CanvasRenderer:
@@ -539,7 +539,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 56549cdaaf4d81e4387b02698fd3daa0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  borderRadius: {x: 20, y: 20, z: 20, w: 20}
+  borderRadius: {x: 5, y: 5, z: 5, w: 5}
 --- !u!114 &8123456789012345606
 MonoBehaviour:
   m_ObjectHideFlags: 0

@@ -2126,7 +2126,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_proxySetsRoot: {fileID: 269540402}
   m_AlignRect: {fileID: 2005732375}
-  m_proxySetsX: 0.42
+  m_proxySetsX: 0.55
   m_verticalOffset: 0
   m_keepAlignedContinuously: 1
   m_startupRefreshFrames: 6

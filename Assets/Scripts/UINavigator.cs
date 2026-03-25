@@ -1275,6 +1275,13 @@ public class UINavigator : MonoBehaviour
         if (m_attributeUiRoot.activeSelf)
             return false;
 
+        var dismiss = ResolveAttributeUiDismissOnSwipe();
+        if (dismiss != null)
+        {
+            var activeProxyParent = m_labelManager != null ? m_labelManager.GetActiveLabelsParent() : m_leftColumnLabelsParent;
+            dismiss.RememberLeftColumnSelection(selected, activeProxyParent);
+        }
+
         m_attributeUiRoot.SetActive(true);
 
         if (m_labelManager != null && m_attributeLabelsParentForManager != null)
@@ -1308,28 +1315,30 @@ public class UINavigator : MonoBehaviour
     }
 
     /// <summary>
-    /// Delegates to <see cref="AttributeUiDismissOnLeftSwipe"/> on <see cref="m_attributeUiRoot"/> when assigned.
+    /// Delegates to <see cref="AttributeUiDismissOnSwipe"/> on <see cref="m_attributeUiRoot"/> when assigned.
     /// </summary>
     bool TryDismissAttributeUiFromLeftSwipe()
     {
-        if (m_attributeUiRoot == null)
-            return false;
-
-        var dismiss = m_attributeUiRoot.GetComponent<AttributeUiDismissOnLeftSwipe>();
-        return dismiss != null && dismiss.TryHandleMoveLeft();
+        var dismiss = ResolveAttributeUiDismissOnSwipe();
+        return dismiss != null && dismiss.TryHandleDismissGesture();
     }
 
     /// <summary>
-    /// Delegates to <see cref="AttributeUiDismissOnLeftSwipe"/> on <see cref="m_attributeUiRoot"/> for horizontal proxy rows
+    /// Delegates to <see cref="AttributeUiDismissOnSwipe"/> on <see cref="m_attributeUiRoot"/> for horizontal proxy rows
     /// that open AttributeUI on downward moves.
     /// </summary>
     bool TryDismissAttributeUiFromUpSwipe()
     {
-        if (m_attributeUiRoot == null)
-            return false;
+        var dismiss = ResolveAttributeUiDismissOnSwipe();
+        return dismiss != null && dismiss.TryHandleDismissGesture();
+    }
 
-        var dismiss = m_attributeUiRoot.GetComponent<AttributeUiDismissOnLeftSwipe>();
-        return dismiss != null && dismiss.TryHandleMoveUp();
+    AttributeUiDismissOnSwipe ResolveAttributeUiDismissOnSwipe()
+    {
+        if (m_attributeUiRoot == null)
+            return null;
+
+        return m_attributeUiRoot.GetComponent<AttributeUiDismissOnSwipe>();
     }
 
     bool UsesVerticalAttributeUiGestures()
