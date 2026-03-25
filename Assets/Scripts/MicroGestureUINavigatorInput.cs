@@ -19,6 +19,8 @@ public class MicroGestureUINavigatorInput : MonoBehaviour
         {
             if(Input.GetKeyDown(KeyCode.U))
             {
+                if (ProxySetDrillDownController.TryHandleSwipeUpReturnToParent())
+                    return;
                 uiNavigator.MoveUp();
             }
             if (Input.GetKeyDown(KeyCode.H))
@@ -31,6 +33,8 @@ public class MicroGestureUINavigatorInput : MonoBehaviour
             }
             if (Input.GetKeyDown(KeyCode.J))
             {
+                if (ProxySetDrillDownController.TryHandleSwipeDownDrillDown())
+                    return;
                 uiNavigator.MoveDown();
             }
             if (Input.GetKeyDown(KeyCode.Space))
@@ -62,10 +66,14 @@ public class MicroGestureUINavigatorInput : MonoBehaviour
         }
         else if (gesture == OVRHand.MicrogestureType.SwipeForward)
         {
+            if (ProxySetDrillDownController.TryHandleSwipeUpReturnToParent())
+                return;
             uiNavigator.MoveUp();
         }
         else if (gesture == OVRHand.MicrogestureType.SwipeBackward)
         {
+            if (ProxySetDrillDownController.TryHandleSwipeDownDrillDown())
+                return;
             uiNavigator.MoveDown();
         }
         else if (gesture == OVRHand.MicrogestureType.ThumbTap)

@@ -92,4 +92,3 @@ public class ProxyLabelStatus : MonoBehaviour, IPointerClickHandler, ISubmitHand
         }
     }
 }
-

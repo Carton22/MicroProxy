@@ -19,6 +19,7 @@ public class RightHandDoubleTapGroupOwnershipStandalone : MonoBehaviour
     [SerializeField] private OVRHand m_rightHand;
     [SerializeField] private ProxyLabelManager m_labelManager;
     [SerializeField] private SocketManager m_socketManager;
+    [SerializeField] private Transform m_proxyLabelsRoot;
 
     [Header("Pinch settings")]
     [Range(0f, 1f)]
@@ -129,6 +130,8 @@ public class RightHandDoubleTapGroupOwnershipStandalone : MonoBehaviour
             m_labelManager = FindFirstObjectByType<ProxyLabelManager>();
         if (m_socketManager == null)
             m_socketManager = FindFirstObjectByType<SocketManager>();
+        if (m_proxyLabelsRoot == null)
+            m_proxyLabelsRoot = FindProxyLabelsRoot();
     }
 
     private void OnGestureSignal(string gestureType)
@@ -153,7 +156,12 @@ public class RightHandDoubleTapGroupOwnershipStandalone : MonoBehaviour
 
     private bool GroupByHardcodedOwnership()
     {
-        var activeParent = m_labelManager != null ? m_labelManager.GetActiveLabelsParent() : null;
+        if (m_labelManager == null)
+            return false;
+
+        ShowAllProxyLabels();
+
+        var activeParent = m_labelManager.GetActiveLabelsParent();
         if (activeParent == null || activeParent.childCount == 0)
             return false;
 
@@ -203,6 +211,17 @@ public class RightHandDoubleTapGroupOwnershipStandalone : MonoBehaviour
         m_lastGroupedParent = activeParent;
         m_isGrouped = true;
         return true;
+    }
+
+    private void ShowAllProxyLabels()
+    {
+        if (m_labelManager == null)
+            return;
+
+        m_labelManager.ClearVisibleLabelsFilter();
+
+        if (m_proxyLabelsRoot != null)
+            m_labelManager.SetActiveLabelsParent(m_proxyLabelsRoot);
     }
 
     private void CacheInitialOrder(Transform activeParent)
@@ -304,6 +323,31 @@ public class RightHandDoubleTapGroupOwnershipStandalone : MonoBehaviour
 
         if (scroller != null)
             scroller.ForceRefreshNow();
+    }
+
+    private Transform FindProxyLabelsRoot()
+    {
+        if (m_labelManager != null)
+        {
+            var activeParent = m_labelManager.GetActiveLabelsParent();
+            if (activeParent != null && activeParent.name.IndexOf("proxyui", System.StringComparison.OrdinalIgnoreCase) >= 0)
+                return activeParent;
+        }
+
+        var allTransforms = FindObjectsByType<Transform>(FindObjectsInactive.Include, FindObjectsSortMode.None);
+        for (int i = 0; i < allTransforms.Length; i++)
+        {
+            var candidate = allTransforms[i];
+            if (candidate == null || candidate.name.IndexOf("proxyui", System.StringComparison.OrdinalIgnoreCase) < 0)
+                continue;
+
+            if (m_labelManager != null && !m_labelManager.ContainsLabelsParent(candidate))
+                continue;
+
+            return candidate;
+        }
+
+        return null;
     }
 
     private void Log(string message)

@@ -65,6 +65,8 @@ public class RemoteGestureUINavigatorInput : MonoBehaviour
             case "swipeforward":
             case "swipeforwardup":
             case "swipeup":
+                if (ProxySetDrillDownController.TryHandleSwipeUpReturnToParent())
+                    break;
                 m_uiNavigator.MoveUp();
                 break;
 
@@ -73,6 +75,8 @@ public class RemoteGestureUINavigatorInput : MonoBehaviour
             case "swipebackward":
             case "swipeback":
             case "swipedown":
+                if (ProxySetDrillDownController.TryHandleSwipeDownDrillDown())
+                    break;
                 m_uiNavigator.MoveDown();
                 break;
 
@@ -131,4 +135,3 @@ public class RemoteGestureUINavigatorInput : MonoBehaviour
         }
     }
 }
-

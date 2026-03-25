@@ -126,6 +126,34 @@ public class ProxySetDrillDownController : MonoBehaviour, IPointerClickHandler, 
         return false;
     }
 
+    public static bool TryHandleSwipeDownDrillDown()
+    {
+        if (!TryGetSelectedDrillDownController(out var selectedController) || selectedController == null)
+            return false;
+
+        selectedController.HandlePress();
+        return true;
+    }
+
+    public static bool TryHandleSwipeUpReturnToParent()
+    {
+        if (!IsAnyDrillDownChildViewActive)
+            return false;
+
+        var controllers = FindObjectsByType<ProxySetDrillDownController>(FindObjectsInactive.Include, FindObjectsSortMode.None);
+        for (int i = 0; i < controllers.Length; i++)
+        {
+            var controller = controllers[i];
+            if (controller == null || !controller.IsInChildView())
+                continue;
+
+            controller.ReturnToParentView();
+            return true;
+        }
+
+        return false;
+    }
+
     public void OnPointerClick(PointerEventData eventData) => HandlePress();
 
     public void OnSubmit(BaseEventData eventData) => HandlePress();

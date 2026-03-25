@@ -2879,6 +2879,7 @@ MonoBehaviour:
   m_rightHand: {fileID: 1924298972}
   m_labelManager: {fileID: 1272610422}
   m_socketManager: {fileID: 622173651}
+  m_proxyLabelsRoot: {fileID: 191618245}
   m_pinchStrengthThreshold: 0.7
   m_doubleTapMaxIntervalSeconds: 0.4
   m_debugLog: 0
