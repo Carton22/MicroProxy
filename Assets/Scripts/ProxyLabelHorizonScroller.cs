@@ -87,6 +87,7 @@ public class ProxyLabelHorizonScroller : MonoBehaviour
     private bool m_hasInitializedWindowCenter;
     private int m_startupRefreshFramesRemaining;
     private bool m_gridLayoutDisabledForHorizontalWheel;
+    private int m_lastKnownSelectedIndex = -1;
 
     private void Reset()
     {
@@ -173,6 +174,7 @@ public class ProxyLabelHorizonScroller : MonoBehaviour
         m_hasInitializedWindowCenter = false;
         m_windowCenterVelocity = 0f;
         m_startupRefreshFramesRemaining = 0;
+        m_lastKnownSelectedIndex = -1;
     }
 
     private void LateUpdate()
@@ -194,8 +196,14 @@ public class ProxyLabelHorizonScroller : MonoBehaviour
         }
 
         int selectedIndex = FindSelectedIndex();
-        if (selectedIndex < 0)
+        if (selectedIndex >= 0)
+        {
+            m_lastKnownSelectedIndex = selectedIndex;
+        }
+        else
+        {
             selectedIndex = Mathf.Clamp(GetFallbackSelectedIndex(), 0, m_labelStates.Count - 1);
+        }
 
         int totalPrimaryCount = m_primaryAnchoredPositions.Count;
         if (totalPrimaryCount <= 0)
@@ -457,8 +465,14 @@ public class ProxyLabelHorizonScroller : MonoBehaviour
             return;
 
         int selectedIndex = FindSelectedIndex();
-        if (selectedIndex < 0)
+        if (selectedIndex >= 0)
+        {
+            m_lastKnownSelectedIndex = selectedIndex;
+        }
+        else
+        {
             selectedIndex = Mathf.Clamp(GetFallbackSelectedIndex(), 0, m_labelStates.Count - 1);
+        }
 
         int totalPrimaryCount = m_primaryAnchoredPositions.Count;
         if (totalPrimaryCount <= 0)
@@ -663,7 +677,9 @@ public class ProxyLabelHorizonScroller : MonoBehaviour
             if (m_hideLabelsCompletelyOutsideWindow)
             {
                 float absColumnDeltaFromWindowCenter = Mathf.Abs(column - m_smoothedWindowCenterRow);
-                if (absColumnDeltaFromWindowCenter > halfWindow + 0.001f)
+                // Let the next label start fading in as soon as it enters the soft band instead of
+                // waiting for the smoothed center to finish most of the move.
+                if (absColumnDeltaFromWindowCenter > softWindow + 0.001f)
                     targetAlpha = 0f;
             }
 
@@ -831,6 +847,9 @@ public class ProxyLabelHorizonScroller : MonoBehaviour
                     return managerIndex;
             }
         }
+
+        if (m_lastKnownSelectedIndex >= 0)
+            return m_lastKnownSelectedIndex;
 
         return 0;
     }
