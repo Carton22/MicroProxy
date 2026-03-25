@@ -453,6 +453,7 @@ MonoBehaviour:
   m_manualFixedDollars: 29
   m_currencyPrefix: $
   m_priceVisibleColor: {r: 1, g: 0, b: 0, a: 0.84}
+  m_colorOnlyToggle: 0
   m_ignoreSecondClickOfDoubleTap: 1
 --- !u!1 &46876037
 GameObject:
@@ -928,6 +929,7 @@ MonoBehaviour:
   m_manualFixedDollars: 20
   m_currencyPrefix: $
   m_priceVisibleColor: {r: 1, g: 0, b: 0, a: 0.84}
+  m_colorOnlyToggle: 0
   m_ignoreSecondClickOfDoubleTap: 1
 --- !u!1 &85318076
 GameObject:
@@ -1314,6 +1316,7 @@ MonoBehaviour:
   m_manualFixedDollars: 15
   m_currencyPrefix: $
   m_priceVisibleColor: {r: 1, g: 0, b: 0, a: 0.84}
+  m_colorOnlyToggle: 0
   m_ignoreSecondClickOfDoubleTap: 1
 --- !u!1001 &187488684
 PrefabInstance:
@@ -1668,6 +1671,7 @@ MonoBehaviour:
   m_manualFixedDollars: 15
   m_currencyPrefix: $
   m_priceVisibleColor: {r: 1, g: 0, b: 0, a: 0.84}
+  m_colorOnlyToggle: 0
   m_ignoreSecondClickOfDoubleTap: 1
 --- !u!1001 &224674829
 PrefabInstance:
@@ -2054,6 +2058,7 @@ MonoBehaviour:
   m_manualFixedDollars: 15
   m_currencyPrefix: $
   m_priceVisibleColor: {r: 1, g: 0, b: 0, a: 0.84}
+  m_colorOnlyToggle: 0
   m_ignoreSecondClickOfDoubleTap: 1
 --- !u!1 &256469435
 GameObject:
@@ -2390,6 +2395,7 @@ MonoBehaviour:
   m_manualFixedDollars: 25
   m_currencyPrefix: $
   m_priceVisibleColor: {r: 1, g: 0, b: 0, a: 0.84}
+  m_colorOnlyToggle: 0
   m_ignoreSecondClickOfDoubleTap: 1
 --- !u!1 &318768596
 GameObject:
@@ -3110,6 +3116,7 @@ MonoBehaviour:
   m_manualFixedDollars: 17
   m_currencyPrefix: $
   m_priceVisibleColor: {r: 1, g: 0, b: 0, a: 0.84}
+  m_colorOnlyToggle: 0
   m_ignoreSecondClickOfDoubleTap: 1
 --- !u!1001 &404176645
 PrefabInstance:
@@ -3230,6 +3237,7 @@ MonoBehaviour:
   m_attributeLabelsParentForManager: {fileID: 0}
   m_selectFirstSelectableInAttributeUi: 1
   m_allowProxySetSwitching: 1
+  m_useVerticalSwipeForProxySetSwitching: 0
   m_proxyLabelHorizonScroller: {fileID: 0}
   m_attributeUiInactiveByDefault: 1
   m_attributeTwistEventSource: {fileID: 0}
@@ -3823,7 +3831,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0a6d786e0476f43e198a156a1fc16135, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  ipAddress: 10.0.225.210
+  ipAddress: 10.131.93.214
   port: 3000
   logRawMessages: 1
 --- !u!4 &622173652
@@ -4734,6 +4742,7 @@ MonoBehaviour:
   m_manualFixedDollars: 30
   m_currencyPrefix: $
   m_priceVisibleColor: {r: 1, g: 0, b: 0, a: 0.84}
+  m_colorOnlyToggle: 0
   m_ignoreSecondClickOfDoubleTap: 1
 --- !u!1 &808026424
 GameObject:
@@ -5179,6 +5188,7 @@ MonoBehaviour:
   m_manualFixedDollars: 7
   m_currencyPrefix: $
   m_priceVisibleColor: {r: 1, g: 0, b: 0, a: 0.84}
+  m_colorOnlyToggle: 0
   m_ignoreSecondClickOfDoubleTap: 1
 --- !u!1001 &843084429
 PrefabInstance:
@@ -5420,6 +5430,7 @@ MonoBehaviour:
   m_manualFixedDollars: 15
   m_currencyPrefix: $
   m_priceVisibleColor: {r: 1, g: 0, b: 0, a: 0.84}
+  m_colorOnlyToggle: 0
   m_ignoreSecondClickOfDoubleTap: 1
 --- !u!1 &875434744
 GameObject:
@@ -6794,6 +6805,7 @@ MonoBehaviour:
   m_manualFixedDollars: 25
   m_currencyPrefix: $
   m_priceVisibleColor: {r: 1, g: 0, b: 0, a: 0.84}
+  m_colorOnlyToggle: 0
   m_ignoreSecondClickOfDoubleTap: 1
 --- !u!1001 &1153696507
 PrefabInstance:
@@ -7249,6 +7261,7 @@ MonoBehaviour:
   m_manualFixedDollars: 40
   m_currencyPrefix: $
   m_priceVisibleColor: {r: 1, g: 0, b: 0, a: 0.84}
+  m_colorOnlyToggle: 0
   m_ignoreSecondClickOfDoubleTap: 1
 --- !u!1 &1272610420
 GameObject:
@@ -7783,6 +7796,7 @@ MonoBehaviour:
   m_manualFixedDollars: 12
   m_currencyPrefix: $
   m_priceVisibleColor: {r: 1, g: 0, b: 0, a: 0.84}
+  m_colorOnlyToggle: 0
   m_ignoreSecondClickOfDoubleTap: 1
 --- !u!1001 &1361663859
 PrefabInstance:
@@ -8326,6 +8340,7 @@ MonoBehaviour:
   m_manualFixedDollars: 26
   m_currencyPrefix: $
   m_priceVisibleColor: {r: 1, g: 0, b: 0, a: 0.84}
+  m_colorOnlyToggle: 0
   m_ignoreSecondClickOfDoubleTap: 1
 --- !u!1 &1426555706
 GameObject:
@@ -8599,6 +8614,7 @@ MonoBehaviour:
   m_manualFixedDollars: 14
   m_currencyPrefix: $
   m_priceVisibleColor: {r: 1, g: 0, b: 0, a: 0.84}
+  m_colorOnlyToggle: 0
   m_ignoreSecondClickOfDoubleTap: 1
 --- !u!1001 &1454868534
 PrefabInstance:
@@ -8743,6 +8759,7 @@ MonoBehaviour:
   m_manualFixedDollars: 25
   m_currencyPrefix: $
   m_priceVisibleColor: {r: 1, g: 0, b: 0, a: 0.84}
+  m_colorOnlyToggle: 0
   m_ignoreSecondClickOfDoubleTap: 1
 --- !u!1 &1455364593
 GameObject:
@@ -9707,6 +9724,7 @@ MonoBehaviour:
   m_manualFixedDollars: 26
   m_currencyPrefix: $
   m_priceVisibleColor: {r: 1, g: 0, b: 0, a: 0.84}
+  m_colorOnlyToggle: 0
   m_ignoreSecondClickOfDoubleTap: 1
 --- !u!1001 &1625817093
 PrefabInstance:
@@ -10640,6 +10658,7 @@ MonoBehaviour:
   m_manualFixedDollars: 15
   m_currencyPrefix: $
   m_priceVisibleColor: {r: 1, g: 0, b: 0, a: 0.84}
+  m_colorOnlyToggle: 0
   m_ignoreSecondClickOfDoubleTap: 1
 --- !u!1 &1744462752
 GameObject:
@@ -11048,6 +11067,7 @@ MonoBehaviour:
   m_manualFixedDollars: 5
   m_currencyPrefix: $
   m_priceVisibleColor: {r: 1, g: 0, b: 0, a: 0.84}
+  m_colorOnlyToggle: 0
   m_ignoreSecondClickOfDoubleTap: 1
 --- !u!1001 &1818264946
 PrefabInstance:
@@ -11742,6 +11762,7 @@ MonoBehaviour:
   m_manualFixedDollars: 12
   m_currencyPrefix: $
   m_priceVisibleColor: {r: 1, g: 0, b: 0, a: 0.84}
+  m_colorOnlyToggle: 0
   m_ignoreSecondClickOfDoubleTap: 1
 --- !u!1001 &1888823151
 PrefabInstance:
@@ -12147,6 +12168,7 @@ MonoBehaviour:
   m_manualFixedDollars: 19
   m_currencyPrefix: $
   m_priceVisibleColor: {r: 1, g: 0, b: 0, a: 0.84}
+  m_colorOnlyToggle: 0
   m_ignoreSecondClickOfDoubleTap: 1
 --- !u!1001 &1909366938
 PrefabInstance:
@@ -12291,6 +12313,7 @@ MonoBehaviour:
   m_manualFixedDollars: 35
   m_currencyPrefix: $
   m_priceVisibleColor: {r: 1, g: 0, b: 0, a: 0.84}
+  m_colorOnlyToggle: 0
   m_ignoreSecondClickOfDoubleTap: 1
 --- !u!1 &1924298965
 GameObject:
@@ -12931,6 +12954,7 @@ MonoBehaviour:
   m_manualFixedDollars: 24
   m_currencyPrefix: $
   m_priceVisibleColor: {r: 1, g: 0, b: 0, a: 0.84}
+  m_colorOnlyToggle: 0
   m_ignoreSecondClickOfDoubleTap: 1
 --- !u!1 &1970356046
 GameObject:
@@ -13742,6 +13766,7 @@ MonoBehaviour:
   m_manualFixedDollars: 13
   m_currencyPrefix: $
   m_priceVisibleColor: {r: 1, g: 0, b: 0, a: 0.84}
+  m_colorOnlyToggle: 0
   m_ignoreSecondClickOfDoubleTap: 1
 --- !u!1001 &2112897288
 PrefabInstance:
@@ -13886,6 +13911,7 @@ MonoBehaviour:
   m_manualFixedDollars: 13
   m_currencyPrefix: $
   m_priceVisibleColor: {r: 1, g: 0, b: 0, a: 0.84}
+  m_colorOnlyToggle: 0
   m_ignoreSecondClickOfDoubleTap: 1
 --- !u!1 &2145431613
 GameObject:

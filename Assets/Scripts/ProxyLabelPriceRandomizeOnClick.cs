@@ -25,6 +25,8 @@ public class ProxyLabelPriceRandomizeOnClick : MonoBehaviour, IPointerClickHandl
 
     [SerializeField] private string m_currencyPrefix = "$";
     [SerializeField] private Color m_priceVisibleColor = new Color(1f, 0f, 0f, 0.84f);
+    [Tooltip("If true, tapping only toggles the visual selected color and does not rewrite the label text.")]
+    [SerializeField] private bool m_colorOnlyToggle;
 
     [Tooltip("If true, ignore the second click of a double-click (pointer path only).")]
     [SerializeField] private bool m_ignoreSecondClickOfDoubleTap = true;
@@ -141,7 +143,7 @@ public class ProxyLabelPriceRandomizeOnClick : MonoBehaviour, IPointerClickHandl
     private void TryApplyRandomPrice()
     {
         EnsureLabelText();
-        if (m_text == null)
+        if (m_text == null && !m_colorOnlyToggle)
             return;
 
         if (!m_hasAssignedPrice)
@@ -160,8 +162,12 @@ public class ProxyLabelPriceRandomizeOnClick : MonoBehaviour, IPointerClickHandl
         }
 
         if (string.IsNullOrEmpty(m_cachedBaseLabel))
-            m_cachedBaseLabel = ResolveBaseLabel(m_text.text);
+            m_cachedBaseLabel = m_text != null ? ResolveBaseLabel(m_text.text) : "item";
         SetPriceVisible(!m_priceVisible);
+
+        if (m_colorOnlyToggle)
+            return;
+
         m_text.text = m_priceVisible
             ? $"{m_cachedBaseLabel}: {m_currencyPrefix}{m_assignedDollars}"
             : m_cachedBaseLabel;
