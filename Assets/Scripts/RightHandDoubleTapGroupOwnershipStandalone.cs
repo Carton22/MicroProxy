@@ -9,9 +9,16 @@ using UnityEngine.EventSystems;
 /// </summary>
 public class RightHandDoubleTapGroupOwnershipStandalone : MonoBehaviour
 {
+    private struct ChildOrderRecord
+    {
+        public Transform Child;
+        public int SiblingIndex;
+    }
+
     [Header("Scene references")]
     [SerializeField] private OVRHand m_rightHand;
     [SerializeField] private ProxyLabelManager m_labelManager;
+    [SerializeField] private SocketManager m_socketManager;
 
     [Header("Pinch settings")]
     [Range(0f, 1f)]
@@ -40,10 +47,27 @@ public class RightHandDoubleTapGroupOwnershipStandalone : MonoBehaviour
 
     private bool m_isPinching;
     private float m_lastTapTime = -1f;
+    private Transform m_lastGroupedParent;
+    private bool m_isGrouped;
+    private readonly List<ChildOrderRecord> m_initialOrderBuffer = new();
 
     private void Awake()
     {
         ResolveReferences();
+    }
+
+    private void OnEnable()
+    {
+        ResolveReferences();
+
+        if (m_socketManager != null)
+            m_socketManager.OnGestureSignalReceived += OnGestureSignal;
+    }
+
+    private void OnDisable()
+    {
+        if (m_socketManager != null)
+            m_socketManager.OnGestureSignalReceived -= OnGestureSignal;
     }
 
     private void Reset()
@@ -103,6 +127,28 @@ public class RightHandDoubleTapGroupOwnershipStandalone : MonoBehaviour
 
         if (m_labelManager == null)
             m_labelManager = FindFirstObjectByType<ProxyLabelManager>();
+        if (m_socketManager == null)
+            m_socketManager = FindFirstObjectByType<SocketManager>();
+    }
+
+    private void OnGestureSignal(string gestureType)
+    {
+        if (string.IsNullOrWhiteSpace(gestureType))
+            return;
+
+        string normalized = gestureType.ToLowerInvariant();
+        if (normalized != "double_tap" && normalized != "doubletap" && normalized != "taptap")
+            return;
+
+        RemoteDoubleTap();
+    }
+
+    public void RemoteDoubleTap()
+    {
+        bool grouped = GroupByHardcodedOwnership();
+        Log(grouped
+            ? "[RightHandDoubleTapGroupOwnershipStandalone] remote double tap handled."
+            : "[RightHandDoubleTapGroupOwnershipStandalone] remote double tap failed.");
     }
 
     private bool GroupByHardcodedOwnership()
@@ -110,6 +156,11 @@ public class RightHandDoubleTapGroupOwnershipStandalone : MonoBehaviour
         var activeParent = m_labelManager != null ? m_labelManager.GetActiveLabelsParent() : null;
         if (activeParent == null || activeParent.childCount == 0)
             return false;
+
+        if (m_isGrouped && activeParent == m_lastGroupedParent)
+            return RestoreInitialOrder(activeParent);
+
+        CacheInitialOrder(activeParent);
 
         var grouped = new List<Transform>(activeParent.childCount);
         var used = new HashSet<Transform>();
@@ -149,6 +200,49 @@ public class RightHandDoubleTapGroupOwnershipStandalone : MonoBehaviour
 
         PreserveSelectionOrSelectFirst(activeParent);
         RefreshScroller(activeParent);
+        m_lastGroupedParent = activeParent;
+        m_isGrouped = true;
+        return true;
+    }
+
+    private void CacheInitialOrder(Transform activeParent)
+    {
+        m_initialOrderBuffer.Clear();
+
+        if (activeParent == null)
+            return;
+
+        for (int i = 0; i < activeParent.childCount; i++)
+        {
+            var child = activeParent.GetChild(i);
+            if (child == null)
+                continue;
+
+            m_initialOrderBuffer.Add(new ChildOrderRecord
+            {
+                Child = child,
+                SiblingIndex = i
+            });
+        }
+    }
+
+    private bool RestoreInitialOrder(Transform activeParent)
+    {
+        if (activeParent == null || m_initialOrderBuffer.Count == 0)
+            return false;
+
+        for (int i = 0; i < m_initialOrderBuffer.Count; i++)
+        {
+            var record = m_initialOrderBuffer[i];
+            if (record.Child == null || record.Child.parent != activeParent)
+                continue;
+
+            record.Child.SetSiblingIndex(record.SiblingIndex);
+        }
+
+        PreserveSelectionOrSelectFirst(activeParent);
+        RefreshScroller(activeParent);
+        m_isGrouped = false;
         return true;
     }
 
