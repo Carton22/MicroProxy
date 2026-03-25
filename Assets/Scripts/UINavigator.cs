@@ -312,7 +312,14 @@ public class UINavigator : MonoBehaviour
             var optionTransform = m_attributeOptionRootsBuffer[kvp.Value];
             m_attributeOptionMarkerWork.Clear();
             if (!TryCollectMarkerIndices(optionTransform, m_attributeOptionMarkerWork))
-                continue;
+            {
+                anyConstraint = true;
+                if (intersection == null)
+                    intersection = new HashSet<int>();
+                else
+                    intersection.Clear();
+                break;
+            }
 
             anyConstraint = true;
 
