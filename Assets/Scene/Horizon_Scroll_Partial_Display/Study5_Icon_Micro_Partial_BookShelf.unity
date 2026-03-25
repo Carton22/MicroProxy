@@ -373,6 +373,7 @@ MonoBehaviour:
   m_useManualFixedValue: 1
   m_manualFixedDollars: 14
   m_currencyPrefix: $
+  m_priceVisibleColor: {r: 1, g: 0, b: 0, a: 0.84}
   m_ignoreSecondClickOfDoubleTap: 1
 --- !u!1 &46876037
 GameObject:
@@ -1382,6 +1383,7 @@ GameObject:
   - component: {fileID: 243943088}
   - component: {fileID: 243943087}
   - component: {fileID: 243943086}
+  - component: {fileID: 243943091}
   - component: {fileID: 243943090}
   m_Layer: 0
   m_Name: ProxyUI
@@ -1431,7 +1433,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
-  m_AnchoredPosition: {x: 0.25, y: -0.3}
+  m_AnchoredPosition: {x: 0.55, y: -0.3}
   m_SizeDelta: {x: 600, y: 600}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &243943086
@@ -1530,11 +1532,24 @@ MonoBehaviour:
   m_GameObject: {fileID: 243943084}
   m_Enabled: 1
   m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bfd3e8a21c5f4d0e9a7b2c1d4e5f6789, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_scroller: {fileID: 243943091}
+--- !u!114 &243943091
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 243943084}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 1382c1e499c6f4bae9ea89e2e0570cc8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   m_labelManager: {fileID: 1272610422}
-  m_viewport: {fileID: 0}
+  m_viewport: {fileID: 243943085}
   m_content: {fileID: 243943085}
   m_gridLayout: {fileID: 243943086}
   m_scrollAxis: 1
@@ -1571,6 +1586,7 @@ GameObject:
   - component: {fileID: 251487949}
   - component: {fileID: 251487948}
   - component: {fileID: 251487952}
+  - component: {fileID: 251487953}
   m_Layer: 0
   m_Name: LeftMicroGesture
   m_TagString: Untagged
@@ -1801,7 +1817,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 251487946}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 51b70d7d5433a4f18989fb4aecd24ac9, type: 3}
   m_Name: 
@@ -1814,7 +1830,8 @@ MonoBehaviour:
   m_attributeUiRoot: {fileID: 278672497}
   m_attributeLabelsParentForManager: {fileID: 0}
   m_selectFirstSelectableInAttributeUi: 1
-  m_proxyLabelHorizonScroller: {fileID: 243943090}
+  m_allowProxySetSwitching: 0
+  m_proxyLabelHorizonScroller: {fileID: 0}
   m_attributeUiInactiveByDefault: 1
   m_attributeTwistEventSource: {fileID: 0}
   m_attributeNamesParent: {fileID: 0}
@@ -1835,6 +1852,21 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   microGesture: {fileID: 251487950}
   debugKeyboardInput: 1
+--- !u!114 &251487953
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 251487946}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 151400e9d41db44b0b1201fb87224d5b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  defaultSelectable: {fileID: 0}
+  selectionRoot: {fileID: 0}
+  m_labelManager: {fileID: 1272610422}
 --- !u!1 &256469435
 GameObject:
   m_ObjectHideFlags: 0
@@ -2034,7 +2066,6 @@ GameObject:
   - component: {fileID: 269540402}
   - component: {fileID: 269540401}
   - component: {fileID: 269540403}
-  - component: {fileID: 269540404}
   m_Layer: 0
   m_Name: ScreenUI
   m_TagString: Untagged
@@ -2095,31 +2126,11 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_proxySetsRoot: {fileID: 269540402}
   m_AlignRect: {fileID: 2005732375}
-  m_proxySetsX: 0.38
+  m_proxySetsX: 0.42
   m_verticalOffset: 0
   m_keepAlignedContinuously: 1
   m_startupRefreshFrames: 6
   m_hiddenAlphaThreshold: 0.05
---- !u!114 &269540404
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 269540400}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 23af82c83b0d450e9bd82407838de5b5, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  m_transitionDuration: 0.3
-  m_sideOffsetMultiplier: 0.8
-  m_centerScale: 1
-  m_sideScale: 0.9
-  m_incomingScaleOvershoot: 1.1
-  m_centerAlpha: 1
-  m_sideAlpha: 0.1
-  m_disableOutgoingRaycasts: 1
 --- !u!1 &278672497
 GameObject:
   m_ObjectHideFlags: 0
@@ -2145,7 +2156,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 278672497}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: c4e8a1f92d0b4e5a9c3d7b6e1f0a8d2c, type: 3}
   m_Name: 
@@ -2568,6 +2579,7 @@ GameObject:
   - component: {fileID: 456180479}
   - component: {fileID: 456180480}
   - component: {fileID: 456180481}
+  - component: {fileID: 456180482}
   m_Layer: 0
   m_Name: RightMicroGesture
   m_TagString: Untagged
@@ -2798,7 +2810,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 456180473}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 51b70d7d5433a4f18989fb4aecd24ac9, type: 3}
   m_Name: 
@@ -2811,7 +2823,8 @@ MonoBehaviour:
   m_attributeUiRoot: {fileID: 278672497}
   m_attributeLabelsParentForManager: {fileID: 0}
   m_selectFirstSelectableInAttributeUi: 1
-  m_proxyLabelHorizonScroller: {fileID: 243943090}
+  m_allowProxySetSwitching: 0
+  m_proxyLabelHorizonScroller: {fileID: 0}
   m_attributeUiInactiveByDefault: 1
   m_attributeTwistEventSource: {fileID: 0}
   m_attributeNamesParent: {fileID: 0}
@@ -2864,6 +2877,21 @@ MonoBehaviour:
   m_twistEventSource: {fileID: 456180475}
   twistPerStep: 0.08
   m_debugLog: 0
+--- !u!114 &456180482
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 456180473}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 151400e9d41db44b0b1201fb87224d5b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  defaultSelectable: {fileID: 0}
+  selectionRoot: {fileID: 0}
+  m_labelManager: {fileID: 1272610422}
 --- !u!1001 &472357246
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -4256,7 +4284,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
-  m_AnchoredPosition: {x: 0.25, y: -0.3}
+  m_AnchoredPosition: {x: 0.55, y: -0.3}
   m_SizeDelta: {x: 600, y: 600}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &775361880
@@ -4611,6 +4639,7 @@ MonoBehaviour:
   m_useManualFixedValue: 1
   m_manualFixedDollars: 13
   m_currencyPrefix: $
+  m_priceVisibleColor: {r: 1, g: 0, b: 0, a: 0.84}
   m_ignoreSecondClickOfDoubleTap: 1
 --- !u!1 &838558378 stripped
 GameObject:
@@ -5064,6 +5093,7 @@ MonoBehaviour:
   m_useManualFixedValue: 1
   m_manualFixedDollars: 35
   m_currencyPrefix: $
+  m_priceVisibleColor: {r: 1, g: 0, b: 0, a: 0.84}
   m_ignoreSecondClickOfDoubleTap: 1
 --- !u!1001 &937523583
 PrefabInstance:
@@ -5198,6 +5228,7 @@ MonoBehaviour:
   m_useManualFixedValue: 1
   m_manualFixedDollars: 13
   m_currencyPrefix: $
+  m_priceVisibleColor: {r: 1, g: 0, b: 0, a: 0.84}
   m_ignoreSecondClickOfDoubleTap: 1
 --- !u!1 &939080230 stripped
 GameObject:
@@ -5221,6 +5252,7 @@ MonoBehaviour:
   m_useManualFixedValue: 1
   m_manualFixedDollars: 15
   m_currencyPrefix: $
+  m_priceVisibleColor: {r: 1, g: 0, b: 0, a: 0.84}
   m_ignoreSecondClickOfDoubleTap: 1
 --- !u!1001 &945324729
 PrefabInstance:
@@ -5402,6 +5434,7 @@ MonoBehaviour:
   m_useManualFixedValue: 1
   m_manualFixedDollars: 5
   m_currencyPrefix: $
+  m_priceVisibleColor: {r: 1, g: 0, b: 0, a: 0.84}
   m_ignoreSecondClickOfDoubleTap: 1
 --- !u!1001 &983944788
 PrefabInstance:
@@ -5913,6 +5946,7 @@ MonoBehaviour:
   m_useManualFixedValue: 1
   m_manualFixedDollars: 12
   m_currencyPrefix: $
+  m_priceVisibleColor: {r: 1, g: 0, b: 0, a: 0.84}
   m_ignoreSecondClickOfDoubleTap: 1
 --- !u!1001 &1057377229
 PrefabInstance:
@@ -6047,6 +6081,7 @@ MonoBehaviour:
   m_useManualFixedValue: 1
   m_manualFixedDollars: 40
   m_currencyPrefix: $
+  m_priceVisibleColor: {r: 1, g: 0, b: 0, a: 0.84}
   m_ignoreSecondClickOfDoubleTap: 1
 --- !u!1001 &1107309194
 PrefabInstance:
@@ -6445,11 +6480,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7191250308198253915, guid: a9088ffdc24df41fba5fd6cb1eaf3ead, type: 3}
       propertyPath: m_SizeDelta.x
-      value: 100
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 7191250308198253915, guid: a9088ffdc24df41fba5fd6cb1eaf3ead, type: 3}
       propertyPath: m_SizeDelta.y
-      value: 50
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 7191250308198253915, guid: a9088ffdc24df41fba5fd6cb1eaf3ead, type: 3}
       propertyPath: m_LocalPosition.x
@@ -6485,7 +6520,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7191250308198253915, guid: a9088ffdc24df41fba5fd6cb1eaf3ead, type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: -271
+      value: -300
       objectReference: {fileID: 0}
     - target: {fileID: 7191250308198253915, guid: a9088ffdc24df41fba5fd6cb1eaf3ead, type: 3}
       propertyPath: m_LocalEulerAnglesHint.x
@@ -6596,6 +6631,7 @@ MonoBehaviour:
   m_useManualFixedValue: 1
   m_manualFixedDollars: 26
   m_currencyPrefix: $
+  m_priceVisibleColor: {r: 1, g: 0, b: 0, a: 0.84}
   m_ignoreSecondClickOfDoubleTap: 1
 --- !u!1 &1176146344
 GameObject:
@@ -6989,6 +7025,7 @@ MonoBehaviour:
   m_useManualFixedValue: 1
   m_manualFixedDollars: 25
   m_currencyPrefix: $
+  m_priceVisibleColor: {r: 1, g: 0, b: 0, a: 0.84}
   m_ignoreSecondClickOfDoubleTap: 1
 --- !u!1 &1209851484
 GameObject:
@@ -7058,6 +7095,7 @@ MonoBehaviour:
   m_useManualFixedValue: 1
   m_manualFixedDollars: 12
   m_currencyPrefix: $
+  m_priceVisibleColor: {r: 1, g: 0, b: 0, a: 0.84}
   m_ignoreSecondClickOfDoubleTap: 1
 --- !u!1001 &1246191696
 PrefabInstance:
@@ -7214,7 +7252,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1272610420}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: d2d3474d83c874be2b3c07da7cb5da6c, type: 3}
   m_Name: 
@@ -7377,6 +7415,7 @@ MonoBehaviour:
   m_useManualFixedValue: 1
   m_manualFixedDollars: 20
   m_currencyPrefix: $
+  m_priceVisibleColor: {r: 1, g: 0, b: 0, a: 0.84}
   m_ignoreSecondClickOfDoubleTap: 1
 --- !u!1 &1353770945 stripped
 GameObject:
@@ -7400,6 +7439,7 @@ MonoBehaviour:
   m_useManualFixedValue: 1
   m_manualFixedDollars: 26
   m_currencyPrefix: $
+  m_priceVisibleColor: {r: 1, g: 0, b: 0, a: 0.84}
   m_ignoreSecondClickOfDoubleTap: 1
 --- !u!1 &1410576277 stripped
 GameObject:
@@ -7582,6 +7622,7 @@ MonoBehaviour:
   m_useManualFixedValue: 1
   m_manualFixedDollars: 19
   m_currencyPrefix: $
+  m_priceVisibleColor: {r: 1, g: 0, b: 0, a: 0.84}
   m_ignoreSecondClickOfDoubleTap: 1
 --- !u!1001 &1462132914
 PrefabInstance:
@@ -7716,6 +7757,7 @@ MonoBehaviour:
   m_useManualFixedValue: 1
   m_manualFixedDollars: 7
   m_currencyPrefix: $
+  m_priceVisibleColor: {r: 1, g: 0, b: 0, a: 0.84}
   m_ignoreSecondClickOfDoubleTap: 1
 --- !u!1 &1463857854
 GameObject:
@@ -8247,6 +8289,7 @@ MonoBehaviour:
   m_useManualFixedValue: 1
   m_manualFixedDollars: 15
   m_currencyPrefix: $
+  m_priceVisibleColor: {r: 1, g: 0, b: 0, a: 0.84}
   m_ignoreSecondClickOfDoubleTap: 1
 --- !u!1 &1629220518
 GameObject:
@@ -8450,6 +8493,7 @@ MonoBehaviour:
   m_useManualFixedValue: 1
   m_manualFixedDollars: 15
   m_currencyPrefix: $
+  m_priceVisibleColor: {r: 1, g: 0, b: 0, a: 0.84}
   m_ignoreSecondClickOfDoubleTap: 1
 --- !u!1001 &1653948097
 PrefabInstance:
@@ -8584,6 +8628,7 @@ MonoBehaviour:
   m_useManualFixedValue: 1
   m_manualFixedDollars: 15
   m_currencyPrefix: $
+  m_priceVisibleColor: {r: 1, g: 0, b: 0, a: 0.84}
   m_ignoreSecondClickOfDoubleTap: 1
 --- !u!1001 &1700106029
 PrefabInstance:
@@ -9755,11 +9800,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7191250308198253915, guid: a9088ffdc24df41fba5fd6cb1eaf3ead, type: 3}
       propertyPath: m_SizeDelta.x
-      value: 100
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 7191250308198253915, guid: a9088ffdc24df41fba5fd6cb1eaf3ead, type: 3}
       propertyPath: m_SizeDelta.y
-      value: 50
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 7191250308198253915, guid: a9088ffdc24df41fba5fd6cb1eaf3ead, type: 3}
       propertyPath: m_LocalPosition.x
@@ -9791,11 +9836,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7191250308198253915, guid: a9088ffdc24df41fba5fd6cb1eaf3ead, type: 3}
       propertyPath: m_AnchoredPosition.x
-      value: 50
+      value: 158
       objectReference: {fileID: 0}
     - target: {fileID: 7191250308198253915, guid: a9088ffdc24df41fba5fd6cb1eaf3ead, type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: -329
+      value: -300
       objectReference: {fileID: 0}
     - target: {fileID: 7191250308198253915, guid: a9088ffdc24df41fba5fd6cb1eaf3ead, type: 3}
       propertyPath: m_LocalEulerAnglesHint.x
@@ -9986,6 +10031,7 @@ MonoBehaviour:
   m_useManualFixedValue: 1
   m_manualFixedDollars: 24
   m_currencyPrefix: $
+  m_priceVisibleColor: {r: 1, g: 0, b: 0, a: 0.84}
   m_ignoreSecondClickOfDoubleTap: 1
 --- !u!1001 &1792454649
 PrefabInstance:
@@ -10410,6 +10456,7 @@ MonoBehaviour:
   m_useManualFixedValue: 1
   m_manualFixedDollars: 29
   m_currencyPrefix: $
+  m_priceVisibleColor: {r: 1, g: 0, b: 0, a: 0.84}
   m_ignoreSecondClickOfDoubleTap: 1
 --- !u!1001 &1853039483
 PrefabInstance:
@@ -10544,6 +10591,7 @@ MonoBehaviour:
   m_useManualFixedValue: 1
   m_manualFixedDollars: 25
   m_currencyPrefix: $
+  m_priceVisibleColor: {r: 1, g: 0, b: 0, a: 0.84}
   m_ignoreSecondClickOfDoubleTap: 1
 --- !u!1 &1884619604
 GameObject:
@@ -10611,6 +10659,7 @@ MonoBehaviour:
   m_useManualFixedValue: 1
   m_manualFixedDollars: 15
   m_currencyPrefix: $
+  m_priceVisibleColor: {r: 1, g: 0, b: 0, a: 0.84}
   m_ignoreSecondClickOfDoubleTap: 1
 --- !u!1 &1909228615
 GameObject:
@@ -10651,7 +10700,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
-  m_AnchoredPosition: {x: 0.25, y: -0.3}
+  m_AnchoredPosition: {x: 0.55, y: -0.3}
   m_SizeDelta: {x: 600, y: 600}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1909228617
@@ -11806,7 +11855,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
-  m_AnchoredPosition: {x: 0.25, y: -0.3}
+  m_AnchoredPosition: {x: 0.55, y: -0.3}
   m_SizeDelta: {x: 600, y: 600}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &2005732376
@@ -12029,6 +12078,7 @@ MonoBehaviour:
   m_useManualFixedValue: 1
   m_manualFixedDollars: 30
   m_currencyPrefix: $
+  m_priceVisibleColor: {r: 1, g: 0, b: 0, a: 0.84}
   m_ignoreSecondClickOfDoubleTap: 1
 --- !u!1001 &2039290625
 PrefabInstance:
@@ -12411,6 +12461,7 @@ MonoBehaviour:
   m_useManualFixedValue: 1
   m_manualFixedDollars: 25
   m_currencyPrefix: $
+  m_priceVisibleColor: {r: 1, g: 0, b: 0, a: 0.84}
   m_ignoreSecondClickOfDoubleTap: 1
 --- !u!1 &2145431613
 GameObject:
@@ -12721,6 +12772,7 @@ MonoBehaviour:
   m_useManualFixedValue: 1
   m_manualFixedDollars: 17
   m_currencyPrefix: $
+  m_priceVisibleColor: {r: 1, g: 0, b: 0, a: 0.84}
   m_ignoreSecondClickOfDoubleTap: 1
 --- !u!1001 &1019656467722773290
 PrefabInstance:

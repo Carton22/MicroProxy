@@ -2175,6 +2175,7 @@ MonoBehaviour:
   m_attributeUiRoot: {fileID: 1745866847}
   m_attributeLabelsParentForManager: {fileID: 0}
   m_selectFirstSelectableInAttributeUi: 1
+  m_allowProxySetSwitching: 1
   m_proxyLabelHorizonScroller: {fileID: 243943090}
   m_attributeUiInactiveByDefault: 1
   m_attributeTwistEventSource: {fileID: 0}
@@ -2294,7 +2295,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 269540400}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 3a74fe6f5d4f4d8e8e56b9db37bce0f1, type: 3}
   m_Name: 
@@ -2743,6 +2744,7 @@ MonoBehaviour:
   m_attributeUiRoot: {fileID: 1745866847}
   m_attributeLabelsParentForManager: {fileID: 0}
   m_selectFirstSelectableInAttributeUi: 1
+  m_allowProxySetSwitching: 1
   m_proxyLabelHorizonScroller: {fileID: 243943090}
   m_attributeUiInactiveByDefault: 1
   m_attributeTwistEventSource: {fileID: 0}

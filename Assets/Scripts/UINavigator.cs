@@ -28,6 +28,7 @@ public class UINavigator : MonoBehaviour
     [SerializeField] private Transform m_attributeLabelsParentForManager;
 
     [SerializeField] private bool m_selectFirstSelectableInAttributeUi = true;
+    [SerializeField] private bool m_allowProxySetSwitching = true;
 
     [Tooltip("Optional explicit scroller to refresh on ProxyUI <-> AttributeUI transitions. If null, auto-find is used.")]
     [SerializeField] private ProxyLabelHorizonScroller m_proxyLabelHorizonScroller;
@@ -646,6 +647,9 @@ public class UINavigator : MonoBehaviour
         if (IsNavigationLocked())
             return;
 
+        if (TryRewindAttributeValueFromDoubleTap())
+            return;
+
         if (TryGroupActiveProxyLabelsByFocusedAttributeFromNone())
             return;
 
@@ -839,6 +843,33 @@ public class UINavigator : MonoBehaviour
 
         BuildAttributeOptionRoots(optionsRoot, m_attributeOptionRootsBuffer);
         ApplyAttributeFilterSelection(attributeButtonRoot, nextIndex);
+        return true;
+    }
+
+    private bool TryRewindAttributeValueFromDoubleTap()
+    {
+        if (!TryResolveAttributeTwistContext(out var attributeButtonRoot, out var optionsRoot, out _, out var optionCount))
+            return false;
+
+        if (optionCount <= 0)
+            return false;
+
+        int currentIndex = m_attributeFilterSelections.TryGetValue(attributeButtonRoot, out var storedIndex)
+            ? storedIndex
+            : -1;
+
+        int previousIndex = currentIndex < 0 ? optionCount - 1 : currentIndex - 1;
+        if (previousIndex < 0)
+            previousIndex = -1;
+
+        if (previousIndex < 0)
+        {
+            ApplyAttributeFilterSelection(attributeButtonRoot, -1);
+            return true;
+        }
+
+        BuildAttributeOptionRoots(optionsRoot, m_attributeOptionRootsBuffer);
+        ApplyAttributeFilterSelection(attributeButtonRoot, previousIndex);
         return true;
     }
 
@@ -1373,6 +1404,8 @@ public class UINavigator : MonoBehaviour
     /// </summary>
     bool TrySwitchToPreviousProxySet()
     {
+        if (!m_allowProxySetSwitching) return false;
+        if (ResolveProxyUiScroller() != null && ResolveProxyUiScroller().UsesHorizontalScrollAxis) return false;
         if (m_labelManager == null) return false;
         if (!IsSelectionInsideActiveManagedProxySet()) return false;
         if (ProxySetDrillDownController.IsAnyDrillDownChildViewActive) return false;
@@ -1393,6 +1426,8 @@ public class UINavigator : MonoBehaviour
     /// </summary>
     bool TrySwitchToNextProxySet()
     {
+        if (!m_allowProxySetSwitching) return false;
+        if (ResolveProxyUiScroller() != null && ResolveProxyUiScroller().UsesHorizontalScrollAxis) return false;
         if (m_labelManager == null) return false;
         if (!IsSelectionInsideActiveManagedProxySet()) return false;
         if (ProxySetDrillDownController.IsAnyDrillDownChildViewActive) return false;

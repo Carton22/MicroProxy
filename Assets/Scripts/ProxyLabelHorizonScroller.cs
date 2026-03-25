@@ -86,6 +86,7 @@ public class ProxyLabelHorizonScroller : MonoBehaviour
     private float m_windowCenterVelocity;
     private bool m_hasInitializedWindowCenter;
     private int m_startupRefreshFramesRemaining;
+    private bool m_gridLayoutDisabledForHorizontalWheel;
 
     private void Reset()
     {
@@ -112,11 +113,39 @@ public class ProxyLabelHorizonScroller : MonoBehaviour
         m_postForceRefreshFrames = Mathf.Max(0, m_postForceRefreshFrames);
     }
 
+    /// <summary>
+    /// Configures a single-row ProxyUI grid as a horizontal wheel: five visible slots, selection
+    /// eased to the same center index, labels outside the window culled. Call after layout refs exist
+    /// (e.g. from <see cref="ProxyUIHorizontalScrollWheel"/> Reset) or assign viewport/content first.
+    /// </summary>
+    public void ApplyProxyUIHorizontalPreset()
+    {
+        m_scrollAxis = ScrollAxis.Horizontal;
+        m_visibleRowCount = 5;
+
+        m_centerSelectedLabel = true;
+        m_clampToContentBounds = true;
+        m_hideLabelsCompletelyOutsideWindow = true;
+
+        if (m_content == null)
+            m_content = transform as RectTransform;
+
+        if (m_viewport == null)
+            m_viewport = m_content;
+
+        if (m_gridLayout == null && m_content != null)
+            m_gridLayout = m_content.GetComponent<GridLayoutGroup>();
+
+        if (m_labelManager == null)
+            m_labelManager = FindFirstObjectByType<ProxyLabelManager>();
+    }
+
     private void OnEnable()
     {
         EnsureReferences();
         m_startupRefreshFramesRemaining = 3;
         RebuildAuthoredLayout(force: true);
+        SyncGridLayoutControl();
         SnapToCurrentSelection();
     }
 
@@ -128,6 +157,7 @@ public class ProxyLabelHorizonScroller : MonoBehaviour
     {
         EnsureReferences();
         RebuildAuthoredLayout(force: true);
+        SyncGridLayoutControl();
         SnapToCurrentSelection();
         RefreshTrackedGraphics(forceDirty: true);
         Canvas.ForceUpdateCanvases();
@@ -139,6 +169,7 @@ public class ProxyLabelHorizonScroller : MonoBehaviour
     private void OnDisable()
     {
         RestoreAuthoredVisuals();
+        RestoreGridLayoutControl();
         m_hasInitializedWindowCenter = false;
         m_windowCenterVelocity = 0f;
         m_startupRefreshFramesRemaining = 0;
@@ -152,6 +183,7 @@ public class ProxyLabelHorizonScroller : MonoBehaviour
 
         bool needsStartupRefresh = m_startupRefreshFramesRemaining > 0;
         RebuildAuthoredLayout(force: needsStartupRefresh);
+        SyncGridLayoutControl();
         if (m_labelStates.Count == 0)
             return;
 
@@ -226,6 +258,7 @@ public class ProxyLabelHorizonScroller : MonoBehaviour
         if (!needsRefresh)
             return;
 
+        RestoreGridLayoutControl();
         RestoreTrackedVisuals();
         Canvas.ForceUpdateCanvases();
         if (m_gridLayout != null)
@@ -281,6 +314,37 @@ public class ProxyLabelHorizonScroller : MonoBehaviour
 
         m_lastChildCount = m_content.childCount;
         m_lastContentSize = currentSize;
+    }
+
+    private void SyncGridLayoutControl()
+    {
+        if (IsHorizontalMode())
+            DisableGridLayoutForHorizontalWheel();
+        else
+            RestoreGridLayoutControl();
+    }
+
+    // The wheel animates child anchored positions directly. Leaving GridLayoutGroup enabled lets
+    // Unity re-apply the authored grid on canvas/layout rebuilds, which reads as the whole row
+    // snapping sideways before easing back. Freeze layout after sampling it so the viewport stays still.
+    private void DisableGridLayoutForHorizontalWheel()
+    {
+        if (m_gridLayout == null || !m_gridLayout.enabled)
+            return;
+
+        m_gridLayout.enabled = false;
+        m_gridLayoutDisabledForHorizontalWheel = true;
+    }
+
+    private void RestoreGridLayoutControl()
+    {
+        if (m_gridLayout == null || !m_gridLayoutDisabledForHorizontalWheel)
+            return;
+
+        m_gridLayout.enabled = true;
+        m_gridLayoutDisabledForHorizontalWheel = false;
+        if (m_content != null && m_content.gameObject.activeInHierarchy)
+            LayoutRebuilder.ForceRebuildLayoutImmediate(m_content);
     }
 
     private void BuildPrimaryLayoutCache()
@@ -579,7 +643,13 @@ public class ProxyLabelHorizonScroller : MonoBehaviour
             float focusT = EaseOutCubic(Mathf.InverseLerp(1.15f, 0f, absColumnDistance));
             bool isSelected = i == selectedIndex;
 
-            Vector2 targetAnchoredPosition = state.AuthoredAnchoredPosition + new Vector2(scrollOffsetX, 0f);
+            float bendAmount = 1f - bandT;
+            float yBendOffset = -m_rowBend * bendAmount;
+
+            // Keep horizontal motion driven by the shared scroll offset only. A per-item X bend
+            // causes sign flips as items cross center, which reads as left/right shaking.
+            Vector2 targetAnchoredPosition = state.AuthoredAnchoredPosition
+                + new Vector2(scrollOffsetX, yBendOffset);
             float targetScaleFactor = Mathf.Lerp(m_hiddenScale, m_edgeScale, bandT);
             targetScaleFactor = Mathf.Lerp(targetScaleFactor, m_focusScale, focusT);
             if (isSelected)
