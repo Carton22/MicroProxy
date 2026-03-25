@@ -679,6 +679,35 @@ public class UINavigator : MonoBehaviour
     }
 
     /// <summary>
+    /// Regroups the active proxy labels by the option order of the requested attribute key.
+    /// Example: "owner" maps to the Ownership attribute group.
+    /// </summary>
+    public bool GroupActiveProxyLabelsByAttributeKey(string attributeKey)
+    {
+        if (IsNavigationLocked() || string.IsNullOrWhiteSpace(attributeKey))
+            return false;
+
+        if (m_labelManager == null)
+            m_labelManager = FindFirstObjectByType<ProxyLabelManager>();
+        if (m_labelManager == null)
+            return false;
+
+        var activeParent = m_labelManager.GetActiveLabelsParent();
+        if (activeParent == null)
+            return false;
+
+        var optionsRoot = FindOptionsRootForAttributeKey(attributeKey);
+        if (optionsRoot == null)
+            return false;
+
+        BuildAttributeOptionRoots(optionsRoot, m_attributeOptionRootsBuffer);
+        if (m_attributeOptionRootsBuffer.Count == 0)
+            return false;
+
+        return GroupActiveProxyLabelsByOptionRoots(activeParent, m_attributeOptionRootsBuffer);
+    }
+
+    /// <summary>
     /// Entry point for socket-driven zoom gestures to switch ScreenUI parent layers directly.
     /// zoomOut=true goes to previous layer (e.g. ProxyUI -> SpatialHierarchy when ordered that way in ProxyLabelManager).
     /// zoomOut=false goes to next layer.
@@ -922,13 +951,21 @@ public class UINavigator : MonoBehaviour
         if (m_attributeOptionRootsBuffer.Count == 0)
             return false;
 
+        return GroupActiveProxyLabelsByOptionRoots(activeParent, m_attributeOptionRootsBuffer);
+    }
+
+    private bool GroupActiveProxyLabelsByOptionRoots(Transform activeParent, List<Transform> optionRoots)
+    {
+        if (activeParent == null || optionRoots == null || optionRoots.Count == 0)
+            return false;
+
         var grouped = new List<Transform>(activeParent.childCount);
         var used = new HashSet<Transform>();
 
         // Group labels by attribute option order.
-        for (int optionIndex = 0; optionIndex < m_attributeOptionRootsBuffer.Count; optionIndex++)
+        for (int optionIndex = 0; optionIndex < optionRoots.Count; optionIndex++)
         {
-            var optionRoot = m_attributeOptionRootsBuffer[optionIndex];
+            var optionRoot = optionRoots[optionIndex];
             if (optionRoot == null)
                 continue;
 
