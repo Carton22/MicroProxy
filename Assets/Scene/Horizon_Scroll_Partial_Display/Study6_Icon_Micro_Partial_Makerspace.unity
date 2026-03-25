@@ -2182,6 +2182,7 @@ MonoBehaviour:
   m_attributeLabelsParentForManager: {fileID: 0}
   m_selectFirstSelectableInAttributeUi: 1
   m_allowProxySetSwitching: 1
+  m_useVerticalSwipeForProxySetSwitching: 1
   m_proxyLabelHorizonScroller: {fileID: 0}
   m_attributeUiInactiveByDefault: 1
   m_attributeTwistEventSource: {fileID: 0}
@@ -2730,6 +2731,7 @@ MonoBehaviour:
   m_attributeLabelsParentForManager: {fileID: 0}
   m_selectFirstSelectableInAttributeUi: 1
   m_allowProxySetSwitching: 1
+  m_useVerticalSwipeForProxySetSwitching: 1
   m_proxyLabelHorizonScroller: {fileID: 0}
   m_attributeUiInactiveByDefault: 1
   m_attributeTwistEventSource: {fileID: 0}

@@ -29,6 +29,8 @@ public class UINavigator : MonoBehaviour
 
     [SerializeField] private bool m_selectFirstSelectableInAttributeUi = true;
     [SerializeField] private bool m_allowProxySetSwitching = true;
+    [Tooltip("When enabled, MoveUp/MoveDown will switch to the previous/next ProxyLabelManager labels parent before normal vertical navigation.")]
+    [SerializeField] private bool m_useVerticalSwipeForProxySetSwitching;
 
     [Tooltip("Optional explicit scroller to refresh on ProxyUI <-> AttributeUI transitions. If null, auto-find is used.")]
     [SerializeField] private ProxyLabelHorizonScroller m_proxyLabelHorizonScroller;
@@ -598,6 +600,9 @@ public class UINavigator : MonoBehaviour
         if (IsNavigationLocked())
             return;
 
+        if (m_useVerticalSwipeForProxySetSwitching && TrySwitchScreenLayerDirect(-1))
+            return;
+
         if (UsesVerticalAttributeUiGestures() && TryDismissAttributeUiFromUpSwipe())
             return;
 
@@ -607,6 +612,9 @@ public class UINavigator : MonoBehaviour
     public void MoveDown()
     {
         if (IsNavigationLocked())
+            return;
+
+        if (m_useVerticalSwipeForProxySetSwitching && TrySwitchScreenLayerDirect(1))
             return;
 
         if (UsesVerticalAttributeUiGestures() && TryShowAttributeUiFromLeftColumn())
