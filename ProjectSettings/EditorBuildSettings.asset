@@ -6,8 +6,8 @@ EditorBuildSettings:
   serializedVersion: 2
   m_Scenes:
   - enabled: 1
-    path: Assets/Scene/Horizon_Scroll_Partial_Display/Study6_Icon_Micro_Partial_Makerspace.unity
-    guid: ce59e5234dd1f44e69a16365bfc581f7
+    path: Assets/Scene/Horizon_Scroll_Partial_Display/Study7_Full_Screen_BookShelf.unity
+    guid: b7b7d598274494dd48075241d49c65fd
   m_configObjects:
     Unity.XR.Oculus.Settings: {fileID: 11400000, guid: f2bf97b3acdb64248a707c407c9fc54e, type: 2}
     com.unity.xr.management.loader_settings: {fileID: 11400000, guid: a971eac5e950046e586c5e153e32d05c, type: 2}

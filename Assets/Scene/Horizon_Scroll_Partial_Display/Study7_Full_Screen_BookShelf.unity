@@ -3224,9 +3224,9 @@ MonoBehaviour:
   defaultSelectable: {fileID: 0}
   selectionRoot: {fileID: 0}
   m_labelManager: {fileID: 1272610422}
-  m_leftColumnLabelsParent: {fileID: 0}
-  m_proxyUiPageRoot: {fileID: 0}
-  m_attributeUiRoot: {fileID: 0}
+  m_leftColumnLabelsParent: {fileID: 463583714}
+  m_proxyUiPageRoot: {fileID: 463583714}
+  m_attributeUiRoot: {fileID: 1455364593}
   m_attributeLabelsParentForManager: {fileID: 0}
   m_selectFirstSelectableInAttributeUi: 1
   m_allowProxySetSwitching: 1
@@ -3823,7 +3823,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0a6d786e0476f43e198a156a1fc16135, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  ipAddress: 10.131.93.214
+  ipAddress: 10.0.225.210
   port: 3000
   logRawMessages: 1
 --- !u!4 &622173652
@@ -4764,9 +4764,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 22607a21b36c1451e814de8958e38137, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  target: {fileID: 0}
+  target: {fileID: 1744462753}
   rotationSource: {fileID: 0}
-  distance: 1
+  distance: 0.8
   inheritRotation: 1
   yawOnly: 0
   positionFollowSpeed: 100
@@ -6537,9 +6537,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 22607a21b36c1451e814de8958e38137, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  target: {fileID: 0}
+  target: {fileID: 1744462753}
   rotationSource: {fileID: 0}
-  distance: 1
+  distance: 0.8
   inheritRotation: 1
   yawOnly: 0
   positionFollowSpeed: 100
@@ -7295,8 +7295,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_labelParents:
-  - {fileID: 0}
-  - {fileID: 0}
+  - {fileID: 463583714}
   m_logger: {fileID: 1561124091}
   m_enableLogging: 0
 --- !u!1 &1285080362
@@ -8755,7 +8754,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1455364596}
   - component: {fileID: 1455364595}
-  - component: {fileID: 1455364594}
+  - component: {fileID: 1455364597}
   m_Layer: 0
   m_Name: AttributeUI
   m_TagString: Untagged
@@ -8763,22 +8762,6 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 0
---- !u!114 &1455364594
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1455364593}
-  m_Enabled: 0
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: c4e8a1f92d0b4e5a9c3d7b6e1f0a8d2c, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  m_leftColumnLabelsParent: {fileID: 463583714}
-  m_leftLabelsParentForProxyManager: {fileID: 463583714}
-  m_proxyLabelManager: {fileID: 0}
-  m_selectFirstInLeftColumn: 1
 --- !u!114 &1455364595
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -8791,9 +8774,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 22607a21b36c1451e814de8958e38137, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  target: {fileID: 0}
+  target: {fileID: 1744462753}
   rotationSource: {fileID: 0}
-  distance: 1
+  distance: 0.8
   inheritRotation: 1
   yawOnly: 0
   positionFollowSpeed: 100
@@ -8818,6 +8801,22 @@ Transform:
   - {fileID: 1595148898}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1455364597
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1455364593}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c4e8a1f92d0b4e5a9c3d7b6e1f0a8d2c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_leftColumnLabelsParent: {fileID: 463583714}
+  m_leftLabelsParentForProxyManager: {fileID: 463583714}
+  m_proxyLabelManager: {fileID: 1272610422}
+  m_selectFirstInLeftColumn: 1
 --- !u!114 &1462897928 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 5191280226305392922, guid: 58eee23691c63485ba7ef961e1ceeb74, type: 3}
