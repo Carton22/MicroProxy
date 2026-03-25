@@ -192,7 +192,6 @@ GameObject:
   - component: {fileID: -1293814966277781294}
   - component: {fileID: 4015155752309191152}
   - component: {fileID: 9098699202892683956}
-  - component: {fileID: -2579346452747637868}
   - component: {fileID: 5983480220058251615}
   m_Layer: 0
   m_Name: Horizon_ProxyLabelWithIcon
@@ -365,23 +364,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_audioSource: {fileID: 0}
---- !u!114 &-2579346452747637868
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4235160468344426946}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: cf5f9b46688b74d858de406c467df4f6, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  m_image: {fileID: 2814049813371364162}
-  m_colorProperty: _Color
-  m_normalColor: {r: 1, g: 1, b: 1, a: 1}
-  m_selectedColor: {r: 1, g: 0.8, b: 0.2, a: 1}
-  m_fallbackSelectedColor: {r: 1, g: 0.8, b: 0.2, a: 1}
 --- !u!114 &5983480220058251615
 MonoBehaviour:
   m_ObjectHideFlags: 0

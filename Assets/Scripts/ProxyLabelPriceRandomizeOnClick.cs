@@ -24,11 +24,15 @@ public class ProxyLabelPriceRandomizeOnClick : MonoBehaviour, IPointerClickHandl
     [SerializeField] private int m_manualFixedDollars = 20;
 
     [SerializeField] private string m_currencyPrefix = "$";
+    [SerializeField] private Color m_priceVisibleColor = new Color(1f, 0f, 0f, 0.84f);
 
     [Tooltip("If true, ignore the second click of a double-click (pointer path only).")]
     [SerializeField] private bool m_ignoreSecondClickOfDoubleTap = true;
 
     private Button m_button;
+    private Graphic m_targetGraphic;
+    private ColorBlock m_originalButtonColors;
+    private bool m_cachedOriginalButtonColors;
     private bool m_hasAssignedPrice;
     private int m_assignedDollars;
     private string m_cachedBaseLabel;
@@ -61,6 +65,7 @@ public class ProxyLabelPriceRandomizeOnClick : MonoBehaviour, IPointerClickHandl
     {
         EnsureLabelText();
         m_button = GetComponent<Button>();
+        CacheButtonState();
     }
 
     private void OnEnable()
@@ -68,8 +73,12 @@ public class ProxyLabelPriceRandomizeOnClick : MonoBehaviour, IPointerClickHandl
         if (m_button == null)
             m_button = GetComponent<Button>();
 
+        CacheButtonState();
+
         if (m_button != null)
             m_button.onClick.AddListener(OnButtonClicked);
+
+        ApplyVisualState();
     }
 
     private void OnDisable()
@@ -99,6 +108,19 @@ public class ProxyLabelPriceRandomizeOnClick : MonoBehaviour, IPointerClickHandl
     {
         if (m_text == null)
             m_text = GetComponentInChildren<TMP_Text>(true);
+    }
+
+    private void CacheButtonState()
+    {
+        if (m_button == null)
+            return;
+
+        m_targetGraphic = m_button.targetGraphic;
+        if (!m_cachedOriginalButtonColors)
+        {
+            m_originalButtonColors = m_button.colors;
+            m_cachedOriginalButtonColors = true;
+        }
     }
 
     public void OnPointerClick(PointerEventData eventData)
@@ -156,7 +178,32 @@ public class ProxyLabelPriceRandomizeOnClick : MonoBehaviour, IPointerClickHandl
         else
             s_visiblePriceLabels.Remove(this);
 
+        ApplyVisualState();
         OnVisiblePricesTotalChanged?.Invoke(GetVisiblePricesTotal());
+    }
+
+    private void ApplyVisualState()
+    {
+        if (m_button == null || !m_cachedOriginalButtonColors)
+            return;
+
+        if (m_priceVisible)
+        {
+            var visibleColors = m_originalButtonColors;
+            visibleColors.highlightedColor = m_priceVisibleColor;
+            visibleColors.pressedColor = m_priceVisibleColor;
+            visibleColors.selectedColor = m_priceVisibleColor;
+            m_button.colors = visibleColors;
+
+            if (m_targetGraphic != null)
+                m_targetGraphic.color = m_priceVisibleColor;
+            return;
+        }
+
+        m_button.colors = m_originalButtonColors;
+
+        if (m_targetGraphic != null)
+            m_targetGraphic.color = m_originalButtonColors.normalColor;
     }
 
     private static string ResolveBaseLabel(string text)
