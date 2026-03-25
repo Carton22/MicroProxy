@@ -433,6 +433,11 @@ public class UINavigator : MonoBehaviour
 
     private int BuildAttributeOptionRoots(Transform optionsRoot, List<Transform> buffer)
     {
+        return BuildAttributeOptionRoots(optionsRoot, buffer, includeInactiveOptions: false);
+    }
+
+    private int BuildAttributeOptionRoots(Transform optionsRoot, List<Transform> buffer, bool includeInactiveOptions)
+    {
         buffer.Clear();
         if (optionsRoot == null)
             return 0;
@@ -440,7 +445,10 @@ public class UINavigator : MonoBehaviour
         for (int i = 0; i < optionsRoot.childCount; i++)
         {
             var child = optionsRoot.GetChild(i);
-            if (child == null || !child.gameObject.activeSelf)
+            if (child == null)
+                continue;
+
+            if (!includeInactiveOptions && !child.gameObject.activeSelf)
                 continue;
 
             if (FindSelectableInInactiveAware(child) == null)
@@ -586,7 +594,8 @@ public class UINavigator : MonoBehaviour
             case "availability":
                 return normalizedRoot.Contains("available");
             case "owner":
-                return normalizedRoot.Contains("ownership");
+                    // Be tolerant of naming differences ("Ownership" vs "Owner").
+                    return normalizedRoot.Contains("ownership") || normalizedRoot.Contains("owner");
             case "color":
                 return normalizedRoot.Contains("colour");
             default:
@@ -700,7 +709,9 @@ public class UINavigator : MonoBehaviour
         if (optionsRoot == null)
             return false;
 
-        BuildAttributeOptionRoots(optionsRoot, m_attributeOptionRootsBuffer);
+        // Allow inactive/disabled option roots so double-tap grouping works even
+        // when AttributeUI is turned off by default in the scene.
+        BuildAttributeOptionRoots(optionsRoot, m_attributeOptionRootsBuffer, includeInactiveOptions: true);
         if (m_attributeOptionRootsBuffer.Count == 0)
             return false;
 
@@ -947,7 +958,7 @@ public class UINavigator : MonoBehaviour
         if (activeParent == null)
             return false;
 
-        BuildAttributeOptionRoots(optionsRoot, m_attributeOptionRootsBuffer);
+        BuildAttributeOptionRoots(optionsRoot, m_attributeOptionRootsBuffer, includeInactiveOptions: true);
         if (m_attributeOptionRootsBuffer.Count == 0)
             return false;
 
@@ -962,6 +973,25 @@ public class UINavigator : MonoBehaviour
         var grouped = new List<Transform>(activeParent.childCount);
         var used = new HashSet<Transform>();
 
+        // Pre-collect marker indices per label child so grouping doesn't depend on whether
+        // LabelMarkerBinding is on the direct label object or deeper descendants.
+        var childMarkerSets = new List<HashSet<int>>(activeParent.childCount);
+        for (int i = 0; i < activeParent.childCount; i++)
+        {
+            var child = activeParent.GetChild(i);
+            if (child == null)
+            {
+                childMarkerSets.Add(new HashSet<int>());
+                continue;
+            }
+
+            var set = new HashSet<int>();
+            TryCollectMarkerIndices(child, set);
+            childMarkerSets.Add(set);
+        }
+
+        var optionMarkerWork = new HashSet<int>();
+
         // Group labels by attribute option order.
         for (int optionIndex = 0; optionIndex < optionRoots.Count; optionIndex++)
         {
@@ -969,9 +999,8 @@ public class UINavigator : MonoBehaviour
             if (optionRoot == null)
                 continue;
 
-            var optionBinding = optionRoot.GetComponent<LabelMarkerBinding>();
-            var optionMarkers = optionBinding != null ? optionBinding.MarkerIndices : null;
-            if (optionMarkers == null || optionMarkers.Count == 0)
+            optionMarkerWork.Clear();
+            if (!TryCollectMarkerIndices(optionRoot, optionMarkerWork) || optionMarkerWork.Count == 0)
                 continue;
 
             for (int i = 0; i < activeParent.childCount; i++)
@@ -980,9 +1009,11 @@ public class UINavigator : MonoBehaviour
                 if (child == null || used.Contains(child))
                     continue;
 
-                var childBinding = child.GetComponent<LabelMarkerBinding>();
-                var childMarkers = childBinding != null ? childBinding.MarkerIndices : null;
-                if (!HasAnyCommonMarker(optionMarkers, childMarkers))
+                var childMarkers = childMarkerSets[i];
+                if (childMarkers == null || childMarkers.Count == 0)
+                    continue;
+
+                if (!optionMarkerWork.Overlaps(childMarkers))
                     continue;
 
                 grouped.Add(child);

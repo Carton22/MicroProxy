@@ -1,0 +1,225 @@
+using System.Collections.Generic;
+using UnityEngine;
+using UnityEngine.EventSystems;
+
+/// <summary>
+/// Quick scene-specific fix for Study6 ownership grouping.
+/// Uses hardcoded Attribute-Ownership marker bindings from the current scene and
+/// reorders the active ProxyLabelManager labels on right-hand middle-finger double tap.
+/// </summary>
+public class RightHandDoubleTapGroupOwnershipStandalone : MonoBehaviour
+{
+    [Header("Scene references")]
+    [SerializeField] private OVRHand m_rightHand;
+    [SerializeField] private ProxyLabelManager m_labelManager;
+
+    [Header("Pinch settings")]
+    [Range(0f, 1f)]
+    [SerializeField] private float m_pinchStrengthThreshold = 0.7f;
+    [SerializeField] private float m_doubleTapMaxIntervalSeconds = 0.4f;
+
+    [Header("Debug")]
+    [SerializeField] private bool m_debugLog;
+    [SerializeField] private SharedLogger m_logger;
+
+    // Attribute-Ownership mapping from Study6_Icon_Micro_Partial_Makerspace.unity:
+    // OwnerA option markers: 2, 3, 9, 5
+    // OwnerB option markers: 4, 5, 10, 22
+    // OwnerC option markers: 1, 6, 7, 8, 11
+    private static readonly int[][] s_ownerMarkerGroups =
+    {
+        new[] { 0, 9, 10, 16 },
+        new[] { 1, 5, 6, 11, 15 },
+        new[] { 2, 8, 14, 17 },
+        new[] { 3, 12 },
+        new[] { 4, 18 },
+        new[] { 7, 13, 19 }
+    };
+
+    private static readonly string[] s_ownerNames = { "CS", "EE", "HCI", "Bio", "Chem", "Rob" };
+
+    private bool m_isPinching;
+    private float m_lastTapTime = -1f;
+
+    private void Awake()
+    {
+        ResolveReferences();
+    }
+
+    private void Reset()
+    {
+        ResolveReferences();
+    }
+
+    private void Update()
+    {
+        ResolveReferences();
+
+        if (m_rightHand == null || m_labelManager == null)
+            return;
+
+        if (!m_rightHand.IsDataValid)
+        {
+            m_isPinching = false;
+            return;
+        }
+
+        float pinch = m_rightHand.GetFingerPinchStrength(OVRHand.HandFinger.Middle);
+        bool pinchDown = pinch >= m_pinchStrengthThreshold;
+
+        if (pinchDown)
+        {
+            if (m_isPinching)
+                return;
+
+            m_isPinching = true;
+            float now = Time.time;
+
+            if (m_lastTapTime >= 0f && (now - m_lastTapTime) <= m_doubleTapMaxIntervalSeconds)
+            {
+                m_lastTapTime = -1f;
+                bool grouped = GroupByHardcodedOwnership();
+                Log(grouped
+                    ? "[RightHandDoubleTapGroupOwnershipStandalone] grouped by hardcoded ownership mapping."
+                    : "[RightHandDoubleTapGroupOwnershipStandalone] grouping failed.");
+            }
+            else
+            {
+                m_lastTapTime = now;
+            }
+        }
+        else
+        {
+            m_isPinching = false;
+        }
+    }
+
+    private void ResolveReferences()
+    {
+        if (m_rightHand == null)
+            m_rightHand = GetComponent<OVRHand>();
+        if (m_rightHand == null)
+            m_rightHand = FindFirstObjectByType<OVRHand>();
+
+        if (m_labelManager == null)
+            m_labelManager = FindFirstObjectByType<ProxyLabelManager>();
+    }
+
+    private bool GroupByHardcodedOwnership()
+    {
+        var activeParent = m_labelManager != null ? m_labelManager.GetActiveLabelsParent() : null;
+        if (activeParent == null || activeParent.childCount == 0)
+            return false;
+
+        var grouped = new List<Transform>(activeParent.childCount);
+        var used = new HashSet<Transform>();
+
+        for (int groupIndex = 0; groupIndex < s_ownerMarkerGroups.Length; groupIndex++)
+        {
+            var markers = s_ownerMarkerGroups[groupIndex];
+
+            for (int i = 0; i < activeParent.childCount; i++)
+            {
+                var child = activeParent.GetChild(i);
+                if (child == null || used.Contains(child))
+                    continue;
+
+                if (!HasAnyMarker(child, markers))
+                    continue;
+
+                grouped.Add(child);
+                used.Add(child);
+            }
+        }
+
+        for (int i = 0; i < activeParent.childCount; i++)
+        {
+            var child = activeParent.GetChild(i);
+            if (child == null || used.Contains(child))
+                continue;
+
+            grouped.Add(child);
+        }
+
+        if (grouped.Count == 0)
+            return false;
+
+        for (int i = 0; i < grouped.Count; i++)
+            grouped[i].SetSiblingIndex(i);
+
+        PreserveSelectionOrSelectFirst(activeParent);
+        RefreshScroller(activeParent);
+        return true;
+    }
+
+    private static bool HasAnyMarker(Transform root, IReadOnlyList<int> markerGroup)
+    {
+        if (root == null || markerGroup == null || markerGroup.Count == 0)
+            return false;
+
+        var bindings = root.GetComponentsInChildren<LabelMarkerBinding>(true);
+        for (int i = 0; i < bindings.Length; i++)
+        {
+            var binding = bindings[i];
+            var indices = binding != null ? binding.MarkerIndices : null;
+            if (indices == null)
+                continue;
+
+            for (int j = 0; j < indices.Count; j++)
+            {
+                int marker = indices[j];
+                for (int k = 0; k < markerGroup.Count; k++)
+                {
+                    if (marker == markerGroup[k])
+                        return true;
+                }
+            }
+        }
+
+        return false;
+    }
+
+    private static void PreserveSelectionOrSelectFirst(Transform activeParent)
+    {
+        if (EventSystem.current == null || activeParent == null)
+            return;
+
+        var selected = EventSystem.current.currentSelectedGameObject;
+        bool selectionInsideRoot = selected != null &&
+            (selected == activeParent.gameObject || selected.transform.IsChildOf(activeParent));
+
+        if (selectionInsideRoot)
+            return;
+
+        for (int i = 0; i < activeParent.childCount; i++)
+        {
+            var child = activeParent.GetChild(i);
+            if (child == null || !child.gameObject.activeInHierarchy)
+                continue;
+
+            EventSystem.current.SetSelectedGameObject(child.gameObject);
+            return;
+        }
+    }
+
+    private static void RefreshScroller(Transform activeParent)
+    {
+        var scroller = activeParent.GetComponent<ProxyLabelHorizonScroller>();
+        if (scroller == null)
+            scroller = activeParent.GetComponentInParent<ProxyLabelHorizonScroller>(true);
+
+        if (scroller != null)
+            scroller.ForceRefreshNow();
+    }
+
+    private void Log(string message)
+    {
+        if (!m_debugLog || string.IsNullOrEmpty(message))
+            return;
+
+        if (m_logger != null)
+            m_logger.Log(message);
+        else
+            Debug.Log(message);
+    }
+}
