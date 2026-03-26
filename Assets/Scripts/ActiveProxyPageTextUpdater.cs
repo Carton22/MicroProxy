@@ -3,8 +3,8 @@ using TMPro;
 using UnityEngine;
 
 /// <summary>
-/// Updates a TMP text based on which ProxyLabelManager page is active:
-/// SpatialHierarchy -> "Top", MaterialArea -> "Middle", ProxyUI -> "Down".
+/// Updates a TMP text based on which ProxyLabelManager label page is active.
+/// Level number maps to the active label parent's index in ProxyLabelManager's `Label Parents` list.
 /// </summary>
 [DisallowMultipleComponent]
 public class ActiveProxyPageTextUpdater : MonoBehaviour
@@ -17,21 +17,15 @@ public class ActiveProxyPageTextUpdater : MonoBehaviour
     [Tooltip("TMP text to update.")]
     [SerializeField] private TMP_Text m_targetText;
 
-    [Header("Matching (by name)")]
-    [Tooltip("Substring match (case-insensitive) against the active labels parent's name.")]
-    [SerializeField] private string m_spatialHierarchyName = "SpatialHierarchy";
-
-    [Tooltip("Substring match (case-insensitive) against the active labels parent's name.")]
-    [SerializeField] private string m_materialAreaName = "MaterialArea";
-
-    [Tooltip("Substring match (case-insensitive) against the active labels parent's name.")]
-    [SerializeField] private string m_proxyUiName = "ProxyUI";
+    [Header("Level text")]
+    [Tooltip("Prefix used when formatting the level text (e.g. prefix='Level ' -> 'Level 0').")]
+    [SerializeField] private string m_levelPrefix = "Level ";
 
     [Header("Update behavior")]
     [Tooltip("How often to check for active page changes (seconds). 0 = every frame.")]
     [SerializeField] private float m_updateIntervalSeconds = 0.15f;
 
-    private Transform m_lastActiveParent;
+    private int m_lastActiveIndex = int.MinValue;
     private float m_nextUpdateTime;
 
     private void Reset()
@@ -68,39 +62,22 @@ public class ActiveProxyPageTextUpdater : MonoBehaviour
         if (m_proxyLabelManager == null)
             return;
 
-        var activeParent = m_proxyLabelManager.GetActiveLabelsParent();
-        if (!force && activeParent == m_lastActiveParent)
+        int activeIndex = m_proxyLabelManager.GetActiveLabelsParentIndex();
+        if (!force && activeIndex == m_lastActiveIndex)
             return;
 
-        m_lastActiveParent = activeParent;
-
-        string next = ResolvePageText(activeParent);
+        m_lastActiveIndex = activeIndex;
+        string next = ResolveLevelText(activeIndex);
         if (m_targetText != null && m_targetText.text != next)
             m_targetText.text = next;
     }
 
-    private string ResolvePageText(Transform activeParent)
+    private string ResolveLevelText(int activeIndex)
     {
-        if (activeParent == null)
+        if (activeIndex < 0)
             return string.Empty;
 
-        string name = activeParent.name ?? string.Empty;
-        string normalized = name.ToLowerInvariant();
-
-        if (!string.IsNullOrEmpty(m_spatialHierarchyName) &&
-            normalized.Contains(m_spatialHierarchyName.ToLowerInvariant()))
-            return "Top";
-
-        if (!string.IsNullOrEmpty(m_materialAreaName) &&
-            normalized.Contains(m_materialAreaName.ToLowerInvariant()))
-            return "Middle";
-
-        if (!string.IsNullOrEmpty(m_proxyUiName) &&
-            normalized.Contains(m_proxyUiName.ToLowerInvariant()))
-            return "Down";
-
-        // If the active page name doesn't match any known option.
-        return string.Empty;
+        return $"{m_levelPrefix}{activeIndex}";
     }
 }
 

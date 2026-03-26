@@ -115,11 +115,11 @@ public class ProxyLabelManager : MonoBehaviour
             m_runtimeActiveLabelsParentOverride = null;
         }
 
-        int activeIndex = GetActiveLabelsParentIndex();
+        int activeIndex = GetActiveLabelsParentIndexInternal();
         return GetLabelsParentAtIndex(activeIndex);
     }
 
-    private int GetActiveLabelsParentIndex()
+    private int GetActiveLabelsParentIndexInternal()
     {
         if (IsValidLabelsParentIndex(m_runtimeActiveLabelsParentIndex))
         {
@@ -153,6 +153,15 @@ public class ProxyLabelManager : MonoBehaviour
         return -1;
     }
 
+    /// <summary>
+    /// Returns the index into the authored <c>Label Parents</c> list for the currently active labels parent.
+    /// Returns -1 if no active labels parent can be resolved.
+    /// </summary>
+    public int GetActiveLabelsParentIndex()
+    {
+        return GetActiveLabelsParentIndexInternal();
+    }
+
     private Transform GetLabelsParentAtIndex(int index)
     {
         if (index < 0 || index >= m_labelParents.Count)
@@ -180,7 +189,7 @@ public class ProxyLabelManager : MonoBehaviour
 
     public bool TrySwitchToPreviousLabelsParent(ProxySetHorizontalTransitionDirection direction)
     {
-        int activeIndex = GetActiveLabelsParentIndex();
+        int activeIndex = GetActiveLabelsParentIndexInternal();
         if (activeIndex <= 0)
             return false;
 
@@ -189,7 +198,7 @@ public class ProxyLabelManager : MonoBehaviour
 
     public bool TrySwitchToNextLabelsParent(ProxySetHorizontalTransitionDirection direction)
     {
-        int activeIndex = GetActiveLabelsParentIndex();
+        int activeIndex = GetActiveLabelsParentIndexInternal();
         if (activeIndex < 0 || activeIndex >= m_labelParents.Count - 1)
             return false;
 
@@ -532,7 +541,7 @@ public class ProxyLabelManager : MonoBehaviour
         if (!IsValidLabelsParentIndex(targetIndex))
             return false;
 
-        int activeIndex = GetActiveLabelsParentIndex();
+        int activeIndex = GetActiveLabelsParentIndexInternal();
         var current = GetLabelsParentAtIndex(activeIndex);
         var target = GetLabelsParentAtIndex(targetIndex);
         if (target == null)
