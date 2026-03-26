@@ -10,6 +10,9 @@ public class SpatialHierarchyChildViewManager : MonoBehaviour
     [SerializeField] private List<Transform> m_levelRoots = new();
     [SerializeField] private Transform m_parentLabelsRoot;
     [SerializeField] private Transform m_childLabelsRoot;
+    [SerializeField] private int m_toggleableLevelIndex = 1;
+    [SerializeField] private Transform m_alternateLevelRoot;
+    [SerializeField] private bool m_startWithAlternateLevel;
     [SerializeField] private bool m_forceSequentialMarkerBindings;
     [SerializeField] private Transform m_sequentialMarkerBindingRoot;
     [SerializeField] private int m_sequentialStartMarkerIndex;
@@ -18,6 +21,8 @@ public class SpatialHierarchyChildViewManager : MonoBehaviour
 
     private readonly List<GameObject> m_rememberedSelections = new();
     private readonly List<int> m_rememberedVisibleIndices = new();
+    private readonly List<Transform> m_effectiveLevelsBuffer = new();
+    private bool m_useAlternateLevel;
 
     public static bool TryHandleTapOnCurrentSelection()
     {
@@ -71,17 +76,49 @@ public class SpatialHierarchyChildViewManager : MonoBehaviour
         return false;
     }
 
+    public static bool TryHandleDoubleTapToggleLevelVariant()
+    {
+        var managers = FindObjectsByType<SpatialHierarchyChildViewManager>(FindObjectsInactive.Include, FindObjectsSortMode.None);
+        for (int i = 0; i < managers.Length; i++)
+        {
+            var manager = managers[i];
+            if (manager != null && manager.isActiveAndEnabled && manager.TryToggleAlternateLevelRoot())
+                return true;
+        }
+
+        return false;
+    }
+
     private void Reset()
     {
         m_labelManager = FindFirstObjectByType<ProxyLabelManager>();
         RebuildLegacyLevelsIfNeeded();
+        if (m_toggleableLevelIndex < 0)
+            m_toggleableLevelIndex = 1;
         if (m_sequentialMarkerBindingRoot == null)
             m_sequentialMarkerBindingRoot = m_childLabelsRoot;
     }
 
     private void OnEnable()
     {
+        m_useAlternateLevel = m_startWithAlternateLevel;
         ResolveReferences();
+    }
+
+    public int GetCurrentLogicalLevelIndex()
+    {
+        ResolveReferences();
+        var levels = GetConfiguredLevels();
+        var selected = EventSystem.current != null ? EventSystem.current.currentSelectedGameObject : null;
+
+        int levelIndex = GetCurrentLevelIndex(levels, selected);
+        if (levelIndex >= 0)
+            return levelIndex;
+
+        if (m_labelManager != null)
+            return FindLevelIndexForRoot(levels, m_labelManager.GetActiveLabelsParent());
+
+        return -1;
     }
 
     public bool TryHandleTapSelected()
@@ -184,6 +221,43 @@ public class SpatialHierarchyChildViewManager : MonoBehaviour
         return true;
     }
 
+    public bool TryToggleAlternateLevelRoot()
+    {
+        ResolveReferences();
+        if (!HasAlternateLevelVariant())
+            return false;
+
+        var levelsBeforeToggle = GetConfiguredLevels();
+        int currentLevelIndex = ResolveCurrentLevelIndex(levelsBeforeToggle);
+        Transform markerSource = ResolveSelectedNodeForCurrentLevel(levelsBeforeToggle, currentLevelIndex);
+
+        var selectedMarkers = new List<int>();
+        if (currentLevelIndex >= m_toggleableLevelIndex)
+            CollectNodeMarkers(markerSource, selectedMarkers);
+
+        m_useAlternateLevel = !m_useAlternateLevel;
+
+        var levelsAfterToggle = GetConfiguredLevels();
+        if (currentLevelIndex == m_toggleableLevelIndex)
+        {
+            var toggledRoot = levelsAfterToggle[m_toggleableLevelIndex];
+            PrepareLevelSwitch(levelsAfterToggle, m_toggleableLevelIndex);
+            Canvas.ForceUpdateCanvases();
+            SelectBestMatchOrFallback(levelsAfterToggle, m_toggleableLevelIndex, toggledRoot, selectedMarkers);
+            RefreshScroller(toggledRoot);
+            Log($"Toggled logical level {m_toggleableLevelIndex} to {toggledRoot.name}.");
+            return true;
+        }
+
+        if (currentLevelIndex >= 0)
+            ShowOnlyLevel(levelsAfterToggle, currentLevelIndex);
+        else
+            HideInactiveToggleLevelRoot();
+
+        Log($"Toggled logical level {m_toggleableLevelIndex} root.");
+        return true;
+    }
+
     private void ShowLevelForMarkers(Transform targetRoot, List<int> markers, string logMessage)
     {
         if (targetRoot == null)
@@ -219,6 +293,51 @@ public class SpatialHierarchyChildViewManager : MonoBehaviour
         m_labelManager.SetActiveLabelsParent(levels[targetLevelIndex]);
     }
 
+    private int ResolveCurrentLevelIndex(List<Transform> levels)
+    {
+        var selected = EventSystem.current != null ? EventSystem.current.currentSelectedGameObject : null;
+        int currentLevelIndex = GetCurrentLevelIndex(levels, selected);
+        if (currentLevelIndex >= 0)
+            return currentLevelIndex;
+
+        return m_labelManager != null
+            ? FindLevelIndexForRoot(levels, m_labelManager.GetActiveLabelsParent())
+            : -1;
+    }
+
+    private Transform ResolveSelectedNodeForCurrentLevel(List<Transform> levels, int currentLevelIndex)
+    {
+        if (levels == null || currentLevelIndex < 0 || currentLevelIndex >= levels.Count || EventSystem.current == null)
+            return null;
+
+        var selected = EventSystem.current.currentSelectedGameObject;
+        if (selected == null)
+            return null;
+
+        return GetDirectChildUnder(selected.transform, levels[currentLevelIndex]);
+    }
+
+    private void SelectBestMatchOrFallback(List<Transform> levels, int levelIndex, Transform targetRoot, List<int> markers)
+    {
+        var matched = FindBestMatchingChild(targetRoot, markers);
+        if (matched != null)
+        {
+            Select(matched.gameObject);
+            RememberSelectionAtLevel(levels, levelIndex, matched.gameObject);
+            return;
+        }
+
+        if (TryRestoreRememberedSelection(levels, levelIndex))
+            return;
+
+        var first = FindFirstSelectableUnder(targetRoot);
+        if (first == null)
+            return;
+
+        Select(first);
+        RememberSelectionAtLevel(levels, levelIndex, first);
+    }
+
     private void RememberSelectionAtLevel(List<Transform> levels, int levelIndex, GameObject selectedObject)
     {
         EnsureRememberedSelectionCapacity(levels.Count);
@@ -233,6 +352,7 @@ public class SpatialHierarchyChildViewManager : MonoBehaviour
 
         RebuildLegacyLevelsIfNeeded();
         ApplySequentialMarkerBindingsIfNeeded();
+        HideInactiveToggleLevelRoot();
     }
 
     private static Transform GetDirectChildUnder(Transform candidate, Transform parent)
@@ -265,7 +385,14 @@ public class SpatialHierarchyChildViewManager : MonoBehaviour
     private List<Transform> GetConfiguredLevels()
     {
         RebuildLegacyLevelsIfNeeded();
-        return m_levelRoots;
+        m_effectiveLevelsBuffer.Clear();
+        for (int i = 0; i < m_levelRoots.Count; i++)
+            m_effectiveLevelsBuffer.Add(m_levelRoots[i]);
+
+        if (HasAlternateLevelVariant() && m_toggleableLevelIndex < m_effectiveLevelsBuffer.Count)
+            m_effectiveLevelsBuffer[m_toggleableLevelIndex] = GetActiveToggleLevelRoot();
+
+        return m_effectiveLevelsBuffer;
     }
 
     private void EnsureRememberedSelectionCapacity(int count)
@@ -333,9 +460,16 @@ public class SpatialHierarchyChildViewManager : MonoBehaviour
             level.gameObject.SetActive(true);
             m_labelManager.RestoreAuthoredLabelsParentState(level);
         }
+
+        var inactiveToggleRoot = GetInactiveToggleLevelRoot();
+        if (inactiveToggleRoot == null)
+            return;
+
+        inactiveToggleRoot.gameObject.SetActive(true);
+        m_labelManager.RestoreAuthoredLabelsParentState(inactiveToggleRoot);
     }
 
-    private static void ShowOnlyLevel(List<Transform> levels, int targetLevelIndex)
+    private void ShowOnlyLevel(List<Transform> levels, int targetLevelIndex)
     {
         if (levels == null)
             return;
@@ -348,6 +482,8 @@ public class SpatialHierarchyChildViewManager : MonoBehaviour
 
             level.gameObject.SetActive(i == targetLevelIndex);
         }
+
+        HideInactiveToggleLevelRoot();
     }
 
     private static void CollectMarkers(Transform root, List<int> destination)
@@ -471,6 +607,48 @@ public class SpatialHierarchyChildViewManager : MonoBehaviour
         return indices != null && indices.Count == 1 && indices[0] == markerIndex;
     }
 
+    private bool HasAlternateLevelVariant()
+    {
+        return m_alternateLevelRoot != null &&
+               m_levelRoots != null &&
+               m_toggleableLevelIndex >= 0 &&
+               m_toggleableLevelIndex < m_levelRoots.Count &&
+               m_levelRoots[m_toggleableLevelIndex] != null;
+    }
+
+    private Transform GetPrimaryToggleLevelRoot()
+    {
+        if (m_levelRoots == null || m_toggleableLevelIndex < 0 || m_toggleableLevelIndex >= m_levelRoots.Count)
+            return null;
+
+        return m_levelRoots[m_toggleableLevelIndex];
+    }
+
+    private Transform GetActiveToggleLevelRoot()
+    {
+        if (!HasAlternateLevelVariant())
+            return GetPrimaryToggleLevelRoot();
+
+        return m_useAlternateLevel ? m_alternateLevelRoot : GetPrimaryToggleLevelRoot();
+    }
+
+    private Transform GetInactiveToggleLevelRoot()
+    {
+        if (!HasAlternateLevelVariant())
+            return null;
+
+        var primary = GetPrimaryToggleLevelRoot();
+        var active = GetActiveToggleLevelRoot();
+        return active == primary ? m_alternateLevelRoot : primary;
+    }
+
+    private void HideInactiveToggleLevelRoot()
+    {
+        var inactiveRoot = GetInactiveToggleLevelRoot();
+        if (inactiveRoot != null)
+            inactiveRoot.gameObject.SetActive(false);
+    }
+
     private static Transform FindBestMatchingChild(Transform root, List<int> markers)
     {
         if (root == null || markers == null || markers.Count == 0)
@@ -497,7 +675,7 @@ public class SpatialHierarchyChildViewManager : MonoBehaviour
                     score++;
             }
 
-            if (score <= 0 || score < bestScore)
+            if (score <= 0 || score <= bestScore)
                 continue;
 
             bestScore = score;

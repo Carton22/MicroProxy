@@ -12,6 +12,7 @@ public class ActiveProxyPageTextUpdater : MonoBehaviour
     [Header("Sources")]
     [Tooltip("ProxyLabelManager that owns the page transforms and can tell us which one is active.")]
     [SerializeField] private ProxyLabelManager m_proxyLabelManager;
+    [SerializeField] private SpatialHierarchyChildViewManager m_hierarchyManager;
 
     [Header("Target")]
     [Tooltip("TMP text to update.")]
@@ -31,6 +32,7 @@ public class ActiveProxyPageTextUpdater : MonoBehaviour
     private void Reset()
     {
         m_proxyLabelManager = FindFirstObjectByType<ProxyLabelManager>();
+        m_hierarchyManager = FindFirstObjectByType<SpatialHierarchyChildViewManager>();
         m_targetText = GetComponentInChildren<TMP_Text>(true);
     }
 
@@ -60,9 +62,16 @@ public class ActiveProxyPageTextUpdater : MonoBehaviour
     private void TryUpdateText(bool force)
     {
         if (m_proxyLabelManager == null)
+            m_proxyLabelManager = FindFirstObjectByType<ProxyLabelManager>();
+        if (m_hierarchyManager == null)
+            m_hierarchyManager = FindFirstObjectByType<SpatialHierarchyChildViewManager>();
+
+        if (m_proxyLabelManager == null && m_hierarchyManager == null)
             return;
 
-        int activeIndex = m_proxyLabelManager.GetActiveLabelsParentIndex();
+        int activeIndex = m_hierarchyManager != null
+            ? m_hierarchyManager.GetCurrentLogicalLevelIndex()
+            : m_proxyLabelManager.GetActiveLabelsParentIndex();
         if (!force && activeIndex == m_lastActiveIndex)
             return;
 
@@ -80,4 +89,3 @@ public class ActiveProxyPageTextUpdater : MonoBehaviour
         return $"{m_levelPrefix}{activeIndex}";
     }
 }
-

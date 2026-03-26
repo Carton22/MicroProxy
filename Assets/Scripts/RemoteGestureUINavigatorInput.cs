@@ -93,6 +93,8 @@ public class RemoteGestureUINavigatorInput : MonoBehaviour
             case "taptap":
             case "double_tap":
             case "doubletap":
+                if (SpatialHierarchyChildViewManager.TryHandleDoubleTapToggleLevelVariant())
+                    break;
                 m_uiNavigator.DoubleTapSelected();
                 break;
 
