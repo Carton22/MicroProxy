@@ -384,7 +384,7 @@ PrefabInstance:
       objectReference: {fileID: 6311396863337633816, guid: d544cc1da1b804501968f7f23cac5360, type: 2}
     - target: {fileID: 1149955376707992541, guid: cd15fd330deeb48b6bcab0b285c5e949, type: 3}
       propertyPath: m_text
-      value: EE
+      value: Drawer6
       objectReference: {fileID: 0}
     - target: {fileID: 1149955376707992541, guid: cd15fd330deeb48b6bcab0b285c5e949, type: 3}
       propertyPath: m_fontSize
@@ -505,6 +505,9 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 4235160468344426946, guid: cd15fd330deeb48b6bcab0b285c5e949, type: 3}
       insertIndex: -1
       addedObject: {fileID: 1353770954}
+    - targetCorrespondingSourceObject: {fileID: 917327442009581178, guid: cd15fd330deeb48b6bcab0b285c5e949, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 0}
   m_SourcePrefab: {fileID: 100100000, guid: cd15fd330deeb48b6bcab0b285c5e949, type: 3}
 --- !u!224 &165049125 stripped
 RectTransform:
@@ -556,7 +559,7 @@ PrefabInstance:
       objectReference: {fileID: 6311396863337633816, guid: d544cc1da1b804501968f7f23cac5360, type: 2}
     - target: {fileID: 1149955376707992541, guid: cd15fd330deeb48b6bcab0b285c5e949, type: 3}
       propertyPath: m_text
-      value: EE
+      value: Drawer16
       objectReference: {fileID: 0}
     - target: {fileID: 1149955376707992541, guid: cd15fd330deeb48b6bcab0b285c5e949, type: 3}
       propertyPath: m_fontSize
@@ -673,6 +676,9 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 4235160468344426946, guid: cd15fd330deeb48b6bcab0b285c5e949, type: 3}
       insertIndex: -1
       addedObject: {fileID: 1165099145}
+    - targetCorrespondingSourceObject: {fileID: 917327442009581178, guid: cd15fd330deeb48b6bcab0b285c5e949, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 0}
   m_SourcePrefab: {fileID: 100100000, guid: cd15fd330deeb48b6bcab0b285c5e949, type: 3}
 --- !u!224 &221088782 stripped
 RectTransform:
@@ -859,6 +865,7 @@ MonoBehaviour:
   m_focusAnchorY: 0
   m_edgeAlpha: 0.4
   m_hiddenAlpha: 0
+  m_horizontalPeekOutsideWindowItems: 0
   m_disableRaycastsForHiddenItems: 1
   m_hideLabelsCompletelyOutsideWindow: 1
   m_hardCullAlphaThreshold: 0.02
@@ -876,6 +883,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_scroller: {fileID: 243943090}
+  m_useMetaRayBanPreset: 1
 --- !u!1 &251487946
 GameObject:
   m_ObjectHideFlags: 0
@@ -1753,7 +1761,7 @@ PrefabInstance:
       objectReference: {fileID: 6311396863337633816, guid: d544cc1da1b804501968f7f23cac5360, type: 2}
     - target: {fileID: 1149955376707992541, guid: cd15fd330deeb48b6bcab0b285c5e949, type: 3}
       propertyPath: m_text
-      value: Bio
+      value: Drawer4
       objectReference: {fileID: 0}
     - target: {fileID: 1149955376707992541, guid: cd15fd330deeb48b6bcab0b285c5e949, type: 3}
       propertyPath: m_fontSize
@@ -1874,6 +1882,9 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 4235160468344426946, guid: cd15fd330deeb48b6bcab0b285c5e949, type: 3}
       insertIndex: -1
       addedObject: {fileID: 1239170447}
+    - targetCorrespondingSourceObject: {fileID: 917327442009581178, guid: cd15fd330deeb48b6bcab0b285c5e949, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 0}
   m_SourcePrefab: {fileID: 100100000, guid: cd15fd330deeb48b6bcab0b285c5e949, type: 3}
 --- !u!224 &472357247 stripped
 RectTransform:
@@ -2430,7 +2441,7 @@ PrefabInstance:
       objectReference: {fileID: 6311396863337633816, guid: d544cc1da1b804501968f7f23cac5360, type: 2}
     - target: {fileID: 1149955376707992541, guid: cd15fd330deeb48b6bcab0b285c5e949, type: 3}
       propertyPath: m_text
-      value: CS
+      value: Drawer17
       objectReference: {fileID: 0}
     - target: {fileID: 1149955376707992541, guid: cd15fd330deeb48b6bcab0b285c5e949, type: 3}
       propertyPath: m_fontSize
@@ -2551,6 +2562,9 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 4235160468344426946, guid: cd15fd330deeb48b6bcab0b285c5e949, type: 3}
       insertIndex: -1
       addedObject: {fileID: 825962974}
+    - targetCorrespondingSourceObject: {fileID: 917327442009581178, guid: cd15fd330deeb48b6bcab0b285c5e949, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 0}
   m_SourcePrefab: {fileID: 100100000, guid: cd15fd330deeb48b6bcab0b285c5e949, type: 3}
 --- !u!224 &825962965 stripped
 RectTransform:
@@ -3046,7 +3060,7 @@ PrefabInstance:
       objectReference: {fileID: 6311396863337633816, guid: d544cc1da1b804501968f7f23cac5360, type: 2}
     - target: {fileID: 1149955376707992541, guid: cd15fd330deeb48b6bcab0b285c5e949, type: 3}
       propertyPath: m_text
-      value: Rob
+      value: Drawer14
       objectReference: {fileID: 0}
     - target: {fileID: 1149955376707992541, guid: cd15fd330deeb48b6bcab0b285c5e949, type: 3}
       propertyPath: m_fontSize
@@ -3163,6 +3177,9 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 4235160468344426946, guid: cd15fd330deeb48b6bcab0b285c5e949, type: 3}
       insertIndex: -1
       addedObject: {fileID: 934372681}
+    - targetCorrespondingSourceObject: {fileID: 917327442009581178, guid: cd15fd330deeb48b6bcab0b285c5e949, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 0}
   m_SourcePrefab: {fileID: 100100000, guid: cd15fd330deeb48b6bcab0b285c5e949, type: 3}
 --- !u!224 &934372672 stripped
 RectTransform:
@@ -3203,7 +3220,7 @@ PrefabInstance:
       objectReference: {fileID: 6311396863337633816, guid: d544cc1da1b804501968f7f23cac5360, type: 2}
     - target: {fileID: 1149955376707992541, guid: cd15fd330deeb48b6bcab0b285c5e949, type: 3}
       propertyPath: m_text
-      value: HCI
+      value: Drawer18
       objectReference: {fileID: 0}
     - target: {fileID: 1149955376707992541, guid: cd15fd330deeb48b6bcab0b285c5e949, type: 3}
       propertyPath: m_fontSize
@@ -3324,6 +3341,9 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 4235160468344426946, guid: cd15fd330deeb48b6bcab0b285c5e949, type: 3}
       insertIndex: -1
       addedObject: {fileID: 955191325}
+    - targetCorrespondingSourceObject: {fileID: 917327442009581178, guid: cd15fd330deeb48b6bcab0b285c5e949, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 0}
   m_SourcePrefab: {fileID: 100100000, guid: cd15fd330deeb48b6bcab0b285c5e949, type: 3}
 --- !u!224 &955191323 stripped
 RectTransform:
@@ -3369,7 +3389,7 @@ PrefabInstance:
       objectReference: {fileID: 6311396863337633816, guid: d544cc1da1b804501968f7f23cac5360, type: 2}
     - target: {fileID: 1149955376707992541, guid: cd15fd330deeb48b6bcab0b285c5e949, type: 3}
       propertyPath: m_text
-      value: EE
+      value: Drawer12
       objectReference: {fileID: 0}
     - target: {fileID: 1149955376707992541, guid: cd15fd330deeb48b6bcab0b285c5e949, type: 3}
       propertyPath: m_fontSize
@@ -3486,6 +3506,9 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 4235160468344426946, guid: cd15fd330deeb48b6bcab0b285c5e949, type: 3}
       insertIndex: -1
       addedObject: {fileID: 1053617568}
+    - targetCorrespondingSourceObject: {fileID: 917327442009581178, guid: cd15fd330deeb48b6bcab0b285c5e949, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 0}
   m_SourcePrefab: {fileID: 100100000, guid: cd15fd330deeb48b6bcab0b285c5e949, type: 3}
 --- !u!224 &1052829065 stripped
 RectTransform:
@@ -3531,7 +3554,7 @@ PrefabInstance:
       objectReference: {fileID: 6311396863337633816, guid: d544cc1da1b804501968f7f23cac5360, type: 2}
     - target: {fileID: 1149955376707992541, guid: cd15fd330deeb48b6bcab0b285c5e949, type: 3}
       propertyPath: m_text
-      value: CS
+      value: Drawer1
       objectReference: {fileID: 0}
     - target: {fileID: 1149955376707992541, guid: cd15fd330deeb48b6bcab0b285c5e949, type: 3}
       propertyPath: m_fontSize
@@ -3664,6 +3687,9 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 4235160468344426946, guid: cd15fd330deeb48b6bcab0b285c5e949, type: 3}
       insertIndex: -1
       addedObject: {fileID: 1057377239}
+    - targetCorrespondingSourceObject: {fileID: 917327442009581178, guid: cd15fd330deeb48b6bcab0b285c5e949, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 0}
   m_SourcePrefab: {fileID: 100100000, guid: cd15fd330deeb48b6bcab0b285c5e949, type: 3}
 --- !u!224 &1057377230 stripped
 RectTransform:
@@ -3700,7 +3726,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 1149955376707992541, guid: cd15fd330deeb48b6bcab0b285c5e949, type: 3}
       propertyPath: m_text
-      value: Car1
+      value: Car2
       objectReference: {fileID: 0}
     - target: {fileID: 1149955376707992541, guid: cd15fd330deeb48b6bcab0b285c5e949, type: 3}
       propertyPath: m_fontSize
@@ -4199,7 +4225,7 @@ PrefabInstance:
       objectReference: {fileID: 6311396863337633816, guid: d544cc1da1b804501968f7f23cac5360, type: 2}
     - target: {fileID: 1149955376707992541, guid: cd15fd330deeb48b6bcab0b285c5e949, type: 3}
       propertyPath: m_text
-      value: HCI
+      value: Drawer15
       objectReference: {fileID: 0}
     - target: {fileID: 1149955376707992541, guid: cd15fd330deeb48b6bcab0b285c5e949, type: 3}
       propertyPath: m_fontSize
@@ -4316,6 +4342,9 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 4235160468344426946, guid: cd15fd330deeb48b6bcab0b285c5e949, type: 3}
       insertIndex: -1
       addedObject: {fileID: 1183172713}
+    - targetCorrespondingSourceObject: {fileID: 917327442009581178, guid: cd15fd330deeb48b6bcab0b285c5e949, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 0}
   m_SourcePrefab: {fileID: 100100000, guid: cd15fd330deeb48b6bcab0b285c5e949, type: 3}
 --- !u!224 &1183172704 stripped
 RectTransform:
@@ -4561,6 +4590,7 @@ GameObject:
   - component: {fileID: 1272610421}
   - component: {fileID: 1272610422}
   - component: {fileID: 1272610423}
+  - component: {fileID: 1272610424}
   m_Layer: 0
   m_Name: RightProxyLabelManager
   m_TagString: Untagged
@@ -4627,6 +4657,31 @@ MonoBehaviour:
   m_sequentialMarkerBindingRoot: {fileID: 243943085}
   m_sequentialStartMarkerIndex: 0
   m_selectFirstVisibleChild: 1
+  m_debugLog: 0
+--- !u!114 &1272610424
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1272610420}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9c5a92b64b3346cca1f7d12766a35c4e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_labelManager: {fileID: 1272610422}
+  m_pageRoots:
+  - {fileID: 2005732375}
+  - {fileID: 775361879}
+  - {fileID: 243943085}
+  - {fileID: 808040191}
+  m_visibleCardCount: 3
+  m_backplatePadding: {x: 36, y: 18}
+  m_edgeFadeWidth: 82
+  m_cornerRadius: 28
+  m_backplateColor: {r: 0.05, g: 0.09, b: 0.13, a: 0.24}
+  m_edgeFadeColor: {r: 0.05, g: 0.09, b: 0.13, a: 0.42}
   m_debugLog: 0
 --- !u!1001 &1274361311
 PrefabInstance:
@@ -4984,7 +5039,7 @@ PrefabInstance:
       objectReference: {fileID: 6311396863337633816, guid: d544cc1da1b804501968f7f23cac5360, type: 2}
     - target: {fileID: 1149955376707992541, guid: cd15fd330deeb48b6bcab0b285c5e949, type: 3}
       propertyPath: m_text
-      value: CS
+      value: Drawer11
       objectReference: {fileID: 0}
     - target: {fileID: 1149955376707992541, guid: cd15fd330deeb48b6bcab0b285c5e949, type: 3}
       propertyPath: m_fontSize
@@ -5105,6 +5160,9 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 4235160468344426946, guid: cd15fd330deeb48b6bcab0b285c5e949, type: 3}
       insertIndex: -1
       addedObject: {fileID: 1452637946}
+    - targetCorrespondingSourceObject: {fileID: 917327442009581178, guid: cd15fd330deeb48b6bcab0b285c5e949, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 0}
   m_SourcePrefab: {fileID: 100100000, guid: cd15fd330deeb48b6bcab0b285c5e949, type: 3}
 --- !u!224 &1450116416 stripped
 RectTransform:
@@ -5150,7 +5208,7 @@ PrefabInstance:
       objectReference: {fileID: 6311396863337633816, guid: d544cc1da1b804501968f7f23cac5360, type: 2}
     - target: {fileID: 1149955376707992541, guid: cd15fd330deeb48b6bcab0b285c5e949, type: 3}
       propertyPath: m_text
-      value: HCI
+      value: Drawer9
       objectReference: {fileID: 0}
     - target: {fileID: 1149955376707992541, guid: cd15fd330deeb48b6bcab0b285c5e949, type: 3}
       propertyPath: m_fontSize
@@ -5283,6 +5341,9 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 4235160468344426946, guid: cd15fd330deeb48b6bcab0b285c5e949, type: 3}
       insertIndex: -1
       addedObject: {fileID: 1462132924}
+    - targetCorrespondingSourceObject: {fileID: 917327442009581178, guid: cd15fd330deeb48b6bcab0b285c5e949, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 0}
   m_SourcePrefab: {fileID: 100100000, guid: cd15fd330deeb48b6bcab0b285c5e949, type: 3}
 --- !u!224 &1462132915 stripped
 RectTransform:
@@ -5358,7 +5419,7 @@ PrefabInstance:
       objectReference: {fileID: 6311396863337633816, guid: d544cc1da1b804501968f7f23cac5360, type: 2}
     - target: {fileID: 1149955376707992541, guid: cd15fd330deeb48b6bcab0b285c5e949, type: 3}
       propertyPath: m_text
-      value: Chem
+      value: Drawer19
       objectReference: {fileID: 0}
     - target: {fileID: 1149955376707992541, guid: cd15fd330deeb48b6bcab0b285c5e949, type: 3}
       propertyPath: m_fontSize
@@ -5479,6 +5540,9 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 4235160468344426946, guid: cd15fd330deeb48b6bcab0b285c5e949, type: 3}
       insertIndex: -1
       addedObject: {fileID: 1528323065}
+    - targetCorrespondingSourceObject: {fileID: 917327442009581178, guid: cd15fd330deeb48b6bcab0b285c5e949, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 0}
   m_SourcePrefab: {fileID: 100100000, guid: cd15fd330deeb48b6bcab0b285c5e949, type: 3}
 --- !u!224 &1528323063 stripped
 RectTransform:
@@ -5641,7 +5705,7 @@ PrefabInstance:
       objectReference: {fileID: 6311396863337633816, guid: d544cc1da1b804501968f7f23cac5360, type: 2}
     - target: {fileID: 1149955376707992541, guid: cd15fd330deeb48b6bcab0b285c5e949, type: 3}
       propertyPath: m_text
-      value: Bio
+      value: Drawer13
       objectReference: {fileID: 0}
     - target: {fileID: 1149955376707992541, guid: cd15fd330deeb48b6bcab0b285c5e949, type: 3}
       propertyPath: m_fontSize
@@ -5758,6 +5822,9 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 4235160468344426946, guid: cd15fd330deeb48b6bcab0b285c5e949, type: 3}
       insertIndex: -1
       addedObject: {fileID: 1886000786}
+    - targetCorrespondingSourceObject: {fileID: 917327442009581178, guid: cd15fd330deeb48b6bcab0b285c5e949, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 0}
   m_SourcePrefab: {fileID: 100100000, guid: cd15fd330deeb48b6bcab0b285c5e949, type: 3}
 --- !u!224 &1600931725 stripped
 RectTransform:
@@ -5778,7 +5845,7 @@ PrefabInstance:
       objectReference: {fileID: 6311396863337633816, guid: d544cc1da1b804501968f7f23cac5360, type: 2}
     - target: {fileID: 1149955376707992541, guid: cd15fd330deeb48b6bcab0b285c5e949, type: 3}
       propertyPath: m_text
-      value: HCI
+      value: Drawer3
       objectReference: {fileID: 0}
     - target: {fileID: 1149955376707992541, guid: cd15fd330deeb48b6bcab0b285c5e949, type: 3}
       propertyPath: m_fontSize
@@ -5899,6 +5966,9 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 4235160468344426946, guid: cd15fd330deeb48b6bcab0b285c5e949, type: 3}
       insertIndex: -1
       addedObject: {fileID: 1604337922}
+    - targetCorrespondingSourceObject: {fileID: 917327442009581178, guid: cd15fd330deeb48b6bcab0b285c5e949, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 0}
   m_SourcePrefab: {fileID: 100100000, guid: cd15fd330deeb48b6bcab0b285c5e949, type: 3}
 --- !u!224 &1604337913 stripped
 RectTransform:
@@ -6252,7 +6322,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 1149955376707992541, guid: cd15fd330deeb48b6bcab0b285c5e949, type: 3}
       propertyPath: m_text
-      value: Car0
+      value: Car1
       objectReference: {fileID: 0}
     - target: {fileID: 1149955376707992541, guid: cd15fd330deeb48b6bcab0b285c5e949, type: 3}
       propertyPath: m_fontSize
@@ -6397,7 +6467,7 @@ PrefabInstance:
       objectReference: {fileID: 6311396863337633816, guid: d544cc1da1b804501968f7f23cac5360, type: 2}
     - target: {fileID: 1149955376707992541, guid: cd15fd330deeb48b6bcab0b285c5e949, type: 3}
       propertyPath: m_text
-      value: Rob
+      value: Drawer20
       objectReference: {fileID: 0}
     - target: {fileID: 1149955376707992541, guid: cd15fd330deeb48b6bcab0b285c5e949, type: 3}
       propertyPath: m_fontSize
@@ -6518,6 +6588,9 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 4235160468344426946, guid: cd15fd330deeb48b6bcab0b285c5e949, type: 3}
       insertIndex: -1
       addedObject: {fileID: 1636174719}
+    - targetCorrespondingSourceObject: {fileID: 917327442009581178, guid: cd15fd330deeb48b6bcab0b285c5e949, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 0}
   m_SourcePrefab: {fileID: 100100000, guid: cd15fd330deeb48b6bcab0b285c5e949, type: 3}
 --- !u!224 &1636174717 stripped
 RectTransform:
@@ -7014,7 +7087,7 @@ PrefabInstance:
       objectReference: {fileID: 6311396863337633816, guid: d544cc1da1b804501968f7f23cac5360, type: 2}
     - target: {fileID: 1149955376707992541, guid: cd15fd330deeb48b6bcab0b285c5e949, type: 3}
       propertyPath: m_text
-      value: CS
+      value: Drawer10
       objectReference: {fileID: 0}
     - target: {fileID: 1149955376707992541, guid: cd15fd330deeb48b6bcab0b285c5e949, type: 3}
       propertyPath: m_fontSize
@@ -7131,6 +7204,9 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 4235160468344426946, guid: cd15fd330deeb48b6bcab0b285c5e949, type: 3}
       insertIndex: -1
       addedObject: {fileID: 1783306842}
+    - targetCorrespondingSourceObject: {fileID: 917327442009581178, guid: cd15fd330deeb48b6bcab0b285c5e949, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 0}
   m_SourcePrefab: {fileID: 100100000, guid: cd15fd330deeb48b6bcab0b285c5e949, type: 3}
 --- !u!224 &1783306833 stripped
 RectTransform:
@@ -7167,7 +7243,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 1149955376707992541, guid: cd15fd330deeb48b6bcab0b285c5e949, type: 3}
       propertyPath: m_text
-      value: Car2
+      value: Car3
       objectReference: {fileID: 0}
     - target: {fileID: 1149955376707992541, guid: cd15fd330deeb48b6bcab0b285c5e949, type: 3}
       propertyPath: m_fontSize
@@ -7316,7 +7392,7 @@ PrefabInstance:
       objectReference: {fileID: 6311396863337633816, guid: d544cc1da1b804501968f7f23cac5360, type: 2}
     - target: {fileID: 1149955376707992541, guid: cd15fd330deeb48b6bcab0b285c5e949, type: 3}
       propertyPath: m_text
-      value: Chem
+      value: Drawer5
       objectReference: {fileID: 0}
     - target: {fileID: 1149955376707992541, guid: cd15fd330deeb48b6bcab0b285c5e949, type: 3}
       propertyPath: m_fontSize
@@ -7437,6 +7513,9 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 4235160468344426946, guid: cd15fd330deeb48b6bcab0b285c5e949, type: 3}
       insertIndex: -1
       addedObject: {fileID: 1839081197}
+    - targetCorrespondingSourceObject: {fileID: 917327442009581178, guid: cd15fd330deeb48b6bcab0b285c5e949, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 0}
   m_SourcePrefab: {fileID: 100100000, guid: cd15fd330deeb48b6bcab0b285c5e949, type: 3}
 --- !u!224 &1839081195 stripped
 RectTransform:
@@ -7482,7 +7561,7 @@ PrefabInstance:
       objectReference: {fileID: 6311396863337633816, guid: d544cc1da1b804501968f7f23cac5360, type: 2}
     - target: {fileID: 1149955376707992541, guid: cd15fd330deeb48b6bcab0b285c5e949, type: 3}
       propertyPath: m_text
-      value: Rob
+      value: Drawer8
       objectReference: {fileID: 0}
     - target: {fileID: 1149955376707992541, guid: cd15fd330deeb48b6bcab0b285c5e949, type: 3}
       propertyPath: m_fontSize
@@ -7619,6 +7698,9 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 4235160468344426946, guid: cd15fd330deeb48b6bcab0b285c5e949, type: 3}
       insertIndex: -1
       addedObject: {fileID: 1853039493}
+    - targetCorrespondingSourceObject: {fileID: 917327442009581178, guid: cd15fd330deeb48b6bcab0b285c5e949, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 0}
   m_SourcePrefab: {fileID: 100100000, guid: cd15fd330deeb48b6bcab0b285c5e949, type: 3}
 --- !u!224 &1853039484 stripped
 RectTransform:
@@ -7691,6 +7773,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_rightHand: {fileID: 1924298972}
   m_socketManager: {fileID: 0}
+  m_listenForRemoteGestureSignals: 0
   m_pinchStrengthThreshold: 0.7
   m_doubleTapMaxIntervalSeconds: 0.4
   m_debugLog: 0
@@ -7929,11 +8012,15 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8163557564688415061, guid: a9088ffdc24df41fba5fd6cb1eaf3ead, type: 3}
       propertyPath: m_fontSize
-      value: 200
+      value: 180
       objectReference: {fileID: 0}
     - target: {fileID: 8163557564688415061, guid: a9088ffdc24df41fba5fd6cb1eaf3ead, type: 3}
       propertyPath: m_fontSizeBase
-      value: 135
+      value: 180
+      objectReference: {fileID: 0}
+    - target: {fileID: 8163557564688415061, guid: a9088ffdc24df41fba5fd6cb1eaf3ead, type: 3}
+      propertyPath: m_enableAutoSizing
+      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -8545,7 +8632,7 @@ PrefabInstance:
       objectReference: {fileID: 6311396863337633816, guid: d544cc1da1b804501968f7f23cac5360, type: 2}
     - target: {fileID: 1149955376707992541, guid: cd15fd330deeb48b6bcab0b285c5e949, type: 3}
       propertyPath: m_text
-      value: EE
+      value: Drawer2
       objectReference: {fileID: 0}
     - target: {fileID: 1149955376707992541, guid: cd15fd330deeb48b6bcab0b285c5e949, type: 3}
       propertyPath: m_fontSize
@@ -8666,6 +8753,9 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 4235160468344426946, guid: cd15fd330deeb48b6bcab0b285c5e949, type: 3}
       insertIndex: -1
       addedObject: {fileID: 2008696698}
+    - targetCorrespondingSourceObject: {fileID: 917327442009581178, guid: cd15fd330deeb48b6bcab0b285c5e949, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 0}
   m_SourcePrefab: {fileID: 100100000, guid: cd15fd330deeb48b6bcab0b285c5e949, type: 3}
 --- !u!224 &2008696689 stripped
 RectTransform:
@@ -8829,7 +8919,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 1149955376707992541, guid: cd15fd330deeb48b6bcab0b285c5e949, type: 3}
       propertyPath: m_text
-      value: Car3
+      value: Car4
       objectReference: {fileID: 0}
     - target: {fileID: 1149955376707992541, guid: cd15fd330deeb48b6bcab0b285c5e949, type: 3}
       propertyPath: m_fontSize
@@ -9200,7 +9290,7 @@ PrefabInstance:
       objectReference: {fileID: 6311396863337633816, guid: d544cc1da1b804501968f7f23cac5360, type: 2}
     - target: {fileID: 1149955376707992541, guid: cd15fd330deeb48b6bcab0b285c5e949, type: 3}
       propertyPath: m_text
-      value: EE
+      value: Drawer7
       objectReference: {fileID: 0}
     - target: {fileID: 1149955376707992541, guid: cd15fd330deeb48b6bcab0b285c5e949, type: 3}
       propertyPath: m_fontSize
@@ -9321,6 +9411,9 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 4235160468344426946, guid: cd15fd330deeb48b6bcab0b285c5e949, type: 3}
       insertIndex: -1
       addedObject: {fileID: 2145605779}
+    - targetCorrespondingSourceObject: {fileID: 917327442009581178, guid: cd15fd330deeb48b6bcab0b285c5e949, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 0}
   m_SourcePrefab: {fileID: 100100000, guid: cd15fd330deeb48b6bcab0b285c5e949, type: 3}
 --- !u!224 &2145605770 stripped
 RectTransform:

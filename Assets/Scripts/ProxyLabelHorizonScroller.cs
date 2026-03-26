@@ -72,6 +72,7 @@ public class ProxyLabelHorizonScroller : MonoBehaviour
     [SerializeField] private float m_focusAnchorY = 0f;
     [Range(0f, 1f)] [SerializeField] private float m_edgeAlpha = 0.4f;
     [Range(0f, 1f)] [SerializeField] private float m_hiddenAlpha = 0f;
+    [SerializeField] private float m_horizontalPeekOutsideWindowItems = 0f;
     [SerializeField] private bool m_disableRaycastsForHiddenItems = true;
     [SerializeField] private bool m_hideLabelsCompletelyOutsideWindow = true;
     [SerializeField] private float m_hardCullAlphaThreshold = 0.02f;
@@ -111,7 +112,18 @@ public class ProxyLabelHorizonScroller : MonoBehaviour
         m_edgeScale = Mathf.Max(0.01f, m_edgeScale);
         m_hiddenScale = Mathf.Max(0.01f, m_hiddenScale);
         m_hardCullAlphaThreshold = Mathf.Clamp01(m_hardCullAlphaThreshold);
+        m_horizontalPeekOutsideWindowItems = Mathf.Max(0f, m_horizontalPeekOutsideWindowItems);
         m_postForceRefreshFrames = Mathf.Max(0, m_postForceRefreshFrames);
+    }
+
+    public int VisibleWindowCount => m_visibleRowCount;
+
+    public void Configure(ProxyLabelManager labelManager, RectTransform viewport, RectTransform content, GridLayoutGroup gridLayout)
+    {
+        m_labelManager = labelManager;
+        m_viewport = viewport;
+        m_content = content;
+        m_gridLayout = gridLayout;
     }
 
     /// <summary>
@@ -129,6 +141,45 @@ public class ProxyLabelHorizonScroller : MonoBehaviour
         m_centerSelectedLabel = true;
         m_clampToContentBounds = true;
         m_hideLabelsCompletelyOutsideWindow = true;
+        m_horizontalPeekOutsideWindowItems = 0f;
+
+        if (m_content == null)
+            m_content = transform as RectTransform;
+
+        if (m_viewport == null)
+            m_viewport = m_content;
+
+        if (m_gridLayout == null && m_content != null)
+            m_gridLayout = m_content.GetComponent<GridLayoutGroup>();
+
+        if (m_labelManager == null)
+            m_labelManager = FindFirstObjectByType<ProxyLabelManager>();
+    }
+
+    public void ApplyMetaRayBanHorizontalPreset(int visibleItemCount = 3)
+    {
+        m_scrollAxis = ScrollAxis.Horizontal;
+        m_visibleRowCount = Mathf.Max(1, visibleItemCount);
+        if ((m_visibleRowCount & 1) == 0)
+            m_visibleRowCount += 1;
+
+        m_centerSelectedLabel = true;
+        m_clampToContentBounds = true;
+        m_scrollSmoothTime = 0.16f;
+        m_visualLerpSpeed = 10f;
+        m_focusScale = 1.1f;
+        m_selectedScaleMultiplier = 1.08f;
+        m_edgeScale = 0.82f;
+        m_hiddenScale = 0.68f;
+        m_sideBend = 24f;
+        m_rowBend = 18f;
+        m_edgeAlpha = 0.22f;
+        m_hiddenAlpha = 0.07f;
+        m_disableRaycastsForHiddenItems = true;
+        m_hideLabelsCompletelyOutsideWindow = false;
+        m_horizontalPeekOutsideWindowItems = 1.2f;
+        m_hardCullAlphaThreshold = 0.02f;
+        m_postForceRefreshFrames = Mathf.Max(m_postForceRefreshFrames, 3);
 
         if (m_content == null)
             m_content = transform as RectTransform;
@@ -644,6 +695,7 @@ public class ProxyLabelHorizonScroller : MonoBehaviour
         float focusColumnX = GetInterpolatedPrimaryCoordinate(m_smoothedWindowCenterRow);
         float scrollOffsetX = m_centerSelectedLabel ? m_focusAnchorX - focusColumnX : 0f;
         float halfWindow = (m_visibleRowCount - 1) * 0.5f;
+        float peekWindow = halfWindow + Mathf.Max(0f, m_horizontalPeekOutsideWindowItems);
         float softWindow = halfWindow + 0.85f;
         int selectedPrimaryIndex = m_labelStates[selectedIndex].PrimaryIndex;
         float visibilityWindowCenter = m_centerSelectedLabel
@@ -679,19 +731,33 @@ public class ProxyLabelHorizonScroller : MonoBehaviour
             if (isSelected)
                 targetAlpha = 1f;
 
-            if (m_hideLabelsCompletelyOutsideWindow)
+            if (absVisibilityDistance > halfWindow + 0.001f)
             {
-                if (absVisibilityDistance > halfWindow + 0.001f)
+                if (m_horizontalPeekOutsideWindowItems > 0f)
+                {
+                    float peekT = EaseOutCubic(Mathf.InverseLerp(peekWindow, halfWindow, absVisibilityDistance));
+                    targetAlpha = Mathf.Lerp(0f, Mathf.Max(m_hiddenAlpha, m_edgeAlpha * 0.36f), peekT);
+                    targetScaleFactor = Mathf.Lerp(m_hiddenScale * 0.9f, m_edgeScale * 0.9f, peekT);
+                    yBendOffset -= m_rowBend * (1f - peekT) * 0.35f;
+                    targetAnchoredPosition = state.AuthoredAnchoredPosition + new Vector2(scrollOffsetX, yBendOffset);
+                }
+                else if (m_hideLabelsCompletelyOutsideWindow)
+                {
                     targetAlpha = 0f;
+                }
             }
 
             state.Rect.anchoredPosition = Vector2.Lerp(state.Rect.anchoredPosition, targetAnchoredPosition, lerpFactor);
             state.Rect.localScale = Vector3.Lerp(state.Rect.localScale, state.AuthoredScale * targetScaleFactor, lerpFactor);
             float appliedAlpha = Mathf.Lerp(state.CanvasGroup.alpha, targetAlpha, lerpFactor);
             state.CanvasGroup.alpha = appliedAlpha;
-            bool shouldRender = m_hideLabelsCompletelyOutsideWindow
-                ? absVisibilityDistance <= halfWindow + 0.001f
-                : targetAlpha > m_hardCullAlphaThreshold && appliedAlpha > m_hardCullAlphaThreshold;
+            float renderDistanceLimit = m_hideLabelsCompletelyOutsideWindow || m_horizontalPeekOutsideWindowItems > 0f
+                ? halfWindow + Mathf.Max(0f, m_horizontalPeekOutsideWindowItems) + 0.001f
+                : float.PositiveInfinity;
+            bool shouldRender = absVisibilityDistance <= renderDistanceLimit
+                && targetAlpha > m_hardCullAlphaThreshold
+                && appliedAlpha > m_hardCullAlphaThreshold;
+            bool shouldShowText = shouldRender && absVisibilityDistance <= halfWindow + 0.001f;
 
             if (shouldRender && state.WereGraphicsHiddenLastFrame)
             {
@@ -712,7 +778,7 @@ public class ProxyLabelHorizonScroller : MonoBehaviour
                         continue;
                     }
 
-                    if (!shouldRender)
+                    if (!shouldShowText)
                     {
                         if (!TrySetTextEnabled(state, t, false))
                         {

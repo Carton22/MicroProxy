@@ -361,4 +361,4 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 56549cdaaf4d81e4387b02698fd3daa0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  borderRadius: {x: 10, y: 10, z: 10, w: 10}
+  borderRadius: {x: 22, y: 22, z: 22, w: 22}

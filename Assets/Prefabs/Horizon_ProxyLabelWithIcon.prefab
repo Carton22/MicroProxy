@@ -242,7 +242,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 2100000, guid: b33f91875cac84d99b38d27d92e471f4, type: 2}
-  m_Color: {r: 1, g: 1, b: 1, a: 0.5137255}
+  m_Color: {r: 0.9411765, g: 0.972549, b: 1, a: 0.44313726}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
@@ -302,10 +302,10 @@ MonoBehaviour:
     m_SelectOnRight: {fileID: 0}
   m_Transition: 1
   m_Colors:
-    m_NormalColor: {r: 1, g: 1, b: 1, a: 0.5137255}
-    m_HighlightedColor: {r: 0.8862745, g: 0.9254902, b: 0.96862745, a: 0.72}
-    m_PressedColor: {r: 0.9490196, g: 0.9764706, b: 1, a: 0.84}
-    m_SelectedColor: {r: 0.27058825, g: 0.5647059, b: 0.85882354, a: 0.94}
+    m_NormalColor: {r: 0.9411765, g: 0.972549, b: 1, a: 0.44313726}
+    m_HighlightedColor: {r: 0.9019608, g: 0.9490196, b: 1, a: 0.72}
+    m_PressedColor: {r: 0.9490196, g: 0.98039216, b: 1, a: 0.86}
+    m_SelectedColor: {r: 0.44313726, g: 0.7137255, b: 0.94509804, a: 0.97}
     m_DisabledColor: {r: 0.78431374, g: 0.78431374, b: 0.78431374, a: 0.5019608}
     m_ColorMultiplier: 1
     m_FadeDuration: 0.1
@@ -376,7 +376,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 56549cdaaf4d81e4387b02698fd3daa0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  borderRadius: {x: 15, y: 15, z: 15, w: 15}
+  borderRadius: {x: 22, y: 22, z: 22, w: 22}
 --- !u!1 &7654639388842140000
 GameObject:
   m_ObjectHideFlags: 0
@@ -539,7 +539,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 56549cdaaf4d81e4387b02698fd3daa0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  borderRadius: {x: 15, y: 15, z: 15, w: 15}
+  borderRadius: {x: 22, y: 22, z: 22, w: 22}
 --- !u!114 &8123456789012345606
 MonoBehaviour:
   m_ObjectHideFlags: 0

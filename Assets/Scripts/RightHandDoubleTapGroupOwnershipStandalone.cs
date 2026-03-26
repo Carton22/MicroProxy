@@ -1,8 +1,9 @@
 using UnityEngine;
 
 /// <summary>
-/// Scene-specific double-tap handler for StudyC.
-/// Toggles the logical middle hierarchy level between Cars and Attribute-Owner.
+/// Local double-tap handler for toggling the logical middle hierarchy level.
+/// Remote server double-tap listening is optional so scenes that already use
+/// RemoteGestureUINavigatorInput do not double-handle the same gesture.
 /// </summary>
 [DisallowMultipleComponent]
 public class RightHandDoubleTapGroupOwnershipStandalone : MonoBehaviour
@@ -10,6 +11,7 @@ public class RightHandDoubleTapGroupOwnershipStandalone : MonoBehaviour
     [Header("Scene references")]
     [SerializeField] private OVRHand m_rightHand;
     [SerializeField] private SocketManager m_socketManager;
+    [SerializeField] private bool m_listenForRemoteGestureSignals;
 
     [Header("Pinch settings")]
     [Range(0f, 1f)]
@@ -25,14 +27,14 @@ public class RightHandDoubleTapGroupOwnershipStandalone : MonoBehaviour
 
     private void Awake()
     {
-        ResolveReferences();
+        ResolveReferences(includeSocketManager: m_listenForRemoteGestureSignals);
     }
 
     private void OnEnable()
     {
-        ResolveReferences();
+        ResolveReferences(includeSocketManager: m_listenForRemoteGestureSignals);
 
-        if (m_socketManager != null)
+        if (m_listenForRemoteGestureSignals && m_socketManager != null)
             m_socketManager.OnGestureSignalReceived += OnGestureSignal;
     }
 
@@ -44,12 +46,12 @@ public class RightHandDoubleTapGroupOwnershipStandalone : MonoBehaviour
 
     private void Reset()
     {
-        ResolveReferences();
+        ResolveReferences(includeSocketManager: m_listenForRemoteGestureSignals);
     }
 
     private void Update()
     {
-        ResolveReferences();
+        ResolveReferences(includeSocketManager: false);
         if (m_rightHand == null)
             return;
 
@@ -90,14 +92,14 @@ public class RightHandDoubleTapGroupOwnershipStandalone : MonoBehaviour
         HandleDoubleTap();
     }
 
-    private void ResolveReferences()
+    private void ResolveReferences(bool includeSocketManager)
     {
         if (m_rightHand == null)
             m_rightHand = GetComponent<OVRHand>();
         if (m_rightHand == null)
             m_rightHand = FindFirstObjectByType<OVRHand>();
 
-        if (m_socketManager == null)
+        if (includeSocketManager && m_socketManager == null)
             m_socketManager = FindFirstObjectByType<SocketManager>();
     }
 
