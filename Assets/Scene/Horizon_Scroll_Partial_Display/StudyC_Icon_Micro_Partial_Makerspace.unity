@@ -677,7 +677,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4235160468344426946, guid: cd15fd330deeb48b6bcab0b285c5e949, type: 3}
       propertyPath: m_Name
-      value: Horizon_ProxyLabelWithIcon (8)
+      value: Horizon_ProxyLabelWithIcon (5)
       objectReference: {fileID: 0}
     - target: {fileID: 6770948959124739245, guid: cd15fd330deeb48b6bcab0b285c5e949, type: 3}
       propertyPath: m_Mesh
@@ -848,7 +848,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4235160468344426946, guid: cd15fd330deeb48b6bcab0b285c5e949, type: 3}
       propertyPath: m_Name
-      value: Horizon_ProxyLabelWithIcon (18)
+      value: Horizon_ProxyLabelWithIcon (15)
       objectReference: {fileID: 0}
     - target: {fileID: 6770948959124739245, guid: cd15fd330deeb48b6bcab0b285c5e949, type: 3}
       propertyPath: m_Mesh
@@ -2055,7 +2055,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4235160468344426946, guid: cd15fd330deeb48b6bcab0b285c5e949, type: 3}
       propertyPath: m_Name
-      value: Horizon_ProxyLabelWithIcon (7)
+      value: Horizon_ProxyLabelWithIcon (3)
       objectReference: {fileID: 0}
     - target: {fileID: 6770948959124739245, guid: cd15fd330deeb48b6bcab0b285c5e949, type: 3}
       propertyPath: m_Mesh
@@ -3165,7 +3165,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4235160468344426946, guid: cd15fd330deeb48b6bcab0b285c5e949, type: 3}
       propertyPath: m_Name
-      value: Horizon_ProxyLabelWithIcon (19)
+      value: Horizon_ProxyLabelWithIcon (16)
       objectReference: {fileID: 0}
     - target: {fileID: 5353102674760847547, guid: cd15fd330deeb48b6bcab0b285c5e949, type: 3}
       propertyPath: m_Colors.m_ColorMultiplier
@@ -3917,7 +3917,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4235160468344426946, guid: cd15fd330deeb48b6bcab0b285c5e949, type: 3}
       propertyPath: m_Name
-      value: Horizon_ProxyLabelWithIcon (16)
+      value: Horizon_ProxyLabelWithIcon (13)
       objectReference: {fileID: 0}
     - target: {fileID: 6770948959124739245, guid: cd15fd330deeb48b6bcab0b285c5e949, type: 3}
       propertyPath: m_Mesh
@@ -4077,7 +4077,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4235160468344426946, guid: cd15fd330deeb48b6bcab0b285c5e949, type: 3}
       propertyPath: m_Name
-      value: Horizon_ProxyLabelWithIcon (21)
+      value: Horizon_ProxyLabelWithIcon (17)
       objectReference: {fileID: 0}
     - target: {fileID: 5353102674760847547, guid: cd15fd330deeb48b6bcab0b285c5e949, type: 3}
       propertyPath: m_Colors.m_ColorMultiplier
@@ -4246,7 +4246,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4235160468344426946, guid: cd15fd330deeb48b6bcab0b285c5e949, type: 3}
       propertyPath: m_Name
-      value: Horizon_ProxyLabelWithIcon (14)
+      value: Horizon_ProxyLabelWithIcon (11)
       objectReference: {fileID: 0}
     - target: {fileID: 6770948959124739245, guid: cd15fd330deeb48b6bcab0b285c5e949, type: 3}
       propertyPath: m_Mesh
@@ -4427,7 +4427,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4235160468344426946, guid: cd15fd330deeb48b6bcab0b285c5e949, type: 3}
       propertyPath: m_Name
-      value: Horizon_ProxyLabelWithIcon (4)
+      value: Horizon_ProxyLabelWithIcon (0)
       objectReference: {fileID: 0}
     - target: {fileID: 6770948959124739245, guid: cd15fd330deeb48b6bcab0b285c5e949, type: 3}
       propertyPath: m_Mesh
@@ -4688,10 +4688,7 @@ PrefabInstance:
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents:
-    - targetCorrespondingSourceObject: {fileID: 917327442009581178, guid: cd15fd330deeb48b6bcab0b285c5e949, type: 3}
-      insertIndex: -1
-      addedObject: {fileID: 0}
+    m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: cd15fd330deeb48b6bcab0b285c5e949, type: 3}
 --- !u!224 &1060978778 stripped
 RectTransform:
@@ -5194,10 +5191,7 @@ PrefabInstance:
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents:
-    - targetCorrespondingSourceObject: {fileID: 789804525493875455, guid: a9088ffdc24df41fba5fd6cb1eaf3ead, type: 3}
-      insertIndex: -1
-      addedObject: {fileID: 0}
+    m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: a9088ffdc24df41fba5fd6cb1eaf3ead, type: 3}
 --- !u!224 &1131747126 stripped
 RectTransform:
@@ -5364,7 +5358,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4235160468344426946, guid: cd15fd330deeb48b6bcab0b285c5e949, type: 3}
       propertyPath: m_Name
-      value: Horizon_ProxyLabelWithIcon (17)
+      value: Horizon_ProxyLabelWithIcon (14)
       objectReference: {fileID: 0}
     - target: {fileID: 6770948959124739245, guid: cd15fd330deeb48b6bcab0b285c5e949, type: 3}
       propertyPath: m_Mesh
@@ -6124,7 +6118,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4235160468344426946, guid: cd15fd330deeb48b6bcab0b285c5e949, type: 3}
       propertyPath: m_Name
-      value: Horizon_ProxyLabelWithIcon (13)
+      value: Horizon_ProxyLabelWithIcon (10)
       objectReference: {fileID: 0}
     - target: {fileID: 6770948959124739245, guid: cd15fd330deeb48b6bcab0b285c5e949, type: 3}
       propertyPath: m_Mesh
@@ -6305,7 +6299,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4235160468344426946, guid: cd15fd330deeb48b6bcab0b285c5e949, type: 3}
       propertyPath: m_Name
-      value: Horizon_ProxyLabelWithIcon (11)
+      value: Horizon_ProxyLabelWithIcon (8)
       objectReference: {fileID: 0}
     - target: {fileID: 6770948959124739245, guid: cd15fd330deeb48b6bcab0b285c5e949, type: 3}
       propertyPath: m_Mesh
@@ -6647,7 +6641,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4235160468344426946, guid: cd15fd330deeb48b6bcab0b285c5e949, type: 3}
       propertyPath: m_Name
-      value: Horizon_ProxyLabelWithIcon (22)
+      value: Horizon_ProxyLabelWithIcon (18)
       objectReference: {fileID: 0}
     - target: {fileID: 5353102674760847547, guid: cd15fd330deeb48b6bcab0b285c5e949, type: 3}
       propertyPath: m_Colors.m_ColorMultiplier
@@ -6933,7 +6927,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4235160468344426946, guid: cd15fd330deeb48b6bcab0b285c5e949, type: 3}
       propertyPath: m_Name
-      value: Horizon_ProxyLabelWithIcon (15)
+      value: Horizon_ProxyLabelWithIcon (12)
       objectReference: {fileID: 0}
     - target: {fileID: 6770948959124739245, guid: cd15fd330deeb48b6bcab0b285c5e949, type: 3}
       propertyPath: m_Mesh
@@ -7077,7 +7071,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4235160468344426946, guid: cd15fd330deeb48b6bcab0b285c5e949, type: 3}
       propertyPath: m_Name
-      value: Horizon_ProxyLabelWithIcon (6)
+      value: Horizon_ProxyLabelWithIcon (2)
       objectReference: {fileID: 0}
     - target: {fileID: 6770948959124739245, guid: cd15fd330deeb48b6bcab0b285c5e949, type: 3}
       propertyPath: m_Mesh
@@ -7653,10 +7647,7 @@ PrefabInstance:
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents:
-    - targetCorrespondingSourceObject: {fileID: 917327442009581178, guid: cd15fd330deeb48b6bcab0b285c5e949, type: 3}
-      insertIndex: -1
-      addedObject: {fileID: 0}
+    m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: cd15fd330deeb48b6bcab0b285c5e949, type: 3}
 --- !u!224 &1633002012 stripped
 RectTransform:
@@ -7697,7 +7688,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4235160468344426946, guid: cd15fd330deeb48b6bcab0b285c5e949, type: 3}
       propertyPath: m_Name
-      value: Horizon_ProxyLabelWithIcon (23)
+      value: Horizon_ProxyLabelWithIcon (19)
       objectReference: {fileID: 0}
     - target: {fileID: 5353102674760847547, guid: cd15fd330deeb48b6bcab0b285c5e949, type: 3}
       propertyPath: m_Colors.m_ColorMultiplier
@@ -8298,7 +8289,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4235160468344426946, guid: cd15fd330deeb48b6bcab0b285c5e949, type: 3}
       propertyPath: m_Name
-      value: Horizon_ProxyLabelWithIcon (12)
+      value: Horizon_ProxyLabelWithIcon (9)
       objectReference: {fileID: 0}
     - target: {fileID: 6770948959124739245, guid: cd15fd330deeb48b6bcab0b285c5e949, type: 3}
       propertyPath: m_Mesh
@@ -8559,10 +8550,7 @@ PrefabInstance:
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents:
-    - targetCorrespondingSourceObject: {fileID: 917327442009581178, guid: cd15fd330deeb48b6bcab0b285c5e949, type: 3}
-      insertIndex: -1
-      addedObject: {fileID: 0}
+    m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: cd15fd330deeb48b6bcab0b285c5e949, type: 3}
 --- !u!224 &1789115431 stripped
 RectTransform:
@@ -8612,7 +8600,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4235160468344426946, guid: cd15fd330deeb48b6bcab0b285c5e949, type: 3}
       propertyPath: m_Name
-      value: Horizon_ProxyLabelWithIcon (20)
+      value: Horizon_ProxyLabelWithIcon (4)
       objectReference: {fileID: 0}
     - target: {fileID: 6770948959124739245, guid: cd15fd330deeb48b6bcab0b285c5e949, type: 3}
       propertyPath: m_Mesh
@@ -9309,7 +9297,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4235160468344426946, guid: cd15fd330deeb48b6bcab0b285c5e949, type: 3}
       propertyPath: m_Name
-      value: Horizon_ProxyLabelWithIcon (10)
+      value: Horizon_ProxyLabelWithIcon (7)
       objectReference: {fileID: 0}
     - target: {fileID: 6770948959124739245, guid: cd15fd330deeb48b6bcab0b285c5e949, type: 3}
       propertyPath: m_Mesh
@@ -10778,7 +10766,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4235160468344426946, guid: cd15fd330deeb48b6bcab0b285c5e949, type: 3}
       propertyPath: m_Name
-      value: Horizon_ProxyLabelWithIcon (5)
+      value: Horizon_ProxyLabelWithIcon (1)
       objectReference: {fileID: 0}
     - target: {fileID: 6770948959124739245, guid: cd15fd330deeb48b6bcab0b285c5e949, type: 3}
       propertyPath: m_Mesh
@@ -11166,10 +11154,7 @@ PrefabInstance:
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents:
-    - targetCorrespondingSourceObject: {fileID: 917327442009581178, guid: cd15fd330deeb48b6bcab0b285c5e949, type: 3}
-      insertIndex: -1
-      addedObject: {fileID: 0}
+    m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: cd15fd330deeb48b6bcab0b285c5e949, type: 3}
 --- !u!224 &2075087914 stripped
 RectTransform:
@@ -11696,7 +11681,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4235160468344426946, guid: cd15fd330deeb48b6bcab0b285c5e949, type: 3}
       propertyPath: m_Name
-      value: Horizon_ProxyLabelWithIcon (9)
+      value: Horizon_ProxyLabelWithIcon (6)
       objectReference: {fileID: 0}
     - target: {fileID: 5353102674760847547, guid: cd15fd330deeb48b6bcab0b285c5e949, type: 3}
       propertyPath: m_Colors.m_ColorMultiplier
