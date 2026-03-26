@@ -238,23 +238,15 @@ public class SpatialHierarchyChildViewManager : MonoBehaviour
         m_useAlternateLevel = !m_useAlternateLevel;
 
         var levelsAfterToggle = GetConfiguredLevels();
-        if (currentLevelIndex == m_toggleableLevelIndex)
-        {
-            var toggledRoot = levelsAfterToggle[m_toggleableLevelIndex];
-            PrepareLevelSwitch(levelsAfterToggle, m_toggleableLevelIndex);
-            Canvas.ForceUpdateCanvases();
-            SelectBestMatchOrFallback(levelsAfterToggle, m_toggleableLevelIndex, toggledRoot, selectedMarkers);
-            RefreshScroller(toggledRoot);
-            Log($"Toggled logical level {m_toggleableLevelIndex} to {toggledRoot.name}.");
-            return true;
-        }
+        var toggledRoot = levelsAfterToggle[m_toggleableLevelIndex];
+        if (toggledRoot == null)
+            return false;
 
-        if (currentLevelIndex >= 0)
-            ShowOnlyLevel(levelsAfterToggle, currentLevelIndex);
-        else
-            HideInactiveToggleLevelRoot();
-
-        Log($"Toggled logical level {m_toggleableLevelIndex} root.");
+        PrepareLevelSwitch(levelsAfterToggle, m_toggleableLevelIndex);
+        Canvas.ForceUpdateCanvases();
+        SelectBestMatchOrFallback(levelsAfterToggle, m_toggleableLevelIndex, toggledRoot, selectedMarkers);
+        RefreshScroller(toggledRoot);
+        Log($"Toggled logical level {m_toggleableLevelIndex} to {toggledRoot.name}.");
         return true;
     }
 
