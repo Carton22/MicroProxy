@@ -5,7 +5,9 @@ public class ProxySetMiniCameraAligner : MonoBehaviour
 {
     [SerializeField] private Transform m_proxySetsRoot;
     [SerializeField] private RectTransform m_AlignRect;
+    [SerializeField] private RectTransform m_horizontalAlignRect;
     [SerializeField] private float m_proxySetsX = 0.42f;
+    [SerializeField] private float m_horizontalOffset;
     [SerializeField] private float m_verticalOffset;
     [SerializeField] private bool m_keepAlignedContinuously = true;
     [SerializeField] private int m_startupRefreshFrames = 6;
@@ -59,6 +61,10 @@ public class ProxySetMiniCameraAligner : MonoBehaviour
         bool hasMiniCameraBounds = m_AlignRect != null && TryGetBoundsInRootSpace(m_AlignRect, out miniCameraBounds);
         float targetCenterY = hasMiniCameraBounds ? miniCameraBounds.center.y + m_verticalOffset : 0f;
 
+        Bounds horizontalAlignBounds = default;
+        bool hasHorizontalAlignBounds = m_horizontalAlignRect != null && TryGetBoundsInRootSpace(m_horizontalAlignRect, out horizontalAlignBounds);
+        float targetCenterX = hasHorizontalAlignBounds ? horizontalAlignBounds.center.x + m_horizontalOffset : m_proxySetsX;
+
         for (int i = 0; i < m_proxySetsRoot.childCount; i++)
         {
             var proxySetRect = m_proxySetsRoot.GetChild(i) as RectTransform;
@@ -66,9 +72,13 @@ public class ProxySetMiniCameraAligner : MonoBehaviour
                 continue;
 
             Vector2 nextAnchoredPosition = proxySetRect.anchoredPosition;
-            nextAnchoredPosition.x = m_proxySetsX;
+            bool hasProxySetBounds = TryGetProxySetBoundsInRootSpace(proxySetRect, out Bounds proxySetBounds);
+            if (hasHorizontalAlignBounds && hasProxySetBounds)
+                nextAnchoredPosition.x += targetCenterX - proxySetBounds.center.x;
+            else
+                nextAnchoredPosition.x = m_proxySetsX;
 
-            if (hasMiniCameraBounds && TryGetProxySetBoundsInRootSpace(proxySetRect, out Bounds proxySetBounds))
+            if (hasMiniCameraBounds && hasProxySetBounds)
                 nextAnchoredPosition.y += targetCenterY - proxySetBounds.center.y;
 
             if ((nextAnchoredPosition - proxySetRect.anchoredPosition).sqrMagnitude <= 0.0000001f)
