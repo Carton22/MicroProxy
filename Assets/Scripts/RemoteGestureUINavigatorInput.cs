@@ -65,6 +65,8 @@ public class RemoteGestureUINavigatorInput : MonoBehaviour
             case "swipeforward":
             case "swipeforwardup":
             case "swipeup":
+                if (SpatialHierarchyChildViewManager.TryHandleSwipeUp())
+                    break;
                 if (ProxySetDrillDownController.TryHandleSwipeUpReturnToParent())
                     break;
                 m_uiNavigator.MoveUp();
@@ -75,6 +77,8 @@ public class RemoteGestureUINavigatorInput : MonoBehaviour
             case "swipebackward":
             case "swipeback":
             case "swipedown":
+                if (SpatialHierarchyChildViewManager.TryHandleSwipeDown())
+                    break;
                 if (ProxySetDrillDownController.TryHandleSwipeDownDrillDown())
                     break;
                 m_uiNavigator.MoveDown();

@@ -19,6 +19,8 @@ public class MicroGestureUINavigatorInput : MonoBehaviour
         {
             if(Input.GetKeyDown(KeyCode.U))
             {
+                if (SpatialHierarchyChildViewManager.TryHandleSwipeUp())
+                    return;
                 if (ProxySetDrillDownController.TryHandleSwipeUpReturnToParent())
                     return;
                 uiNavigator.MoveUp();
@@ -33,6 +35,8 @@ public class MicroGestureUINavigatorInput : MonoBehaviour
             }
             if (Input.GetKeyDown(KeyCode.J))
             {
+                if (SpatialHierarchyChildViewManager.TryHandleSwipeDown())
+                    return;
                 if (ProxySetDrillDownController.TryHandleSwipeDownDrillDown())
                     return;
                 uiNavigator.MoveDown();
@@ -66,12 +70,16 @@ public class MicroGestureUINavigatorInput : MonoBehaviour
         }
         else if (gesture == OVRHand.MicrogestureType.SwipeForward)
         {
+            if (SpatialHierarchyChildViewManager.TryHandleSwipeUp())
+                return;
             if (ProxySetDrillDownController.TryHandleSwipeUpReturnToParent())
                 return;
             uiNavigator.MoveUp();
         }
         else if (gesture == OVRHand.MicrogestureType.SwipeBackward)
         {
+            if (SpatialHierarchyChildViewManager.TryHandleSwipeDown())
+                return;
             if (ProxySetDrillDownController.TryHandleSwipeDownDrillDown())
                 return;
             uiNavigator.MoveDown();
