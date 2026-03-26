@@ -10,6 +10,9 @@ public class SpatialHierarchyChildViewManager : MonoBehaviour
     [SerializeField] private List<Transform> m_levelRoots = new();
     [SerializeField] private Transform m_parentLabelsRoot;
     [SerializeField] private Transform m_childLabelsRoot;
+    [SerializeField] private bool m_forceSequentialMarkerBindings;
+    [SerializeField] private Transform m_sequentialMarkerBindingRoot;
+    [SerializeField] private int m_sequentialStartMarkerIndex;
     [SerializeField] private bool m_selectFirstVisibleChild = true;
     [SerializeField] private bool m_debugLog;
 
@@ -72,6 +75,13 @@ public class SpatialHierarchyChildViewManager : MonoBehaviour
     {
         m_labelManager = FindFirstObjectByType<ProxyLabelManager>();
         RebuildLegacyLevelsIfNeeded();
+        if (m_sequentialMarkerBindingRoot == null)
+            m_sequentialMarkerBindingRoot = m_childLabelsRoot;
+    }
+
+    private void OnEnable()
+    {
+        ResolveReferences();
     }
 
     public bool TryHandleTapSelected()
@@ -116,7 +126,7 @@ public class SpatialHierarchyChildViewManager : MonoBehaviour
         RememberSelectionAtLevel(levels, currentLevelIndex, selectedNode.gameObject);
 
         var markers = new List<int>();
-        CollectMarkers(selectedNode, markers);
+        CollectNodeMarkers(selectedNode, markers);
         PrepareLevelSwitch(levels, currentLevelIndex + 1);
         ShowLevelForMarkers(nextRoot, markers, $"Showing children for {selectedNode.name} at level {currentLevelIndex + 1}.");
         return true;
@@ -148,7 +158,7 @@ public class SpatialHierarchyChildViewManager : MonoBehaviour
 
         Transform selectedNode = selected != null ? GetDirectChildUnder(selected.transform, currentRoot) : null;
         var selectedMarkers = new List<int>();
-        CollectMarkers(selectedNode, selectedMarkers);
+        CollectNodeMarkers(selectedNode, selectedMarkers);
 
         PrepareLevelSwitch(levels, currentLevelIndex - 1);
 
@@ -222,6 +232,7 @@ public class SpatialHierarchyChildViewManager : MonoBehaviour
             m_labelManager = FindFirstObjectByType<ProxyLabelManager>();
 
         RebuildLegacyLevelsIfNeeded();
+        ApplySequentialMarkerBindingsIfNeeded();
     }
 
     private static Transform GetDirectChildUnder(Transform candidate, Transform parent)
@@ -366,6 +377,42 @@ public class SpatialHierarchyChildViewManager : MonoBehaviour
         }
     }
 
+    private static void CollectNodeMarkers(Transform node, List<int> destination)
+    {
+        destination.Clear();
+        if (node == null)
+            return;
+
+        var directBinding = node.GetComponent<LabelMarkerBinding>();
+        if (TryAppendBindingMarkers(directBinding, destination))
+            return;
+
+        CollectMarkers(node, destination);
+    }
+
+    private static bool TryAppendBindingMarkers(LabelMarkerBinding binding, List<int> destination)
+    {
+        if (binding == null || destination == null)
+            return false;
+
+        var indices = binding.MarkerIndices;
+        if (indices == null || indices.Count == 0)
+            return false;
+
+        var seen = new HashSet<int>();
+        for (int i = 0; i < indices.Count; i++)
+        {
+            int marker = indices[i];
+            if (marker < 0 || seen.Contains(marker))
+                continue;
+
+            seen.Add(marker);
+            destination.Add(marker);
+        }
+
+        return destination.Count > 0;
+    }
+
     private static int GetVisibleChildIndexUnder(Transform root, Transform selected)
     {
         if (root == null || selected == null)
@@ -385,6 +432,43 @@ public class SpatialHierarchyChildViewManager : MonoBehaviour
         }
 
         return -1;
+    }
+
+    private void ApplySequentialMarkerBindingsIfNeeded()
+    {
+        if (!m_forceSequentialMarkerBindings)
+            return;
+
+        var root = m_sequentialMarkerBindingRoot != null ? m_sequentialMarkerBindingRoot : m_childLabelsRoot;
+        if (root == null)
+            return;
+
+        for (int i = 0; i < root.childCount; i++)
+        {
+            var child = root.GetChild(i);
+            if (child == null)
+                continue;
+
+            int markerIndex = m_sequentialStartMarkerIndex + i;
+            var binding = child.GetComponent<LabelMarkerBinding>();
+            if (binding == null)
+                binding = child.gameObject.AddComponent<LabelMarkerBinding>();
+
+            if (HasExactSingleMarker(binding, markerIndex))
+                continue;
+
+            binding.ClearMarkerIndices();
+            binding.AddMarkerIndex(markerIndex);
+        }
+    }
+
+    private static bool HasExactSingleMarker(LabelMarkerBinding binding, int markerIndex)
+    {
+        if (binding == null)
+            return false;
+
+        var indices = binding.MarkerIndices;
+        return indices != null && indices.Count == 1 && indices[0] == markerIndex;
     }
 
     private static Transform FindBestMatchingChild(Transform root, List<int> markers)
