@@ -121,6 +121,12 @@ public class SpatialHierarchyChildViewManager : MonoBehaviour
         return -1;
     }
 
+    public Transform GetCurrentToggleLevelRoot()
+    {
+        ResolveReferences();
+        return GetActiveToggleLevelRoot();
+    }
+
     public bool TryHandleTapSelected()
     {
         if (EventSystem.current == null)

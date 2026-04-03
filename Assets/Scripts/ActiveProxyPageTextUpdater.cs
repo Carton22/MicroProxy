@@ -22,11 +22,21 @@ public class ActiveProxyPageTextUpdater : MonoBehaviour
     [Tooltip("Prefix used when formatting the level text (e.g. prefix='Level ' -> 'Level 0').")]
     [SerializeField] private string m_levelPrefix = "Level ";
 
+    [Header("Organization tag")]
+    [Tooltip("When enabled, appends an organization hint such as 'by Space' or 'by Owner'.")]
+    [SerializeField] private bool m_includeOrganizationTag = true;
+    [SerializeField] private string m_organizationSeparator = "  ";
+    [SerializeField] private string m_spaceGroupRootName = "Cars";
+    [SerializeField] private string m_spaceTagText = "by Space";
+    [SerializeField] private string m_ownerGroupRootName = "Attribute-Owner";
+    [SerializeField] private string m_ownerTagText = "by Owner";
+
     [Header("Update behavior")]
     [Tooltip("How often to check for active page changes (seconds). 0 = every frame.")]
     [SerializeField] private float m_updateIntervalSeconds = 0.15f;
 
     private int m_lastActiveIndex = int.MinValue;
+    private string m_lastResolvedText = string.Empty;
     private float m_nextUpdateTime;
 
     private void Reset()
@@ -72,11 +82,16 @@ public class ActiveProxyPageTextUpdater : MonoBehaviour
         int activeIndex = m_hierarchyManager != null
             ? m_hierarchyManager.GetCurrentLogicalLevelIndex()
             : m_proxyLabelManager.GetActiveLabelsParentIndex();
-        if (!force && activeIndex == m_lastActiveIndex)
+        string next = ResolveLevelText(activeIndex);
+        if (!force &&
+            activeIndex == m_lastActiveIndex &&
+            string.Equals(next, m_lastResolvedText, StringComparison.Ordinal))
+        {
             return;
+        }
 
         m_lastActiveIndex = activeIndex;
-        string next = ResolveLevelText(activeIndex);
+        m_lastResolvedText = next;
         if (m_targetText != null && m_targetText.text != next)
             m_targetText.text = next;
     }
@@ -86,6 +101,39 @@ public class ActiveProxyPageTextUpdater : MonoBehaviour
         if (activeIndex < 0)
             return string.Empty;
 
-        return $"{m_levelPrefix}{activeIndex}";
+        string levelText = $"{m_levelPrefix}{activeIndex}";
+        string organizationTag = ResolveOrganizationTag();
+        if (string.IsNullOrWhiteSpace(organizationTag))
+            return levelText;
+
+        return string.IsNullOrEmpty(m_organizationSeparator)
+            ? $"{levelText} {organizationTag}".Trim()
+            : $"{levelText}{m_organizationSeparator}{organizationTag}";
+    }
+
+    private string ResolveOrganizationTag()
+    {
+        if (!m_includeOrganizationTag || m_hierarchyManager == null)
+            return string.Empty;
+
+        Transform activeToggleRoot = m_hierarchyManager.GetCurrentToggleLevelRoot();
+        if (activeToggleRoot == null || string.IsNullOrWhiteSpace(activeToggleRoot.name))
+            return string.Empty;
+
+        string rootName = activeToggleRoot.name;
+        if (MatchesRootName(rootName, m_spaceGroupRootName))
+            return m_spaceTagText;
+        if (MatchesRootName(rootName, m_ownerGroupRootName))
+            return m_ownerTagText;
+
+        return string.Empty;
+    }
+
+    private static bool MatchesRootName(string rootName, string expectedName)
+    {
+        if (string.IsNullOrWhiteSpace(rootName) || string.IsNullOrWhiteSpace(expectedName))
+            return false;
+
+        return rootName.IndexOf(expectedName, StringComparison.OrdinalIgnoreCase) >= 0;
     }
 }
