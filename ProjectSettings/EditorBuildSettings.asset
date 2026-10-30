@@ -6,8 +6,8 @@ EditorBuildSettings:
   serializedVersion: 2
   m_Scenes:
   - enabled: 1
-    path: Assets/Scene/Video Demo/Case1Bookshelf.unity
-    guid: 5826bc7c64e9b40a29c7ae28dcf2e491
+    path: Assets/Scene/UIST Demo/Full_Display_Microgesture.unity
+    guid: 7dd7d276eef2b42e687052377f800989
   m_configObjects:
     Unity.XR.Oculus.Settings: {fileID: 11400000, guid: f2bf97b3acdb64248a707c407c9fc54e, type: 2}
     com.unity.xr.management.loader_settings: {fileID: 11400000, guid: a971eac5e950046e586c5e153e32d05c, type: 2}

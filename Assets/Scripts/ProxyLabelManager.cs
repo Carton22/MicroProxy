@@ -24,6 +24,9 @@ public class ProxyLabelManager : MonoBehaviour
     [Tooltip("Possible parents whose direct children are proxy label GameObjects. Exactly one should be active in the hierarchy at a time.")]
     [SerializeField] private List<Transform> m_labelParents = new();
 
+    [Tooltip("Keep a logical proxy target for spatial links while input focus is on filters or other UI.")]
+    [SerializeField] private bool m_retainProxyFocusWhenUnfocused;
+
     [Header("Debug logging")]
     [Tooltip("Optional shared logger used to log which label index is currently selected.")]
     [SerializeField] private SharedLogger m_logger;
@@ -39,6 +42,7 @@ public class ProxyLabelManager : MonoBehaviour
     private readonly HashSet<int> m_visibleMarkerFilter = new();
     private bool m_visibleMarkerFilterEnabled;
     private Transform m_lastFilteredLabelsParent;
+    private readonly Dictionary<Transform, Transform> m_rememberedProxyFocus = new();
 
     private void Awake()
     {
@@ -48,6 +52,9 @@ public class ProxyLabelManager : MonoBehaviour
 
     private void LateUpdate()
     {
+        if (m_retainProxyFocusWhenUnfocused)
+            GetSelectedLabelIndex();
+
         if (!m_visibleMarkerFilterEnabled)
             return;
 
@@ -388,17 +395,18 @@ public class ProxyLabelManager : MonoBehaviour
     }
 
     /// <summary>
-    /// Index of the currently selected label under m_labelsParent (0-based), or -1 if none.
+    /// Visible index of the focused proxy, optionally retaining a logical target while other UI has focus.
     /// </summary>
     public int GetSelectedLabelIndex()
     {
         var parent = GetActiveLabelsParent();
-        if (parent == null || EventSystem.current == null)
+        if (parent == null)
             return -1;
 
-        var current = EventSystem.current.currentSelectedGameObject;
-        if (current == null)
-            return -1;
+        var current = EventSystem.current != null ? EventSystem.current.currentSelectedGameObject : null;
+        m_rememberedProxyFocus.TryGetValue(parent, out var remembered);
+        Transform firstVisible = null;
+        int rememberedIndex = -1;
 
         // Accept selection on the child itself or any nested descendant.
         int visibleIndex = 0;
@@ -408,8 +416,15 @@ public class ProxyLabelManager : MonoBehaviour
             if (child == null || !child.gameObject.activeInHierarchy)
                 continue;
 
-            if (current == child.gameObject || current.transform.IsChildOf(child))
+            if (firstVisible == null)
+                firstVisible = child;
+            if (child == remembered)
+                rememberedIndex = visibleIndex;
+
+            if (current != null && (current == child.gameObject || current.transform.IsChildOf(child)))
             {
+                if (m_retainProxyFocusWhenUnfocused)
+                    m_rememberedProxyFocus[parent] = child;
                 LogSelectedIndex(visibleIndex, child.gameObject.name);
                 return visibleIndex;
             }
@@ -417,6 +432,21 @@ public class ProxyLabelManager : MonoBehaviour
             visibleIndex++;
         }
 
+        if (!m_retainProxyFocusWhenUnfocused)
+            return -1;
+
+        if (rememberedIndex >= 0)
+            return rememberedIndex;
+
+        // Filtering may hide or remove the old target. Keep links on a visible proxy,
+        // without moving the EventSystem focus away from the active filter button.
+        if (firstVisible != null)
+        {
+            m_rememberedProxyFocus[parent] = firstVisible;
+            return 0;
+        }
+
+        m_rememberedProxyFocus.Remove(parent);
         return -1;
     }
 

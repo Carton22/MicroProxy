@@ -1,0 +1,104 @@
+{
+  "items": [
+    {
+      "name": "item1",
+      "image": "items/item1.png",
+      "description": "Yellow binder",
+      "type": "Book",
+      "color": "Yellow",
+      "topic": "CS",
+      "note": "Binder classified as Book within the requested types.",
+      "price": 17
+    },
+    {
+      "name": "item2",
+      "image": "items/item2.png",
+      "description": "Black binder",
+      "type": "Book",
+      "color": "Black",
+      "topic": "CS",
+      "note": "Binder classified as Book within the requested types.",
+      "price": 30
+    },
+    {
+      "name": "item3",
+      "image": "items/item3.png",
+      "description": "Ray-Ban display box",
+      "type": "Box",
+      "color": "Yellow",
+      "topic": "CS",
+      "note": "Beige packaging assigned Yellow for this preview.",
+      "price": 43
+    },
+    {
+      "name": "item4",
+      "image": "items/item4.png",
+      "description": "UbiComp adjunct proceedings",
+      "type": "Book",
+      "color": "Green",
+      "topic": "CS",
+      "note": "",
+      "price": 15
+    },
+    {
+      "name": "item5",
+      "image": "items/item5.png",
+      "description": "National Geographic · Picasso",
+      "type": "Book",
+      "color": "Yellow",
+      "topic": "Art",
+      "note": "",
+      "price": 28
+    },
+    {
+      "name": "item6",
+      "image": "items/item6.png",
+      "description": "Black Sharpie",
+      "type": "Pen",
+      "color": "Black",
+      "topic": "Art",
+      "note": "",
+      "price": 41
+    },
+    {
+      "name": "item7",
+      "image": "items/item7.png",
+      "description": "Kleenex tissue box",
+      "type": "Box",
+      "color": "Green",
+      "topic": "Art",
+      "note": "",
+      "price": 13
+    },
+    {
+      "name": "item8",
+      "image": "items/item8.png",
+      "description": "Green Expo marker",
+      "type": "Pen",
+      "color": "Green",
+      "topic": "Art",
+      "note": "",
+      "price": 26
+    },
+    {
+      "name": "item9",
+      "image": "items/item9.png",
+      "description": "New York magnet box",
+      "type": "Box",
+      "color": "Red",
+      "topic": "Art",
+      "note": "Multicolored design assigned Red for this preview.",
+      "price": 39
+    },
+    {
+      "name": "item10",
+      "image": "items/item10.png",
+      "description": "Red Expo marker",
+      "type": "Pen",
+      "color": "Red",
+      "topic": "Art",
+      "note": "",
+      "price": 11
+    }
+  ]
+}

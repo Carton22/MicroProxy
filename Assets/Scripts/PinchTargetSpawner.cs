@@ -47,6 +47,8 @@ public class PinchTargetSpawner : MonoBehaviour
     private bool m_wasPinching;
     private Transform m_thumbTip;
     private Transform m_middleTip;
+    private OVRSkeleton m_resolvedSkeleton;
+    private OVRSkeleton.SkeletonType? m_resolvedSkeletonType;
 
     private Transform GetMarkerParent()
     {
@@ -90,7 +92,9 @@ public class PinchTargetSpawner : MonoBehaviour
         if (m_leftHand == null || m_targetPrefab == null)
             return;
 
-        if (m_middleTip == null || (m_useThumbIndexMidpoint && m_thumbTip == null))
+        if (m_middleTip == null || (m_useThumbIndexMidpoint && m_thumbTip == null)
+            || m_resolvedSkeleton != m_leftHandSkeleton
+            || (m_leftHandSkeleton != null && m_resolvedSkeletonType != m_leftHandSkeleton.GetSkeletonType()))
             TryResolveTipsFromSkeleton();
 
         if (!m_leftHand.IsDataValid)
@@ -215,7 +219,7 @@ public class PinchTargetSpawner : MonoBehaviour
     private Vector3 GetPinchWorldPosition()
     {
         // Prefer skeleton tip positions. Pointer-ray fallback is intentionally removed to avoid incorrect marker placement.
-        if (m_middleTip != null && (!m_useThumbIndexMidpoint || m_thumbTip == null))
+        if (m_middleTip != null && !m_useThumbIndexMidpoint)
             return m_middleTip.position;
 
         if (m_thumbTip != null && m_middleTip != null)
@@ -230,6 +234,21 @@ public class PinchTargetSpawner : MonoBehaviour
         if (m_leftHandSkeleton == null)
             return;
 
+        var skeletonType = m_leftHandSkeleton.GetSkeletonType();
+        if (m_resolvedSkeleton != m_leftHandSkeleton || m_resolvedSkeletonType != skeletonType)
+        {
+            m_thumbTip = null;
+            m_middleTip = null;
+            m_resolvedSkeleton = m_leftHandSkeleton;
+            m_resolvedSkeletonType = skeletonType;
+        }
+
+        // OpenXR and legacy skeleton IDs overlap numerically but refer to different joints.
+        bool isOpenXr = skeletonType == OVRSkeleton.SkeletonType.XRHandLeft
+            || skeletonType == OVRSkeleton.SkeletonType.XRHandRight;
+        var thumbId = isOpenXr ? OVRSkeleton.BoneId.XRHand_ThumbTip : OVRSkeleton.BoneId.Hand_ThumbTip;
+        var middleId = isOpenXr ? OVRSkeleton.BoneId.XRHand_MiddleTip : OVRSkeleton.BoneId.Hand_MiddleTip;
+
         var bones = m_leftHandSkeleton.Bones;
         if (bones == null || bones.Count == 0)
             return;
@@ -239,10 +258,10 @@ public class PinchTargetSpawner : MonoBehaviour
             if (bone == null || bone.Transform == null)
                 continue;
 
-            if (m_thumbTip == null && bone.Id == OVRSkeleton.BoneId.Hand_ThumbTip)
+            if (m_thumbTip == null && bone.Id == thumbId)
                 m_thumbTip = bone.Transform;
 
-            if (m_middleTip == null && bone.Id == OVRSkeleton.BoneId.Hand_MiddleTip)
+            if (m_middleTip == null && bone.Id == middleId)
                 m_middleTip = bone.Transform;
 
             if (m_thumbTip != null && m_middleTip != null)
