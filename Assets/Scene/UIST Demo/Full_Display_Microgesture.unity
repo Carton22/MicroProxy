@@ -8130,6 +8130,14 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 1744462754}
     - target: {fileID: 5841989571830368855, guid: 58eee23691c63485ba7ef961e1ceeb74, type: 3}
+      propertyPath: m_OverrideSorting
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 5841989571830368855, guid: 58eee23691c63485ba7ef961e1ceeb74, type: 3}
+      propertyPath: m_SortingOrder
+      value: -100
+      objectReference: {fileID: 0}
+    - target: {fileID: 5841989571830368855, guid: 58eee23691c63485ba7ef961e1ceeb74, type: 3}
       propertyPath: m_PlaneDistance
       value: 1
       objectReference: {fileID: 0}
@@ -8138,6 +8146,11 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 58eee23691c63485ba7ef961e1ceeb74, type: 3}
+--- !u!224 &1288145369 stripped
+RectTransform:
+  m_CorrespondingSourceObject: {fileID: 3538017278138891281, guid: 58eee23691c63485ba7ef961e1ceeb74, type: 3}
+  m_PrefabInstance: {fileID: 1288145368}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1001 &1303279952
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -9726,6 +9739,8 @@ MonoBehaviour:
   m_linePrefab: {fileID: 8259901140109785974, guid: 7a22edf228430442baabc7ff1a91b95c, type: 3}
   m_labelManagers:
   - {fileID: 1272610422}
+  m_linkAllFilteredMarkers: 1
+  m_attributeUiRoot: {fileID: 1455364593}
   m_runtimeTargetSource: {fileID: 1942878147}
   m_showCirclesAndLinesOnBigCanvas: 1
   m_bendXFactor: 0.7
@@ -12620,6 +12635,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1942878148}
+  - component: {fileID: 1942878149}
   - component: {fileID: 1942878147}
   m_Layer: 0
   m_Name: PinchTargetManager
@@ -12650,6 +12666,23 @@ MonoBehaviour:
   m_pinchStartStrength: 0.6
   m_pinchReleaseStrength: 0.35
   m_lockTargetPlacement: 0
+--- !u!114 &1942878149
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1942878146}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e92c7cce2b9f94575b7274df7dcc655a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_pinchTargetSpawner: {fileID: 1942878147}
+  m_hideWorldMarkers: 0
+  m_hideBehindPassthroughCanvas: 1
+  m_occludingCanvas: {fileID: 1288145369}
+  m_viewer: {fileID: 1744462753}
 --- !u!4 &1942878148
 Transform:
   m_ObjectHideFlags: 0

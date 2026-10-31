@@ -30,6 +30,10 @@ public class CanvasRayIntersectionVisualizer : MonoBehaviour
     [Tooltip("Label managers used to resolve which proxy-set label is selected and which label is bound to each marker index.")]
     [SerializeField] private List<ProxyLabelManager> m_labelManagers = new();
 
+    [Tooltip("While the attribute UI is open and a filter is active, link every matching marker instead of only the focused proxy.")]
+    [SerializeField] private bool m_linkAllFilteredMarkers;
+    [SerializeField] private GameObject m_attributeUiRoot;
+
     [Header("Runtime")]
     private RectTransform m_circleInstance;
 
@@ -324,8 +328,7 @@ public class CanvasRayIntersectionVisualizer : MonoBehaviour
             return;
         }
 
-        // Resolve label associated with this marker index: it must be bound to the currently selected label
-        // in ANY proxy set.
+        // Resolve the focused proxy, or every matching proxy during attribute selection.
         if (!TryGetSelectedLabelRectForMarkerIndex(index, out var labelRect) || labelRect == null)
         {
             if (m_lineInstances != null && index < m_lineInstances.Length && m_lineInstances[index] != null)
@@ -445,6 +448,22 @@ public class CanvasRayIntersectionVisualizer : MonoBehaviour
             var lm = m_labelManagers[lmIndex];
             if (lm == null)
                 continue;
+
+            if (m_linkAllFilteredMarkers && m_attributeUiRoot != null
+                && m_attributeUiRoot.activeInHierarchy && lm.HasVisibleLabelsFilter)
+            {
+                if (lm.IsMarkerIncludedInVisibleFilter(markerIndex))
+                {
+                    var matchingLabel = lm.GetLabelRectTransformForMarkerIndex(markerIndex);
+                    if (matchingLabel != null)
+                    {
+                        selectedLabelRect = matchingLabel;
+                        return true;
+                    }
+                }
+                // Empty results and ineligible members of grouped labels have no link.
+                continue;
+            }
 
             int selectedIndex = lm.GetSelectedLabelIndex();
             if (selectedIndex < 0)

@@ -256,6 +256,9 @@ public class ProxyLabelManager : MonoBehaviour
 
     public bool HasVisibleLabelsFilter => m_visibleMarkerFilterEnabled;
 
+    public bool IsMarkerIncludedInVisibleFilter(int markerIndex) =>
+        m_visibleMarkerFilterEnabled && m_visibleMarkerFilter.Contains(markerIndex);
+
     /// <param name="markerIndices">Allowed marker indices, or null to clear the filter.</param>
     /// <param name="emptyMeansHideAll">
     /// When true and <paramref name="markerIndices"/> is non-null with count 0, all proxy labels are hidden (conjunctive filter with empty intersection).
